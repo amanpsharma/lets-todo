@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Plus, Sparkles, Users } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Sparkles, Users, Menu, X } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import { UserButton } from "@clerk/nextjs";
 import { usePathname, useRouter } from "next/navigation";
 import { useTodos } from "@/hooks/useTodos";
 import { TodoContext } from "@/context/TodoContext";
 import Sidebar from "@/components/Sidebar";
+import MobileNav from "@/components/MobileNav";
 import ThemeToggle from "@/components/ThemeToggle";
 import AddTodoModal from "@/components/AddTodoModal";
 import PomodoroTimer from "@/components/PomodoroTimer";
@@ -49,11 +50,17 @@ export default function DashboardLayout({
   const [showFriends, setShowFriends] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Sync category filter with useTodos
   useEffect(() => {
     todoHook.setFilters({ ...todoHook.filters, category: selectedCategory });
   }, [selectedCategory]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   const activeTab = pathToTab[pathname] || "all";
 
@@ -83,6 +90,7 @@ export default function DashboardLayout({
       if (e.key === "Escape") {
         setShowModal(false);
         setShowCommandPalette(false);
+        setMobileMenuOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -104,30 +112,25 @@ export default function DashboardLayout({
     <TodoContext.Provider value={todoHook}>
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-violet-50 dark:from-gray-950 dark:via-slate-950 dark:to-violet-950/50 transition-colors duration-500">
       <Toaster
-        position="top-right"
+        position="top-center"
         toastOptions={{
           className:
-            "!bg-white/90 !backdrop-blur-xl dark:!bg-gray-800/90 !text-gray-900 dark:!text-white !shadow-2xl !rounded-2xl !border !border-white/20 dark:!border-white/5",
+            "!bg-white/90 !backdrop-blur-xl dark:!bg-gray-800/90 !text-gray-900 dark:!text-white !shadow-2xl !rounded-2xl !border !border-white/20 dark:!border-white/5 !text-sm",
           duration: 2500,
         }}
       />
 
-      {/* Background orbs */}
+      {/* Background orbs - smaller on mobile */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-gradient-to-br from-violet-300/20 to-purple-400/20 dark:from-violet-600/10 dark:to-purple-700/10 rounded-full blur-3xl animate-pulse-ring" />
+        <div className="absolute -top-40 -right-40 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-gradient-to-br from-violet-300/20 to-purple-400/20 dark:from-violet-600/10 dark:to-purple-700/10 rounded-full blur-3xl animate-pulse-ring" />
         <div
-          className="absolute top-1/3 -left-32 w-[400px] h-[400px] bg-gradient-to-br from-blue-300/20 to-cyan-400/20 dark:from-blue-600/10 dark:to-cyan-700/10 rounded-full blur-3xl animate-pulse-ring"
+          className="absolute top-1/3 -left-32 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-gradient-to-br from-blue-300/20 to-cyan-400/20 dark:from-blue-600/10 dark:to-cyan-700/10 rounded-full blur-3xl animate-pulse-ring"
           style={{ animationDelay: "1s" }}
         />
-        <div
-          className="absolute -bottom-40 right-1/4 w-[450px] h-[450px] bg-gradient-to-br from-pink-300/15 to-rose-400/15 dark:from-pink-600/8 dark:to-rose-700/8 rounded-full blur-3xl animate-pulse-ring"
-          style={{ animationDelay: "2s" }}
-        />
-        <div className="absolute top-2/3 left-1/3 w-[300px] h-[300px] bg-gradient-to-br from-emerald-300/10 to-teal-400/10 dark:from-emerald-600/5 dark:to-teal-700/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative flex h-screen overflow-hidden">
-        {/* Sidebar */}
+        {/* Desktop Sidebar */}
         <Sidebar
           stats={stats}
           todos={todos}
@@ -140,7 +143,46 @@ export default function DashboardLayout({
           onNewTask={() => setShowModal(true)}
           onOpenPomodoro={() => router.push("/dashboard/pomodoro")}
           onOpenFriends={() => router.push("/dashboard/friends")}
+          onOpenChat={() => router.push("/dashboard/chat")}
         />
+
+        {/* Mobile Sidebar Overlay */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setMobileMenuOpen(false)}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+              />
+              <motion.div
+                initial={{ x: -300 }}
+                animate={{ x: 0 }}
+                exit={{ x: -300 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="fixed left-0 top-0 bottom-0 w-80 z-50 md:hidden"
+              >
+                <Sidebar
+                  stats={stats}
+                  todos={todos}
+                  activeTab={activeTab}
+                  setActiveTab={(tab) => { setActiveTab(tab); setMobileMenuOpen(false); }}
+                  selectedCategory={selectedCategory}
+                  setSelectedCategory={setSelectedCategory}
+                  collapsed={false}
+                  setCollapsed={() => setMobileMenuOpen(false)}
+                  onNewTask={() => { setMobileMenuOpen(false); setShowModal(true); }}
+                  onOpenPomodoro={() => { setMobileMenuOpen(false); router.push("/dashboard/pomodoro"); }}
+                  onOpenFriends={() => { setMobileMenuOpen(false); router.push("/dashboard/friends"); }}
+                  onOpenChat={() => { setMobileMenuOpen(false); router.push("/dashboard/chat"); }}
+                  isMobile
+                />
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
         {/* Main Content */}
         <main className="flex-1 flex flex-col overflow-hidden">
@@ -148,21 +190,29 @@ export default function DashboardLayout({
           <motion.header
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-shrink-0 flex items-center justify-between px-8 py-5 border-b border-white/20 dark:border-white/5 glass"
+            className="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b border-white/20 dark:border-white/5 glass"
           >
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-4">
+              {/* Mobile hamburger */}
+              <button
+                onClick={() => setMobileMenuOpen(true)}
+                className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 md:hidden"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-2 sm:gap-3">
                 <motion.div
                   whileHover={{ rotate: 15 }}
-                  className="p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl shadow-lg shadow-violet-500/30"
+                  className="p-1.5 sm:p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg sm:rounded-xl shadow-lg shadow-violet-500/30"
                 >
-                  <Sparkles className="w-5 h-5 text-white" />
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </motion.div>
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900 dark:text-white font-heading">
+                  <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white font-heading">
                     TaskFlow
                   </h1>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
                     Press{" "}
                     <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px] font-mono">
                       Ctrl+K
@@ -173,12 +223,12 @@ export default function DashboardLayout({
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-3">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/dashboard/pomodoro")}
-                className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 text-sm font-medium hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors border border-orange-200/50 dark:border-orange-800/30"
+                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 text-sm font-medium hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors border border-orange-200/50 dark:border-orange-800/30"
               >
                 <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
                 Focus Mode
@@ -187,7 +237,7 @@ export default function DashboardLayout({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/dashboard/friends")}
-                className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-medium hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors border border-violet-200/50 dark:border-violet-800/30"
+                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-medium hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors border border-violet-200/50 dark:border-violet-800/30"
               >
                 <Users className="w-4 h-4" />
                 Friends
@@ -195,25 +245,35 @@ export default function DashboardLayout({
               <ThemeToggle />
               <UserButton
                 appearance={{
-                  elements: { avatarBox: "w-9 h-9 ring-2 ring-violet-500/20" },
+                  elements: { avatarBox: "w-8 h-8 sm:w-9 sm:h-9 ring-2 ring-violet-500/20" },
                 }}
               />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowModal(true)}
-                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 transition-all hover:from-violet-500 hover:to-purple-500"
+                className="hidden sm:flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 transition-all hover:from-violet-500 hover:to-purple-500"
               >
                 <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">New Task</span>
+                <span>New Task</span>
               </motion.button>
             </div>
           </motion.header>
 
-          {/* Page Content */}
-          <div className="flex-1 overflow-y-auto px-8 py-6">{children}</div>
+          {/* Page Content — extra bottom padding on mobile for bottom nav */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 md:pb-6">
+            {children}
+          </div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileNav
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        onNewTask={() => setShowModal(true)}
+        pathname={pathname}
+      />
 
       {/* Modals */}
       <AddTodoModal
@@ -249,16 +309,6 @@ export default function DashboardLayout({
       />
 
       <UserSync />
-
-      {/* Mobile FAB */}
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setShowModal(true)}
-        className="fixed bottom-6 right-6 sm:hidden w-14 h-14 bg-gradient-to-br from-violet-600 to-purple-600 text-white rounded-full shadow-2xl shadow-violet-500/40 flex items-center justify-center z-40"
-      >
-        <Plus className="w-7 h-7" />
-      </motion.button>
     </div>
     </TodoContext.Provider>
   );

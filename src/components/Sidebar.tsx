@@ -14,6 +14,7 @@ import {
   Zap,
   Share2,
   Users,
+  MessageCircle,
 } from "lucide-react";
 import { Stats, Todo } from "@/types/todo";
 import ProgressRing from "./ProgressRing";
@@ -34,6 +35,8 @@ interface SidebarProps {
   onNewTask: () => void;
   onOpenPomodoro: () => void;
   onOpenFriends: () => void;
+  onOpenChat: () => void;
+  isMobile?: boolean;
 }
 
 const categoryIcons: Record<string, string> = {
@@ -58,6 +61,8 @@ export default function Sidebar({
   onNewTask,
   onOpenPomodoro,
   onOpenFriends,
+  onOpenChat,
+  isMobile,
 }: SidebarProps) {
   const navItems = [
     { id: "all" as TabType, label: "All Tasks", icon: ListTodo, count: stats?.total || 0 },
@@ -76,11 +81,11 @@ export default function Sidebar({
 
   return (
     <motion.aside
-      initial={{ x: -20, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
+      initial={isMobile ? false : { x: -20, opacity: 0 }}
+      animate={isMobile ? undefined : { x: 0, opacity: 1 }}
       className={`flex-shrink-0 h-full flex flex-col border-r border-white/20 dark:border-white/5 glass transition-all duration-300 ${
-        collapsed ? "w-20" : "w-80"
-      } hidden md:flex`}
+        collapsed && !isMobile ? "w-20" : "w-80"
+      } ${isMobile ? "bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl" : "hidden md:flex"}`}
     >
       {/* Collapse Toggle */}
       <div className="flex items-center justify-end p-3">
@@ -215,6 +220,13 @@ export default function Sidebar({
             <Timer className="w-5 h-5" />
             <span>Focus Timer</span>
             <kbd className="ml-auto px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px] font-mono text-gray-400">Ctrl+P</kbd>
+          </button>
+          <button
+            onClick={onOpenChat}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-violet-50 dark:hover:bg-violet-900/10 hover:text-violet-600 dark:hover:text-violet-400 transition-all"
+          >
+            <MessageCircle className="w-5 h-5" />
+            <span>Chat</span>
           </button>
           <button
             onClick={onOpenFriends}

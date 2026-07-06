@@ -243,7 +243,7 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
 
         {/* Subtask progress */}
         {subtasks.length > 0 && !expanded && (
-          <div className="mt-3 ml-9">
+          <div className="mt-3 ml-0 sm:ml-9">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs text-gray-400">
                 {subtasks.filter((s) => s.completed).length}/{subtasks.length} subtasks
@@ -267,9 +267,9 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="px-5 pb-5 border-t border-gray-100/50 dark:border-gray-800/50"
+          className="px-3 sm:px-5 pb-4 sm:pb-5 border-t border-gray-100/50 dark:border-gray-800/50"
         >
-          <div className="pt-4 ml-9 space-y-2">
+          <div className="pt-4 ml-0 sm:ml-9 space-y-2">
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
               Subtasks
             </p>
@@ -298,7 +298,7 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
                   </span>
                   <button
                     onClick={() => removeSubtask(subtask.id)}
-                    className="opacity-0 group-hover/sub:opacity-100 p-0.5 text-gray-400 hover:text-red-500 transition-all"
+                    className="sm:opacity-0 sm:group-hover/sub:opacity-100 p-0.5 text-gray-400 hover:text-red-500 transition-all"
                   >
                     <X className="w-3 h-3" />
                   </button>

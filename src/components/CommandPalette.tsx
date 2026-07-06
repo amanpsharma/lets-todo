@@ -100,7 +100,7 @@ export default function CommandPalette({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
             transition={{ type: "spring", damping: 25, stiffness: 400 }}
-            className="fixed top-[20%] left-1/2 -translate-x-1/2 w-full max-w-lg z-50 px-4"
+            className="fixed top-[15%] sm:top-[20%] left-1/2 -translate-x-1/2 w-full max-w-lg z-50 px-4"
           >
             <div className="glass-card rounded-2xl shadow-2xl overflow-hidden">
               {/* Search Input */}
@@ -160,8 +160,8 @@ export default function CommandPalette({
                 )}
               </div>
 
-              {/* Footer */}
-              <div className="px-5 py-3 border-t border-gray-200/50 dark:border-gray-700/50 flex items-center gap-4 text-[10px] text-gray-400">
+              {/* Footer — hidden on mobile since keyboard shortcuts aren't relevant for touch */}
+              <div className="hidden sm:flex px-5 py-3 border-t border-gray-200/50 dark:border-gray-700/50 items-center gap-4 text-[10px] text-gray-400">
                 <span className="flex items-center gap-1">
                   <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded">↑↓</kbd> Navigate
                 </span>

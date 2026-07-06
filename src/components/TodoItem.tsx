@@ -249,23 +249,26 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
             )}
           </div>
 
-          {/* Actions */}
-          <div className="relative flex items-center gap-0.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
+          {/* Actions — always visible on mobile, hover on desktop */}
+          <div className="relative flex items-center gap-0.5 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100 transition-opacity duration-200">
             <button
               onClick={() => setExpanded(!expanded)}
+              aria-label={expanded ? "Collapse subtasks" : "Expand subtasks"}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
               {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
             <button
               onClick={() => setShowShare(!showShare)}
-              className="p-2 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/20 text-gray-400 hover:text-violet-500 transition-colors"
+              aria-label="Share task"
+              className="p-2 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/20 text-gray-400 hover:text-violet-500 transition-colors hidden sm:block"
             >
               <Share2 className="w-4 h-4" />
             </button>
             <button
               onClick={() => { setEditing(true); setEditTitle(todo.title); setEditDesc(todo.description || ""); }}
-              className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-400 hover:text-blue-500 transition-colors"
+              aria-label="Edit task"
+              className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-400 hover:text-blue-500 transition-colors hidden sm:block"
             >
               <Edit3 className="w-4 h-4" />
             </button>
@@ -290,7 +293,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                 ), { duration: 5000 });
               }}
               aria-label="Delete task"
-              className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors"
+              className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors hidden sm:block"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -315,6 +318,48 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
           </div>
         </div>
 
+        {/* Mobile action bar — share, edit, delete on a separate row */}
+        {!editing && (
+          <div className="flex items-center gap-1 mt-2 ml-9 sm:hidden">
+            <button
+              onClick={() => setShowShare(!showShare)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 text-xs"
+            >
+              <Share2 className="w-3.5 h-3.5" /> Share
+            </button>
+            <button
+              onClick={() => { setEditing(true); setEditTitle(todo.title); setEditDesc(todo.description || ""); }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 text-xs"
+            >
+              <Edit3 className="w-3.5 h-3.5" /> Edit
+            </button>
+            <button
+              onClick={() => {
+                toast((t) => (
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm">Delete this task?</span>
+                    <button
+                      onClick={() => { toast.dismiss(t.id); onDelete(todo._id); }}
+                      className="px-3 py-1 bg-red-500 text-white text-xs font-medium rounded-lg"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => toast.dismiss(t.id)}
+                      className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ), { duration: 5000 });
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 text-xs"
+            >
+              <Trash2 className="w-3.5 h-3.5" /> Delete
+            </button>
+          </div>
+        )}
+
         {/* Subtask progress bar */}
         {subtasks.length > 0 && !expanded && (
           <div className="mt-3 ml-9">
@@ -336,9 +381,9 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="px-5 pb-5 border-t border-gray-100/50 dark:border-gray-800/50"
+          className="px-3 sm:px-5 pb-4 sm:pb-5 border-t border-gray-100/50 dark:border-gray-800/50"
         >
-          <div className="pt-4 ml-9 space-y-2">
+          <div className="pt-4 ml-0 sm:ml-9 space-y-2">
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Subtasks</p>
             {subtasks.map((subtask) => (
               <div key={subtask.id} className="group/sub py-1.5">
@@ -364,7 +409,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                   </span>
                   <button
                     onClick={() => removeSubtask(subtask.id)}
-                    className="opacity-0 group-hover/sub:opacity-100 p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-all"
+                    className="sm:opacity-0 sm:group-hover/sub:opacity-100 p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-all"
                   >
                     <X className="w-3 h-3" />
                   </button>

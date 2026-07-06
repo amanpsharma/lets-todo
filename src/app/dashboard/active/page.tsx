@@ -60,14 +60,14 @@ export default function ActiveTasksPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-            <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-1.5 sm:p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg sm:rounded-xl">
+            <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">In Progress</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{activeTodos.length} active tasks</p>
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">In Progress</h2>
+            <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400">{activeTodos.length} active tasks</p>
           </div>
         </div>
         <SortDropdown sortBy={sortBy} setSortBy={setSortBy} />

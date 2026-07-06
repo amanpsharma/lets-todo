@@ -101,15 +101,15 @@ export default function PomodoroPage() {
       className="max-w-md mx-auto"
     >
       {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl">
-          <Brain className="w-5 h-5 text-white" />
+      <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
+        <div className="p-1.5 sm:p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg sm:rounded-xl">
+          <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
             Pomodoro Timer
           </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400">
             Stay focused and productive
           </p>
         </div>
@@ -147,9 +147,9 @@ export default function PomodoroPage() {
         </div>
 
         {/* Timer Display */}
-        <div className="flex justify-center mb-8">
-          <div className="relative">
-            <svg width="220" height="220" className="progress-ring">
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <div className="relative w-[180px] h-[180px] sm:w-[220px] sm:h-[220px]">
+            <svg viewBox="0 0 220 220" className="w-full h-full progress-ring">
               <circle
                 cx="110"
                 cy="110"
@@ -205,7 +205,7 @@ export default function PomodoroPage() {
               </defs>
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-5xl font-bold text-gray-900 dark:text-white font-mono">
+              <span className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white font-mono">
                 {String(minutes).padStart(2, "0")}:
                 {String(seconds).padStart(2, "0")}
               </span>

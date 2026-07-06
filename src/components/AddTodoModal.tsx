@@ -98,19 +98,19 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
           >
             <form
               onSubmit={handleSubmit}
-              className="glass-card rounded-3xl shadow-2xl p-7"
+              className="glass-card rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-7"
             >
               {/* Header */}
-              <div className="flex items-center justify-between mb-7">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl shadow-lg shadow-violet-500/30">
-                    <Sparkles className="w-5 h-5 text-white" />
+              <div className="flex items-center justify-between mb-5 sm:mb-7">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="p-1.5 sm:p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg sm:rounded-xl shadow-lg shadow-violet-500/30">
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                       Create Task
                     </h2>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Add a new task to your list</p>
+                    <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400">Add a new task to your list</p>
                   </div>
                 </div>
                 <button
@@ -122,7 +122,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                 </button>
               </div>
 
-              <div className="space-y-5">
+              <div className="space-y-4 sm:space-y-5">
                 {/* Title */}
                 <div>
                   <input
@@ -254,7 +254,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
               </div>
 
               {/* Actions */}
-              <div className="mt-7 flex gap-3">
+              <div className="mt-5 sm:mt-7 flex gap-3">
                 <button
                   type="button"
                   onClick={onClose}

@@ -11,7 +11,9 @@ import {
   Clock,
   Send,
   Loader2,
+  MessageCircle,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 interface UserResult {
@@ -44,6 +46,7 @@ interface FriendsData {
 }
 
 export default function FriendsPage() {
+  const router = useRouter();
   const [tab, setTab] = useState<"friends" | "requests" | "search">("friends");
   const [friendsData, setFriendsData] = useState<FriendsData>({
     friends: [],
@@ -150,23 +153,23 @@ export default function FriendsPage() {
       className="max-w-2xl mx-auto"
     >
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl">
-          <Users className="w-5 h-5 text-white" />
+      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <div className="p-1.5 sm:p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg sm:rounded-xl">
+          <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Friends</h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Friends</h2>
+          <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400">
             Manage your friends and share tasks
           </p>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 dark:bg-gray-800/80 rounded-xl p-1 mb-6">
+      <div className="flex gap-1 bg-gray-100 dark:bg-gray-800/80 rounded-xl p-1 mb-4 sm:mb-6">
         <button
           onClick={() => setTab("friends")}
-          className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+          className={`flex-1 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
             tab === "friends"
               ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
               : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
@@ -176,7 +179,7 @@ export default function FriendsPage() {
         </button>
         <button
           onClick={() => setTab("requests")}
-          className={`relative flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+          className={`relative flex-1 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
             tab === "requests"
               ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
               : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
@@ -191,7 +194,7 @@ export default function FriendsPage() {
         </button>
         <button
           onClick={() => setTab("search")}
-          className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+          className={`flex-1 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
             tab === "search"
               ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
               : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
@@ -202,7 +205,7 @@ export default function FriendsPage() {
       </div>
 
       {/* Content */}
-      <div className="glass-card rounded-2xl p-6">
+      <div className="glass-card rounded-2xl p-4 sm:p-6">
         {loading && tab !== "search" ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
@@ -248,6 +251,13 @@ export default function FriendsPage() {
                           {friend.email}
                         </p>
                       </div>
+                      <button
+                        onClick={() => router.push(`/dashboard/chat/${friend.clerkId}`)}
+                        className="p-2.5 rounded-xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors"
+                        title="Chat"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                      </button>
                     </div>
                   ))
                 )}

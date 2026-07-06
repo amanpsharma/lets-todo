@@ -59,14 +59,14 @@ export default function AllTasksPage() {
       transition={{ duration: 0.3 }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-violet-100 dark:bg-violet-900/30 rounded-xl">
-            <ListChecks className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-1.5 sm:p-2 bg-violet-100 dark:bg-violet-900/30 rounded-lg sm:rounded-xl">
+            <ListChecks className="w-4 h-4 sm:w-5 sm:h-5 text-violet-600 dark:text-violet-400" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">All Tasks</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{todos.length} tasks total</p>
+            <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">All Tasks</h2>
+            <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400">{todos.length} tasks total</p>
           </div>
         </div>
         <SortDropdown sortBy={sortBy} setSortBy={setSortBy} />
