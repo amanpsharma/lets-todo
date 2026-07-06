@@ -16,6 +16,7 @@ import PomodoroTimer from "@/components/PomodoroTimer";
 import CommandPalette from "@/components/CommandPalette";
 import FriendsPanel from "@/components/FriendsPanel";
 import UserSync from "@/components/UserSync";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import toast from "react-hot-toast";
 
 type TabType = "all" | "active" | "completed" | "shared";
@@ -309,6 +310,7 @@ export default function DashboardLayout({
       />
 
       <UserSync />
+      <PWAInstallPrompt />
     </div>
     </TodoContext.Provider>
   );

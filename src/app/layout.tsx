@@ -15,7 +15,17 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: "TaskFlow - Advanced Todo Application",
-  description: "A beautifully designed, feature-rich task management application",
+  description:
+    "A beautifully designed, feature-rich task management application",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "TaskFlow",
+    startupImage: "/icons/icon-512x512.png",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export default function RootLayout({
@@ -27,6 +37,8 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <head>
+          <meta name="theme-color" content="#7c3aed" />
+          <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
           <script
             dangerouslySetInnerHTML={{
               __html: `
@@ -35,6 +47,14 @@ export default function RootLayout({
                     document.documentElement.classList.add('dark')
                   }
                 } catch (_) {}
+
+                // Register service worker
+                if ('serviceWorker' in navigator) {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                      .catch(function(err) { console.log('SW registration failed:', err); });
+                  });
+                }
               `,
             }}
           />
