@@ -37,6 +37,8 @@ interface SidebarProps {
   onOpenFriends: () => void;
   onOpenChat: () => void;
   isMobile?: boolean;
+  unreadChats?: number;
+  pendingShared?: number;
 }
 
 const categoryIcons: Record<string, string> = {
@@ -63,12 +65,14 @@ export default function Sidebar({
   onOpenFriends,
   onOpenChat,
   isMobile,
+  unreadChats = 0,
+  pendingShared = 0,
 }: SidebarProps) {
   const navItems = [
     { id: "all" as TabType, label: "All Tasks", icon: ListTodo, count: stats?.total || 0 },
     { id: "active" as TabType, label: "In Progress", icon: Clock, count: stats?.active || 0 },
     { id: "completed" as TabType, label: "Completed", icon: CheckCircle2, count: stats?.completed || 0 },
-    { id: "shared" as TabType, label: "Shared with Me", icon: Share2, count: null },
+    { id: "shared" as TabType, label: "Shared with Me", icon: Share2, count: pendingShared || null },
   ];
 
   const categories = stats?.categories || [];
@@ -150,12 +154,23 @@ export default function Sidebar({
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
               />
             )}
-            <item.icon className="w-5 h-5 flex-shrink-0" />
+            <div className="relative flex-shrink-0">
+              <item.icon className="w-5 h-5" />
+              {collapsed && item.id === "shared" && pendingShared > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] px-0.5 flex items-center justify-center bg-red-500 text-white text-[8px] font-bold rounded-full">
+                  {pendingShared > 9 ? "9+" : pendingShared}
+                </span>
+              )}
+            </div>
             {!collapsed && (
               <>
                 <span>{item.label}</span>
                 {item.count !== null && (
-                  <span className="ml-auto px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs font-bold text-gray-500 dark:text-gray-400">
+                  <span className={`ml-auto px-2 py-0.5 rounded-lg text-xs font-bold ${
+                    item.id === "shared" && pendingShared > 0
+                      ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                      : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
+                  }`}>
                     {item.count}
                   </span>
                 )}
@@ -225,8 +240,20 @@ export default function Sidebar({
             onClick={onOpenChat}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-violet-50 dark:hover:bg-violet-900/10 hover:text-violet-600 dark:hover:text-violet-400 transition-all"
           >
-            <MessageCircle className="w-5 h-5" />
+            <div className="relative">
+              <MessageCircle className="w-5 h-5" />
+              {unreadChats > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] px-0.5 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full">
+                  {unreadChats > 99 ? "99+" : unreadChats}
+                </span>
+              )}
+            </div>
             <span>Chat</span>
+            {unreadChats > 0 && (
+              <span className="ml-auto px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-xs font-bold">
+                {unreadChats}
+              </span>
+            )}
           </button>
           <button
             onClick={onOpenFriends}

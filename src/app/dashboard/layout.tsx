@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Sparkles, Users, Menu, X } from "lucide-react";
+import { Plus, Sparkles, Users, Menu, X, MessageCircle } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import { UserButton } from "@clerk/nextjs";
 import { usePathname, useRouter } from "next/navigation";
@@ -17,6 +17,7 @@ import CommandPalette from "@/components/CommandPalette";
 import FriendsPanel from "@/components/FriendsPanel";
 import UserSync from "@/components/UserSync";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import { useNotifications } from "@/hooks/useNotifications";
 import toast from "react-hot-toast";
 
 type TabType = "all" | "active" | "completed" | "shared";
@@ -52,6 +53,7 @@ export default function DashboardLayout({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { unreadChats, pendingShared } = useNotifications();
 
   // Sync category filter with useTodos
   useEffect(() => {
@@ -145,6 +147,8 @@ export default function DashboardLayout({
           onOpenPomodoro={() => router.push("/dashboard/pomodoro")}
           onOpenFriends={() => router.push("/dashboard/friends")}
           onOpenChat={() => router.push("/dashboard/chat")}
+          unreadChats={unreadChats}
+          pendingShared={pendingShared}
         />
 
         {/* Mobile Sidebar Overlay */}
@@ -179,6 +183,8 @@ export default function DashboardLayout({
                   onOpenFriends={() => { setMobileMenuOpen(false); router.push("/dashboard/friends"); }}
                   onOpenChat={() => { setMobileMenuOpen(false); router.push("/dashboard/chat"); }}
                   isMobile
+                  unreadChats={unreadChats}
+                  pendingShared={pendingShared}
                 />
               </motion.div>
             </>
@@ -237,11 +243,30 @@ export default function DashboardLayout({
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => router.push("/dashboard/chat")}
+                className="relative hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-medium hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors border border-violet-200/50 dark:border-violet-800/30"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Chat
+                {unreadChats > 0 && (
+                  <span className="min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
+                    {unreadChats > 99 ? "99+" : unreadChats}
+                  </span>
+                )}
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/dashboard/friends")}
-                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-medium hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors border border-violet-200/50 dark:border-violet-800/30"
+                className="relative hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-medium hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors border border-violet-200/50 dark:border-violet-800/30"
               >
                 <Users className="w-4 h-4" />
                 Friends
+                {pendingShared > 0 && (
+                  <span className="min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
+                    {pendingShared > 99 ? "99+" : pendingShared}
+                  </span>
+                )}
               </motion.button>
               <ThemeToggle />
               <UserButton
@@ -274,6 +299,8 @@ export default function DashboardLayout({
         onTabChange={setActiveTab}
         onNewTask={() => setShowModal(true)}
         pathname={pathname}
+        unreadChats={unreadChats}
+        pendingShared={pendingShared}
       />
 
       {/* Modals */}

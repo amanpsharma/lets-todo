@@ -19,6 +19,8 @@ interface MobileNavProps {
   onTabChange: (tab: TabType) => void;
   onNewTask: () => void;
   pathname: string;
+  unreadChats?: number;
+  pendingShared?: number;
 }
 
 const tabs: { id: TabType; label: string; icon: typeof ListTodo }[] = [
@@ -28,7 +30,7 @@ const tabs: { id: TabType; label: string; icon: typeof ListTodo }[] = [
   { id: "shared", label: "Shared", icon: Share2 },
 ];
 
-export default function MobileNav({ activeTab, onTabChange, onNewTask, pathname }: MobileNavProps) {
+export default function MobileNav({ activeTab, onTabChange, onNewTask, pathname, unreadChats = 0, pendingShared = 0 }: MobileNavProps) {
   const router = useRouter();
   const isSpecialPage = pathname === "/dashboard/friends" || pathname === "/dashboard/pomodoro" || pathname.startsWith("/dashboard/chat");
 
@@ -58,7 +60,14 @@ export default function MobileNav({ activeTab, onTabChange, onNewTask, pathname 
                     transition={{ type: "spring", damping: 25, stiffness: 300 }}
                   />
                 )}
-                <tab.icon className="w-5 h-5" />
+                <div className="relative">
+                  <tab.icon className="w-5 h-5" />
+                  {tab.id === "shared" && pendingShared > 0 && (
+                    <span className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-0.5 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full shadow-sm">
+                      {pendingShared > 99 ? "99+" : pendingShared}
+                    </span>
+                  )}
+                </div>
                 <span className="text-[10px] font-medium">{tab.label}</span>
               </button>
             );
@@ -78,13 +87,20 @@ export default function MobileNav({ activeTab, onTabChange, onNewTask, pathname 
           {/* Extra shortcuts */}
           <button
             onClick={() => router.push("/dashboard/chat")}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl min-w-[56px] ${
+            className={`relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl min-w-[56px] ${
               pathname.startsWith("/dashboard/chat")
                 ? "text-violet-600 dark:text-violet-400"
                 : "text-gray-400 dark:text-gray-500"
             }`}
           >
-            <MessageCircle className="w-5 h-5" />
+            <div className="relative">
+              <MessageCircle className="w-5 h-5" />
+              {unreadChats > 0 && (
+                <span className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-0.5 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full shadow-sm">
+                  {unreadChats > 99 ? "99+" : unreadChats}
+                </span>
+              )}
+            </div>
             <span className="text-[10px] font-medium">Chat</span>
           </button>
           <button
