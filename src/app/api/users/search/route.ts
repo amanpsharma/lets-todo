@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
           await User.findOneAndUpdate(
             { clerkId: cu.id },
             { clerkId: cu.id, name, email, avatar },
-            { upsert: true, new: true }
+            { upsert: true, returnDocument: "after" }
           );
 
           localUsers.push({

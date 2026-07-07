@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -39,28 +41,11 @@ export default function RootLayout({
         <head>
           <meta name="theme-color" content="#7c3aed" />
           <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                try {
-                  if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.classList.add('dark')
-                  }
-                } catch (_) {}
-
-                // Register service worker
-                if ('serviceWorker' in navigator) {
-                  window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/sw.js', { scope: '/' })
-                      .catch(function(err) { console.log('SW registration failed:', err); });
-                  });
-                }
-              `,
-            }}
-          />
+          <Script src="/theme-init.js" strategy="beforeInteractive" />
         </head>
         <body className={`${plusJakarta.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
           {children}
+          <ServiceWorkerRegister />
         </body>
       </html>
     </ClerkProvider>

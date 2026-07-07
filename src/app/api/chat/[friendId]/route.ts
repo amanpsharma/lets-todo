@@ -59,6 +59,33 @@ export async function GET(
   }
 }
 
+// DELETE chat history with a friend
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ friendId: string }> }
+) {
+  try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const { friendId } = await params;
+    await dbConnect();
+
+    // Delete all messages between the two users
+    const result = await Message.deleteMany({
+      $or: [
+        { from: userId, to: friendId },
+        { from: friendId, to: userId },
+      ],
+    });
+
+    return NextResponse.json({ deleted: result.deletedCount });
+  } catch (error) {
+    console.error("DELETE /api/chat error:", error);
+    return NextResponse.json({ error: "Failed to delete chat" }, { status: 500 });
+  }
+}
+
 // POST a new message
 export async function POST(
   req: NextRequest,

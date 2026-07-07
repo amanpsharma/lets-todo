@@ -53,7 +53,7 @@ export async function POST(
           },
         },
       },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     return NextResponse.json(updated);

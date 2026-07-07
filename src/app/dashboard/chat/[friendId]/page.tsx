@@ -9,10 +9,12 @@ import {
   Check,
   CheckCheck,
   MessageCircle,
+  Trash2,
 } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { format, isToday, isYesterday } from "date-fns";
+import toast from "react-hot-toast";
 
 interface Message {
   _id: string;
@@ -179,6 +181,39 @@ export default function ChatPage() {
     }
   };
 
+  const deleteChatHistory = () => {
+    toast((t) => (
+      <div className="flex items-center gap-3">
+        <span className="text-sm">Delete all messages?</span>
+        <button
+          onClick={async () => {
+            toast.dismiss(t.id);
+            try {
+              const res = await fetch(`/api/chat/${friendId}`, { method: "DELETE" });
+              if (res.ok) {
+                setMessages([]);
+                toast.success("Chat history deleted");
+              } else {
+                toast.error("Failed to delete");
+              }
+            } catch {
+              toast.error("Failed to delete");
+            }
+          }}
+          className="px-3 py-1 bg-red-500 text-white text-xs font-medium rounded-lg"
+        >
+          Delete
+        </button>
+        <button
+          onClick={() => toast.dismiss(t.id)}
+          className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-lg"
+        >
+          Cancel
+        </button>
+      </div>
+    ), { duration: 5000 });
+  };
+
   const formatMessageTime = (date: string) => {
     const d = new Date(date);
     return format(d, "h:mm a");
@@ -247,6 +282,15 @@ export default function ChatPage() {
           </div>
         ) : (
           <div className="h-10 w-32 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
+        )}
+        {messages.length > 0 && (
+          <button
+            onClick={deleteChatHistory}
+            className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors"
+            title="Delete chat history"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
         )}
       </div>
 

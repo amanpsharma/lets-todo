@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
         email: clerkUser.emailAddresses[0]?.emailAddress || "",
         avatar: clerkUser.imageUrl || "",
       },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: "after" }
     );
 
     return NextResponse.json(user);

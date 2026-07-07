@@ -99,7 +99,7 @@ export async function PUT(
       if (body.subtasks) {
         body.subtasks = await mergeAndStampSubtasks(todo.subtasks || [], body.subtasks, userId);
       }
-      const updated = await Todo.findByIdAndUpdate(id, body, { new: true });
+      const updated = await Todo.findByIdAndUpdate(id, body, { returnDocument: "after" });
       return NextResponse.json(updated);
     }
 
@@ -139,7 +139,7 @@ export async function PUT(
       return NextResponse.json({ error: "No permitted changes" }, { status: 403 });
     }
 
-    const updated = await Todo.findByIdAndUpdate(id, updates, { new: true });
+    const updated = await Todo.findByIdAndUpdate(id, updates, { returnDocument: "after" });
     return NextResponse.json(updated);
   } catch (error) {
     console.error("PUT /api/todos/shared/[id] error:", error);

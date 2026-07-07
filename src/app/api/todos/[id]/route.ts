@@ -81,7 +81,7 @@ export async function PUT(
     const todo = await Todo.findOneAndUpdate(
       { _id: id, userId },
       body,
-      { new: true }
+      { returnDocument: "after" }
     );
     if (!todo) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
