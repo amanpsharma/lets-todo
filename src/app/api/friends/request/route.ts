@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import dbConnect from "@/lib/mongodb";
 import FriendRequest from "@/models/FriendRequest";
 import User from "@/models/User";
+import { createNotification } from "@/lib/notify";
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,6 +50,15 @@ export async function POST(request: NextRequest) {
       from: userId,
       to: toUserId,
       status: "pending",
+    });
+
+    // Notify the recipient about the friend request
+    await createNotification({
+      userId: toUserId,
+      type: "shared",
+      title: "Friend Request",
+      body: `${currentUser?.name || "Someone"} sent you a friend request`,
+      link: "/dashboard/friends",
     });
 
     return NextResponse.json(friendRequest, { status: 201 });

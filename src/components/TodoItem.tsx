@@ -13,6 +13,7 @@ import {
   Plus,
   X,
   Share2,
+  Repeat,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Todo } from "@/types/todo";
@@ -82,6 +83,12 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(todo.title);
   const [editDesc, setEditDesc] = useState(todo.description || "");
+  const [editPriority, setEditPriority] = useState<Todo["priority"]>(todo.priority);
+  const [editCategory, setEditCategory] = useState(todo.category);
+  const [editDueDate, setEditDueDate] = useState(todo.dueDate ? format(new Date(todo.dueDate), "yyyy-MM-dd") : "");
+  const [editRecurring, setEditRecurring] = useState<"none" | "daily" | "weekly" | "monthly">(todo.recurring || "none");
+  const [editTags, setEditTags] = useState<string[]>(todo.tags || []);
+  const [editTagInput, setEditTagInput] = useState("");
   const [subtaskInput, setSubtaskInput] = useState("");
   const [showShare, setShowShare] = useState(false);
 
@@ -94,9 +101,53 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
     todo.dueDate && !todo.completed && isPast(new Date(todo.dueDate)) && !isToday(new Date(todo.dueDate));
 
   const handleSaveEdit = () => {
-    onUpdate(todo._id, { title: editTitle, description: editDesc });
+    onUpdate(todo._id, {
+      title: editTitle,
+      description: editDesc,
+      priority: editPriority,
+      category: editCategory,
+      dueDate: editDueDate || null,
+      recurring: editRecurring,
+      tags: editTags,
+    });
     setEditing(false);
   };
+
+  const startEditing = () => {
+    setEditTitle(todo.title);
+    setEditDesc(todo.description || "");
+    setEditPriority(todo.priority);
+    setEditCategory(todo.category);
+    setEditDueDate(todo.dueDate ? format(new Date(todo.dueDate), "yyyy-MM-dd") : "");
+    setEditRecurring(todo.recurring || "none");
+    setEditTags(todo.tags || []);
+    setEditTagInput("");
+    setEditing(true);
+  };
+
+  const addEditTag = () => {
+    if (editTagInput.trim() && !editTags.includes(editTagInput.trim())) {
+      setEditTags([...editTags, editTagInput.trim()]);
+      setEditTagInput("");
+    }
+  };
+
+  const priorities: { value: Todo["priority"]; label: string; color: string; dot: string }[] = [
+    { value: "low", label: "Low", color: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300", dot: "bg-emerald-400" },
+    { value: "medium", label: "Medium", color: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300", dot: "bg-blue-400" },
+    { value: "high", label: "High", color: "bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300", dot: "bg-orange-400" },
+    { value: "urgent", label: "Urgent", color: "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300", dot: "bg-red-500" },
+  ];
+
+  const categoryOptions = [
+    { value: "general", label: "General", emoji: "📋" },
+    { value: "work", label: "Work", emoji: "💼" },
+    { value: "personal", label: "Personal", emoji: "🏠" },
+    { value: "shopping", label: "Shopping", emoji: "🛒" },
+    { value: "health", label: "Health", emoji: "💪" },
+    { value: "learning", label: "Learning", emoji: "📚" },
+    { value: "finance", label: "Finance", emoji: "💰" },
+  ];
 
   const addSubtask = () => {
     if (!subtaskInput.trim()) return;
@@ -159,22 +210,121 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
           {/* Content */}
           <div className="flex-1 min-w-0">
             {editing ? (
-              <div className="space-y-2">
+              <div className="space-y-3">
+                {/* Title */}
                 <input
                   type="text"
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
                   className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white font-medium text-sm"
                   autoFocus
-                  onKeyDown={(e) => e.key === "Enter" && handleSaveEdit()}
+                  placeholder="Task title"
                 />
+                {/* Description */}
                 <textarea
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}
                   className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white text-sm resize-none"
                   rows={2}
+                  placeholder="Description (optional)"
                 />
+                {/* Priority */}
+                <div>
+                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 block">Priority</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {priorities.map((p) => (
+                      <button
+                        key={p.value}
+                        type="button"
+                        onClick={() => setEditPriority(p.value)}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${p.color} ${
+                          editPriority === p.value ? "ring-2 ring-violet-500 shadow-sm" : "opacity-60 hover:opacity-100"
+                        }`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${p.dot}`} />
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Category */}
+                <div>
+                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 block">Category</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {categoryOptions.map((c) => (
+                      <button
+                        key={c.value}
+                        type="button"
+                        onClick={() => setEditCategory(c.value)}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                          editCategory === c.value
+                            ? "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 ring-2 ring-violet-500 shadow-sm"
+                            : "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400 opacity-60 hover:opacity-100"
+                        }`}
+                      >
+                        {c.emoji} {c.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Due Date & Recurring */}
                 <div className="flex gap-2">
+                  <div className="flex-1">
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 block">Due Date</label>
+                    <input
+                      type="date"
+                      value={editDueDate}
+                      onChange={(e) => setEditDueDate(e.target.value)}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white text-sm"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 block">Recurring</label>
+                    <select
+                      value={editRecurring}
+                      onChange={(e) => setEditRecurring(e.target.value as "none" | "daily" | "weekly" | "monthly")}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white text-sm"
+                    >
+                      <option value="none">None</option>
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                </div>
+                {/* Tags */}
+                <div>
+                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 block">Tags</label>
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {editTags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                      >
+                        <Tag className="w-2.5 h-2.5" />
+                        {tag}
+                        <button type="button" onClick={() => setEditTags(editTags.filter((t) => t !== tag))} className="hover:text-red-500">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={editTagInput}
+                      onChange={(e) => setEditTagInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addEditTag(); } }}
+                      placeholder="Add tag..."
+                      className="flex-1 px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white text-xs"
+                    />
+                    <button type="button" onClick={addEditTag} className="px-2.5 py-1.5 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors text-xs font-medium">
+                      Add
+                    </button>
+                  </div>
+                </div>
+                {/* Save / Cancel */}
+                <div className="flex gap-2 pt-1">
                   <button
                     onClick={handleSaveEdit}
                     className="px-4 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-lg text-sm font-medium shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40"
@@ -230,6 +380,12 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                     {format(new Date(todo.dueDate), "MMM d")}
                   </span>
                 )}
+                {todo.recurring && todo.recurring !== "none" && (
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
+                    <Repeat className="w-3 h-3" />
+                    {todo.recurring}
+                  </span>
+                )}
                 {tags.map((tag) => (
                   <span
                     key={tag}
@@ -266,7 +422,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
               <Share2 className="w-4 h-4" />
             </button>
             <button
-              onClick={() => { setEditing(true); setEditTitle(todo.title); setEditDesc(todo.description || ""); }}
+              onClick={startEditing}
               aria-label="Edit task"
               className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-400 hover:text-blue-500 transition-colors hidden sm:block"
             >
@@ -328,7 +484,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
               <Share2 className="w-3.5 h-3.5" /> Share
             </button>
             <button
-              onClick={() => { setEditing(true); setEditTitle(todo.title); setEditDesc(todo.description || ""); }}
+              onClick={startEditing}
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 text-xs"
             >
               <Edit3 className="w-3.5 h-3.5" /> Edit

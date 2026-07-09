@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import dbConnect from "@/lib/mongodb";
 import FriendRequest from "@/models/FriendRequest";
 import User from "@/models/User";
+import { createNotification } from "@/lib/notify";
 
 export async function PUT(
   request: NextRequest,
@@ -47,6 +48,16 @@ export async function PUT(
         { clerkId: friendRequest.from },
         { $addToSet: { friends: userId } }
       );
+
+      // Notify the requester that their request was accepted
+      const acceptedBy = await User.findOne({ clerkId: userId }).select("name");
+      await createNotification({
+        userId: friendRequest.from,
+        type: "shared",
+        title: "Friend Request Accepted",
+        body: `${acceptedBy?.name || "Someone"} accepted your friend request`,
+        link: "/dashboard/friends",
+      });
     } else {
       friendRequest.status = "rejected";
       await friendRequest.save();

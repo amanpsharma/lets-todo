@@ -1,7 +1,6 @@
 "use client";
 
 import { SignUp } from "@clerk/nextjs";
-import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
 export default function SignUpPage() {
@@ -13,10 +12,8 @@ export default function SignUpPage() {
         <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-purple-200/30 dark:bg-purple-800/10 rounded-full blur-3xl" />
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 flex flex-col items-center"
+      <div
+        className="relative z-10 flex flex-col items-center animate-fade-in-up"
       >
         <div className="flex items-center gap-3 mb-8">
           <div className="p-2.5 bg-gradient-to-br from-violet-600 to-purple-600 rounded-xl shadow-lg shadow-violet-500/25">
@@ -34,7 +31,7 @@ export default function SignUpPage() {
             },
           }}
         />
-      </motion.div>
+      </div>
     </div>
   );
 }

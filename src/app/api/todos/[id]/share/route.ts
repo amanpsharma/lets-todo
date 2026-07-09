@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import dbConnect from "@/lib/mongodb";
 import Todo from "@/models/Todo";
 import User from "@/models/User";
+import { createNotification } from "@/lib/notify";
 
 export async function POST(
   request: NextRequest,
@@ -55,6 +56,15 @@ export async function POST(
       },
       { returnDocument: "after" }
     );
+
+    // Notify the friend that a todo was shared with them
+    await createNotification({
+      userId: friendId,
+      type: "shared",
+      title: todo.title,
+      body: `${currentUser.name || "Someone"} shared a task with you`,
+      link: "/dashboard/shared",
+    });
 
     return NextResponse.json(updated);
   } catch (error) {

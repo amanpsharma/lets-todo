@@ -32,7 +32,8 @@ const tabs: { id: TabType; label: string; icon: typeof ListTodo }[] = [
 
 export default function MobileNav({ activeTab, onTabChange, onNewTask, pathname, unreadChats = 0, pendingShared = 0 }: MobileNavProps) {
   const router = useRouter();
-  const isSpecialPage = pathname === "/dashboard/friends" || pathname === "/dashboard/pomodoro" || pathname.startsWith("/dashboard/chat");
+  const specialPages = ["/dashboard/friends", "/dashboard/pomodoro", "/dashboard/kanban", "/dashboard/calendar", "/dashboard/analytics", "/dashboard/habits", "/dashboard/notes", "/dashboard/focus", "/dashboard/timeline"];
+  const isSpecialPage = specialPages.includes(pathname) || pathname.startsWith("/dashboard/chat");
 
   return (
     <div className="fixed bottom-0 left-0 right-0 md:hidden z-30">

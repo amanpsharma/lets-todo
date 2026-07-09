@@ -7,6 +7,7 @@ import { useTodoContext } from "@/context/TodoContext";
 import TodoList from "@/components/TodoList";
 import FilterBar from "@/components/FilterBar";
 import SortDropdown from "@/components/SortDropdown";
+import SmartInput from "@/components/SmartInput";
 import { Todo } from "@/types/todo";
 
 type SortType = "date" | "priority" | "name" | "dueDate";
@@ -90,6 +91,9 @@ export default function AllTasksPage() {
           </button>
         </motion.div>
       )}
+
+      {/* AI Smart Input */}
+      <SmartInput />
 
       {/* Filter Bar */}
       <div className="mb-6">

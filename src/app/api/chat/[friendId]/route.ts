@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import dbConnect from "@/lib/mongodb";
 import Message from "@/models/Message";
 import User from "@/models/User";
+import { createNotification } from "@/lib/notify";
 
 // GET messages between current user and friend
 export async function GET(
@@ -118,6 +119,15 @@ export async function POST(
       from: userId,
       to: friendId,
       content: content.trim(),
+    });
+
+    // Notify the recipient
+    await createNotification({
+      userId: friendId,
+      type: "chat",
+      title: "New message",
+      body: `${currentUser.name || "Someone"}: ${content.trim().slice(0, 80)}${content.trim().length > 80 ? "..." : ""}`,
+      link: `/dashboard/chat/${userId}`,
     });
 
     return NextResponse.json(message, { status: 201 });

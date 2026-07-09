@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -41,11 +40,13 @@ export default function RootLayout({
         <head>
           <meta name="theme-color" content="#7c3aed" />
           <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+          <Script src="/sw-kill.js" strategy="beforeInteractive" />
           <Script src="/theme-init.js" strategy="beforeInteractive" />
         </head>
-        <body className={`${plusJakarta.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
+        <body
+          className={`${plusJakarta.variable} ${spaceGrotesk.variable} font-sans antialiased`}
+        >
           {children}
-          <ServiceWorkerRegister />
         </body>
       </html>
     </ClerkProvider>

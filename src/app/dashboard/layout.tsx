@@ -17,6 +17,8 @@ import CommandPalette from "@/components/CommandPalette";
 import FriendsPanel from "@/components/FriendsPanel";
 import UserSync from "@/components/UserSync";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import NotificationCenter from "@/components/NotificationCenter";
+import OnboardingModal from "@/components/OnboardingModal";
 import { useNotifications } from "@/hooks/useNotifications";
 import toast from "react-hot-toast";
 
@@ -268,6 +270,7 @@ export default function DashboardLayout({
                   </span>
                 )}
               </motion.button>
+              <NotificationCenter />
               <ThemeToggle />
               <UserButton
                 appearance={{
@@ -338,6 +341,7 @@ export default function DashboardLayout({
 
       <UserSync />
       <PWAInstallPrompt />
+      <OnboardingModal />
     </div>
     </TodoContext.Provider>
   );

@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import dbConnect from "@/lib/mongodb";
 import Todo from "@/models/Todo";
 import User from "@/models/User";
+import { notifyCollaborators } from "@/lib/notify";
 
 interface SubtaskData {
   id: string;
@@ -93,6 +94,10 @@ export async function PUT(
     const todo = await Todo.findById(id);
     if (!todo) return NextResponse.json({ error: "Todo not found" }, { status: 404 });
 
+    // Get actor name for notifications
+    const actorUser = await User.findOne({ clerkId: userId }).select("name");
+    const actorName = actorUser?.name || "Someone";
+
     // Check if user is owner
     if (todo.userId === userId) {
       const body = await request.json();
@@ -100,6 +105,48 @@ export async function PUT(
         body.subtasks = await mergeAndStampSubtasks(todo.subtasks || [], body.subtasks, userId);
       }
       const updated = await Todo.findByIdAndUpdate(id, body, { returnDocument: "after" });
+
+      // Notify collaborators about owner's changes
+      if (todo.sharedWith?.length > 0) {
+        let notifBody = `${actorName} updated this task`;
+        let notifType: "completed" | "subtask" | "shared" = "shared";
+        if (body.completed === true) {
+          notifBody = `${actorName} marked this task as done`;
+          notifType = "completed";
+        } else if (body.subtasks) {
+          const oldCount = todo.subtasks?.length || 0;
+          const newCount = body.subtasks.length;
+          if (newCount > oldCount) {
+            notifBody = `${actorName} added a subtask`;
+            notifType = "subtask";
+          } else {
+            const newlyCompleted = body.subtasks.find(
+              (s: SubtaskData) =>
+                s.completed &&
+                todo.subtasks?.find(
+                  (old: SubtaskData) => old.id === s.id && !old.completed
+                )
+            );
+            if (newlyCompleted) {
+              notifBody = `${actorName} completed a subtask`;
+              notifType = "subtask";
+            }
+          }
+        }
+
+        await notifyCollaborators({
+          todoId: id,
+          todoTitle: todo.title,
+          actorUserId: userId,
+          actorName,
+          ownerUserId: todo.userId,
+          sharedWith: todo.sharedWith,
+          type: notifType,
+          body: notifBody,
+          link: "/dashboard/shared",
+        });
+      }
+
       return NextResponse.json(updated);
     }
 
@@ -140,6 +187,46 @@ export async function PUT(
     }
 
     const updated = await Todo.findByIdAndUpdate(id, updates, { returnDocument: "after" });
+
+    // Notify owner + other collaborators about this user's changes
+    let notifBody = `${actorName} updated this task`;
+    let notifType: "completed" | "subtask" | "shared" = "shared";
+    if (updates.completed === true) {
+      notifBody = `${actorName} marked this task as done`;
+      notifType = "completed";
+    } else if (updates.subtasks) {
+      const oldCount = todo.subtasks?.length || 0;
+      const newCount = (updates.subtasks as SubtaskData[]).length;
+      if (newCount > oldCount) {
+        notifBody = `${actorName} added a subtask`;
+        notifType = "subtask";
+      } else {
+        const newlyCompleted = (updates.subtasks as SubtaskData[]).find(
+          (s) =>
+            s.completed &&
+            todo.subtasks?.find(
+              (old: SubtaskData) => old.id === s.id && !old.completed
+            )
+        );
+        if (newlyCompleted) {
+          notifBody = `${actorName} completed a subtask`;
+          notifType = "subtask";
+        }
+      }
+    }
+
+    await notifyCollaborators({
+      todoId: id,
+      todoTitle: todo.title,
+      actorUserId: userId,
+      actorName,
+      ownerUserId: todo.userId,
+      sharedWith: todo.sharedWith,
+      type: notifType,
+      body: notifBody,
+      link: "/dashboard/shared",
+    });
+
     return NextResponse.json(updated);
   } catch (error) {
     console.error("PUT /api/todos/shared/[id] error:", error);

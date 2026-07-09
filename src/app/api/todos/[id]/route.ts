@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import dbConnect from "@/lib/mongodb";
 import Todo from "@/models/Todo";
 import User from "@/models/User";
+import { notifyCollaborators } from "@/lib/notify";
 
 export async function PUT(
   request: NextRequest,
@@ -78,12 +79,106 @@ export async function PUT(
       }
     }
 
+    // Fetch original todo before update to detect changes for notifications
+    const originalTodo = await Todo.findOne({ _id: id, userId });
+    if (!originalTodo) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
     const todo = await Todo.findOneAndUpdate(
       { _id: id, userId },
       body,
       { returnDocument: "after" }
     );
     if (!todo) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+    // Notify collaborators if this is a shared todo
+    if (originalTodo.sharedWith?.length > 0) {
+      const actorUser = await User.findOne({ clerkId: userId }).select("name");
+      const actorName = actorUser?.name || "Someone";
+
+      let notifBody = `${actorName} updated this task`;
+      let notifType: "completed" | "subtask" | "shared" = "shared";
+
+      if (body.completed === true && !originalTodo.completed) {
+        notifBody = `${actorName} marked this task as done`;
+        notifType = "completed";
+      } else if (body.completed === false && originalTodo.completed) {
+        notifBody = `${actorName} reopened this task`;
+      } else if (body.subtasks) {
+        const oldCount = originalTodo.subtasks?.length || 0;
+        const newCount = body.subtasks.length;
+        if (newCount > oldCount) {
+          notifBody = `${actorName} added a subtask`;
+          notifType = "subtask";
+        } else {
+          const newlyDone = body.subtasks.find(
+            (s: { id: string; completed: boolean }) =>
+              s.completed &&
+              originalTodo.subtasks?.find(
+                (old: { id: string; completed: boolean }) =>
+                  old.id === s.id && !old.completed
+              )
+          );
+          if (newlyDone) {
+            notifBody = `${actorName} completed a subtask`;
+            notifType = "subtask";
+          }
+        }
+      }
+
+      await notifyCollaborators({
+        todoId: id,
+        todoTitle: todo.title,
+        actorUserId: userId,
+        actorName,
+        ownerUserId: todo.userId,
+        sharedWith: originalTodo.sharedWith,
+        type: notifType,
+        body: notifBody,
+        link: "/dashboard/shared",
+      });
+    }
+
+    // Auto-create next occurrence for recurring tasks
+    if (
+      body.completed === true &&
+      todo.recurring &&
+      todo.recurring !== "none"
+    ) {
+      let nextDue: Date | null = null;
+      const base = todo.dueDate ? new Date(todo.dueDate) : new Date();
+      if (todo.recurring === "daily") {
+        nextDue = new Date(base);
+        nextDue.setDate(nextDue.getDate() + 1);
+      } else if (todo.recurring === "weekly") {
+        nextDue = new Date(base);
+        nextDue.setDate(nextDue.getDate() + 7);
+      } else if (todo.recurring === "monthly") {
+        nextDue = new Date(base);
+        nextDue.setMonth(nextDue.getMonth() + 1);
+      }
+
+      const count = await Todo.countDocuments({ userId });
+      await Todo.create({
+        title: todo.title,
+        description: todo.description,
+        completed: false,
+        priority: todo.priority,
+        category: todo.category,
+        dueDate: nextDue,
+        recurring: todo.recurring,
+        tags: todo.tags,
+        subtasks: todo.subtasks.map((s: { id: string; title: string }) => ({
+          id: s.id,
+          title: s.title,
+          completed: false,
+          addedBy: undefined,
+          completedBy: undefined,
+        })),
+        sharedWith: [],
+        order: count,
+        userId,
+      });
+    }
 
     return NextResponse.json(todo);
   } catch (error) {

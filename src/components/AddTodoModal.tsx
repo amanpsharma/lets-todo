@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Tag, Calendar, Flag, Sparkles } from "lucide-react";
+import { X, Plus, Tag, Calendar, Flag, Sparkles, Repeat } from "lucide-react";
 import { Todo } from "@/types/todo";
 
 interface AddTodoModalProps {
@@ -17,6 +17,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
   const [priority, setPriority] = useState<Todo["priority"]>("medium");
   const [category, setCategory] = useState("general");
   const [dueDate, setDueDate] = useState("");
+  const [recurring, setRecurring] = useState<"none" | "daily" | "weekly" | "monthly">("none");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -64,6 +65,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
       priority,
       category,
       dueDate: dueDate || null,
+      recurring,
       tags: finalTags,
     });
 
@@ -72,6 +74,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
     setPriority("medium");
     setCategory("general");
     setDueDate("");
+    setRecurring("none");
     setTags([]);
     setTagInput("");
     setLoading(false);
@@ -205,6 +208,34 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                     onChange={(e) => setDueDate(e.target.value)}
                     className="w-full px-4 py-2.5 bg-gray-50/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-violet-500/50 focus:border-transparent text-gray-900 dark:text-white text-sm backdrop-blur-sm"
                   />
+                </div>
+
+                {/* Recurring */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
+                    <Repeat className="w-4 h-4 text-violet-500" /> Repeat
+                  </label>
+                  <div className="flex gap-2 flex-wrap">
+                    {([
+                      { value: "none", label: "Never" },
+                      { value: "daily", label: "Daily" },
+                      { value: "weekly", label: "Weekly" },
+                      { value: "monthly", label: "Monthly" },
+                    ] as const).map((r) => (
+                      <button
+                        key={r.value}
+                        type="button"
+                        onClick={() => setRecurring(r.value)}
+                        className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
+                          recurring === r.value
+                            ? "bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 ring-2 ring-violet-500 shadow-sm"
+                            : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        }`}
+                      >
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Tags */}

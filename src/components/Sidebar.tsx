@@ -5,7 +5,6 @@ import {
   ListTodo,
   Clock,
   CheckCircle2,
-  Flame,
   Timer,
   ChevronLeft,
   ChevronRight,
@@ -15,11 +14,15 @@ import {
   Share2,
   Users,
   MessageCircle,
+  BarChart3,
+  Columns3,
+  Calendar,
+  Target,
+  StickyNote,
+  Eye,
 } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
 import { Stats, Todo } from "@/types/todo";
-import ProgressRing from "./ProgressRing";
-import StreakCounter from "./StreakCounter";
-import MotivationalQuote from "./MotivationalQuote";
 
 type TabType = "all" | "active" | "completed" | "shared";
 
@@ -76,18 +79,12 @@ export default function Sidebar({
   ];
 
   const categories = stats?.categories || [];
-  const completionRate = stats?.completionRate || 0;
-
-  // Calculate streak from todos
-  const todayCompleted = todos.filter(
-    (t) => t.completed && new Date(t.updatedAt).toDateString() === new Date().toDateString()
-  ).length;
 
   return (
     <motion.aside
       initial={isMobile ? false : { x: -20, opacity: 0 }}
       animate={isMobile ? undefined : { x: 0, opacity: 1 }}
-      className={`flex-shrink-0 h-full flex flex-col border-r border-white/20 dark:border-white/5 glass transition-all duration-300 ${
+      className={`flex-shrink-0 h-full flex flex-col overflow-y-auto border-r border-white/20 dark:border-white/5 glass transition-all duration-300 ${
         collapsed && !isMobile ? "w-20" : "w-80"
       } ${isMobile ? "bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl" : "hidden md:flex"}`}
     >
@@ -222,86 +219,107 @@ export default function Sidebar({
       )}
 
       {/* Quick Actions */}
-      {!collapsed && (
-        <div className="px-3 mt-6">
+      <div className="px-3 mt-6">
+        {!collapsed && (
           <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 flex items-center gap-2">
             <Zap className="w-3.5 h-3.5" />
             Quick Actions
           </p>
-          <button
-            onClick={onOpenPomodoro}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:text-orange-600 dark:hover:text-orange-400 transition-all"
-          >
-            <Timer className="w-5 h-5" />
-            <span>Focus Timer</span>
-            <kbd className="ml-auto px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px] font-mono text-gray-400">Ctrl+P</kbd>
-          </button>
-          <button
-            onClick={onOpenChat}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-violet-50 dark:hover:bg-violet-900/10 hover:text-violet-600 dark:hover:text-violet-400 transition-all"
-          >
-            <div className="relative">
-              <MessageCircle className="w-5 h-5" />
-              {unreadChats > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] px-0.5 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full">
-                  {unreadChats > 99 ? "99+" : unreadChats}
-                </span>
-              )}
-            </div>
-            <span>Chat</span>
+        )}
+        <button
+          onClick={onOpenPomodoro}
+          title="Focus Timer"
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:text-orange-600 dark:hover:text-orange-400 transition-all ${collapsed ? "justify-center" : ""}`}
+        >
+          <Timer className="w-5 h-5 flex-shrink-0" />
+          {!collapsed && (
+            <>
+              <span>Focus Timer</span>
+              <kbd className="ml-auto px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px] font-mono text-gray-400">Ctrl+P</kbd>
+            </>
+          )}
+        </button>
+        <button
+          onClick={onOpenChat}
+          title="Chat"
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-violet-50 dark:hover:bg-violet-900/10 hover:text-violet-600 dark:hover:text-violet-400 transition-all ${collapsed ? "justify-center" : ""}`}
+        >
+          <div className="relative flex-shrink-0">
+            <MessageCircle className="w-5 h-5" />
             {unreadChats > 0 && (
-              <span className="ml-auto px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-xs font-bold">
-                {unreadChats}
+              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] px-0.5 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full">
+                {unreadChats > 99 ? "99+" : unreadChats}
               </span>
             )}
-          </button>
-          <button
-            onClick={onOpenFriends}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-violet-50 dark:hover:bg-violet-900/10 hover:text-violet-600 dark:hover:text-violet-400 transition-all"
-          >
-            <Users className="w-5 h-5" />
-            <span>Friends</span>
-          </button>
-        </div>
-      )}
-
-      {/* Bottom Section - Stats */}
-      <div className="mt-auto p-4 space-y-4">
-        {!collapsed && (
-          <>
-            {/* Progress Ring */}
-            <div className="glass-card rounded-2xl p-4">
-              <div className="flex items-center gap-4">
-                <ProgressRing percentage={completionRate} size={56} />
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {completionRate}% Done
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {stats?.completed || 0} of {stats?.total || 0} tasks
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Streak */}
-            <StreakCounter todayCompleted={todayCompleted} />
-
-            {/* Motivational Quote */}
-            <MotivationalQuote />
-          </>
-        )}
-
-        {collapsed && stats && (
-          <div className="flex flex-col items-center gap-3">
-            <ProgressRing percentage={completionRate} size={40} strokeWidth={4} />
-            <div className="flex items-center gap-1">
-              <Flame className="w-4 h-4 text-orange-500" />
-              <span className="text-xs font-bold text-gray-600 dark:text-gray-400">{todayCompleted}</span>
-            </div>
           </div>
-        )}
+          {!collapsed && (
+            <>
+              <span>Chat</span>
+              {unreadChats > 0 && (
+                <span className="ml-auto px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-xs font-bold">
+                  {unreadChats}
+                </span>
+              )}
+            </>
+          )}
+        </button>
+        <button
+          onClick={onOpenFriends}
+          title="Friends"
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-violet-50 dark:hover:bg-violet-900/10 hover:text-violet-600 dark:hover:text-violet-400 transition-all ${collapsed ? "justify-center" : ""}`}
+        >
+          <Users className="w-5 h-5 flex-shrink-0" />
+          {!collapsed && <span>Friends</span>}
+        </button>
       </div>
+
+      {/* Views */}
+      <ViewLinks collapsed={collapsed} />
+
     </motion.aside>
+  );
+}
+
+function ViewLinks({ collapsed }: { collapsed: boolean }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const views = [
+    { path: "/dashboard/kanban", label: "Kanban Board", icon: Columns3 },
+    { path: "/dashboard/calendar", label: "Calendar", icon: Calendar },
+    { path: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+    { path: "/dashboard/habits", label: "Habits", icon: Target },
+    { path: "/dashboard/notes", label: "Sticky Notes", icon: StickyNote },
+    { path: "/dashboard/focus", label: "Focus Mode", icon: Eye },
+    { path: "/dashboard/timeline", label: "Timeline", icon: Clock },
+  ];
+
+  return (
+    <div className="px-3 mt-4">
+      {!collapsed && (
+        <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+          Views
+        </p>
+      )}
+      {views.map((view) => {
+        const active = pathname === view.path;
+        const Icon = view.icon;
+        return (
+          <button
+            key={view.path}
+            onClick={() => router.push(view.path)}
+            title={view.label}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              active
+                ? "bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300"
+                : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
+            } ${collapsed ? "justify-center" : ""}`}
+          >
+            <Icon className="w-5 h-5 flex-shrink-0" />
+            {!collapsed && <span>{view.label}</span>}
+          </button>
+        );
+      })}
+    </div>
   );
 }
