@@ -47,7 +47,7 @@ const priorityConfig = {
 const permissionIcons = {
   view: { icon: Eye, label: "View only", color: "text-gray-500 bg-gray-50 dark:bg-gray-800" },
   edit: { icon: Pencil, label: "Can edit", color: "text-blue-500 bg-blue-50 dark:bg-blue-900/20" },
-  admin: { icon: Shield, label: "Full access", color: "text-violet-500 bg-violet-50 dark:bg-violet-900/20" },
+  admin: { icon: Shield, label: "Full access", color: "text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20" },
 };
 
 function getExpandedState(id: string): boolean {
@@ -160,7 +160,7 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
               todo.completed
                 ? "bg-gradient-to-br from-emerald-400 to-emerald-600 border-emerald-500 shadow-lg shadow-emerald-500/30"
                 : canEdit
-                ? "border-gray-300 dark:border-gray-600 hover:border-violet-500 hover:scale-110 cursor-pointer"
+                ? "border-gray-300 dark:border-gray-600 hover:border-indigo-500 hover:scale-110 cursor-pointer"
                 : "border-gray-200 dark:border-gray-700 cursor-default"
             }`}
           >
@@ -219,7 +219,7 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
                   {tag}
                 </span>
               ))}
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-300 font-medium">
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-300 font-medium">
                 <Share2 className="w-3 h-3" />
                 from {todo.ownerName}
               </span>
@@ -253,7 +253,7 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${subtaskProgress}%` }}
-                className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full"
+                className="h-full bg-gradient-to-r from-indigo-500 to-indigo-400 rounded-full"
                 transition={{ duration: 0.5 }}
               />
             </div>
@@ -282,7 +282,7 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
                     className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
                       subtask.completed
                         ? "bg-emerald-500 border-emerald-500"
-                        : "border-gray-300 dark:border-gray-600 hover:border-violet-500"
+                        : "border-gray-300 dark:border-gray-600 hover:border-indigo-500"
                     }`}
                   >
                     {subtask.completed && <Check className="w-2.5 h-2.5 text-white" />}
@@ -310,7 +310,7 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
                       {subtask.addedBy.avatar ? (
                         <img src={subtask.addedBy.avatar} alt="" className="w-3.5 h-3.5 rounded-full" />
                       ) : (
-                        <span className="w-3.5 h-3.5 rounded-full bg-violet-400 text-white flex items-center justify-center text-[7px] font-bold">
+                        <span className="w-3.5 h-3.5 rounded-full bg-indigo-400 text-white flex items-center justify-center text-[7px] font-bold">
                           {subtask.addedBy.name.charAt(0).toUpperCase()}
                         </span>
                       )}
@@ -341,12 +341,12 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
                 onChange={(e) => setSubtaskInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && addSubtask()}
                 placeholder="Add a subtask..."
-                className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400"
+                className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400"
               />
               <button
                 onClick={addSubtask}
                 disabled={!subtaskInput.trim()}
-                className="p-2 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-xl hover:bg-violet-200 dark:hover:bg-violet-900/50 transition-colors disabled:opacity-40"
+                className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors disabled:opacity-40"
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -377,7 +377,7 @@ export default function SharedWithMe() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
         <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
           Loading shared todos...
         </p>
@@ -388,8 +388,8 @@ export default function SharedWithMe() {
   if (todos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <div className="p-4 bg-violet-50 dark:bg-violet-900/20 rounded-2xl mb-4">
-          <Inbox className="w-10 h-10 text-violet-400" />
+        <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl mb-4">
+          <Inbox className="w-10 h-10 text-indigo-400" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
           Nothing shared yet

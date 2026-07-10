@@ -162,7 +162,7 @@ export default function FriendsPanel({ isOpen, onClose }: FriendsPanelProps) {
           <div className="p-6 pb-4 border-b border-white/10 dark:border-white/5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl">
+                <div className="p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl">
                   <Users className="w-5 h-5 text-white" />
                 </div>
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">
@@ -221,7 +221,7 @@ export default function FriendsPanel({ isOpen, onClose }: FriendsPanelProps) {
           <div className="flex-1 overflow-y-auto p-6 pt-4">
             {loading && tab !== "search" ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
+                <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
               </div>
             ) : (
               <>
@@ -249,7 +249,7 @@ export default function FriendsPanel({ isOpen, onClose }: FriendsPanelProps) {
                                 className="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-800"
                               />
                             ) : (
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
                                 {friend.name.charAt(0).toUpperCase()}
                               </div>
                             )}
@@ -380,11 +380,11 @@ export default function FriendsPanel({ isOpen, onClose }: FriendsPanelProps) {
                         value={searchQuery}
                         onChange={(e) => searchUsers(e.target.value)}
                         placeholder="Search by name or email..."
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         autoFocus
                       />
                       {searching && (
-                        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-violet-500 animate-spin" />
+                        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500 animate-spin" />
                       )}
                     </div>
 
@@ -409,7 +409,7 @@ export default function FriendsPanel({ isOpen, onClose }: FriendsPanelProps) {
                                 className="w-10 h-10 rounded-full object-cover"
                               />
                             ) : (
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
                                 {user.name.charAt(0).toUpperCase()}
                               </div>
                             )}
@@ -432,7 +432,7 @@ export default function FriendsPanel({ isOpen, onClose }: FriendsPanelProps) {
                             ) : (
                               <button
                                 onClick={() => sendRequest(user.clerkId)}
-                                className="p-2 rounded-lg bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors"
+                                className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
                               >
                                 <UserPlus className="w-4 h-4" />
                               </button>

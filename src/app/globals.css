@@ -19,7 +19,7 @@
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+  scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -31,12 +31,12 @@
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: rgba(139, 92, 246, 0.3);
+  background-color: rgba(99, 102, 241, 0.3);
   border-radius: 20px;
 }
 
 ::selection {
-  background-color: rgba(139, 92, 246, 0.2);
+  background-color: rgba(99, 102, 241, 0.2);
 }
 
 @keyframes shimmer {
@@ -70,27 +70,27 @@
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .dark .glass {
-  background: rgba(15, 15, 25, 0.7);
+  background: rgba(15, 15, 25, 0.75);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .dark .glass-card {
-  background: rgba(20, 20, 35, 0.6);
+  background: rgba(20, 20, 35, 0.65);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .progress-ring {

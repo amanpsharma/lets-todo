@@ -50,14 +50,14 @@ export default function MobileNav({ activeTab, onTabChange, onNewTask, pathname,
                 onClick={() => onTabChange(tab.id)}
                 className={`relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-colors min-w-[56px] ${
                   isActive
-                    ? "text-violet-600 dark:text-violet-400"
+                    ? "text-indigo-600 dark:text-indigo-400"
                     : "text-gray-400 dark:text-gray-500"
                 }`}
               >
                 {isActive && (
                   <motion.div
                     layoutId="mobileNavActive"
-                    className="absolute -top-1.5 w-6 h-1 bg-violet-500 rounded-full"
+                    className="absolute -top-1.5 w-6 h-1 bg-indigo-500 rounded-full"
                     transition={{ type: "spring", damping: 25, stiffness: 300 }}
                   />
                 )}
@@ -79,10 +79,10 @@ export default function MobileNav({ activeTab, onTabChange, onNewTask, pathname,
             onClick={onNewTask}
             className="flex flex-col items-center gap-0.5 px-3 py-1.5"
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-600 rounded-2xl shadow-lg shadow-violet-500/30 flex items-center justify-center -mt-4">
+            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-500 rounded-2xl shadow-lg shadow-indigo-500/30 flex items-center justify-center -mt-4">
               <Plus className="w-5 h-5 text-white" />
             </div>
-            <span className="text-[10px] font-medium text-violet-600 dark:text-violet-400">New</span>
+            <span className="text-[10px] font-medium text-indigo-600 dark:text-indigo-400">New</span>
           </button>
 
           {/* Extra shortcuts */}
@@ -90,7 +90,7 @@ export default function MobileNav({ activeTab, onTabChange, onNewTask, pathname,
             onClick={() => router.push("/dashboard/chat")}
             className={`relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl min-w-[56px] ${
               pathname.startsWith("/dashboard/chat")
-                ? "text-violet-600 dark:text-violet-400"
+                ? "text-indigo-600 dark:text-indigo-400"
                 : "text-gray-400 dark:text-gray-500"
             }`}
           >
@@ -108,7 +108,7 @@ export default function MobileNav({ activeTab, onTabChange, onNewTask, pathname,
             onClick={() => router.push("/dashboard/friends")}
             className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl min-w-[56px] ${
               pathname === "/dashboard/friends"
-                ? "text-violet-600 dark:text-violet-400"
+                ? "text-indigo-600 dark:text-indigo-400"
                 : "text-gray-400 dark:text-gray-500"
             }`}
           >

@@ -105,7 +105,7 @@ export default function Sidebar({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onNewTask}
-            className="w-full flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-2xl font-medium shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 transition-shadow"
+            className="w-full flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-2xl font-medium shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-shadow"
           >
             <Plus className="w-5 h-5" />
             <span>New Task</span>
@@ -120,7 +120,7 @@ export default function Sidebar({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={onNewTask}
-            className="p-3 bg-gradient-to-br from-violet-600 to-purple-600 text-white rounded-xl shadow-lg"
+            className="p-3 bg-gradient-to-br from-indigo-600 to-indigo-500 text-white rounded-xl shadow-lg"
           >
             <Plus className="w-5 h-5" />
           </motion.button>
@@ -140,14 +140,14 @@ export default function Sidebar({
             onClick={() => setActiveTab(item.id)}
             className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
               activeTab === item.id
-                ? "bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300"
+                ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300"
                 : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
             } ${collapsed ? "justify-center" : ""}`}
           >
             {activeTab === item.id && (
               <motion.div
                 layoutId="sidebarActiveTab"
-                className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-violet-600 rounded-r-full"
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-indigo-600 rounded-r-full"
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
               />
             )}
@@ -204,7 +204,7 @@ export default function Sidebar({
                   onClick={() => setSelectedCategory(selectedCategory === cat ? "" : cat)}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all ${
                     selectedCategory === cat
-                      ? "bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 font-medium"
+                      ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 font-medium"
                       : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
                   }`}
                 >
@@ -229,7 +229,7 @@ export default function Sidebar({
         <button
           onClick={onOpenPomodoro}
           title="Focus Timer"
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-orange-50 dark:hover:bg-orange-900/10 hover:text-orange-600 dark:hover:text-orange-400 transition-all ${collapsed ? "justify-center" : ""}`}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-amber-50 dark:hover:bg-amber-900/10 hover:text-amber-600 dark:hover:text-amber-400 transition-all ${collapsed ? "justify-center" : ""}`}
         >
           <Timer className="w-5 h-5 flex-shrink-0" />
           {!collapsed && (
@@ -242,7 +242,7 @@ export default function Sidebar({
         <button
           onClick={onOpenChat}
           title="Chat"
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-violet-50 dark:hover:bg-violet-900/10 hover:text-violet-600 dark:hover:text-violet-400 transition-all ${collapsed ? "justify-center" : ""}`}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all ${collapsed ? "justify-center" : ""}`}
         >
           <div className="relative flex-shrink-0">
             <MessageCircle className="w-5 h-5" />
@@ -266,7 +266,7 @@ export default function Sidebar({
         <button
           onClick={onOpenFriends}
           title="Friends"
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-violet-50 dark:hover:bg-violet-900/10 hover:text-violet-600 dark:hover:text-violet-400 transition-all ${collapsed ? "justify-center" : ""}`}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all ${collapsed ? "justify-center" : ""}`}
         >
           <Users className="w-5 h-5 flex-shrink-0" />
           {!collapsed && <span>Friends</span>}
@@ -311,7 +311,7 @@ function ViewLinks({ collapsed }: { collapsed: boolean }) {
             title={view.label}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
               active
-                ? "bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300"
+                ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300"
                 : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
             } ${collapsed ? "justify-center" : ""}`}
           >

@@ -115,7 +115,7 @@ export default function DashboardLayout({
 
   return (
     <TodoContext.Provider value={todoHook}>
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-violet-50 dark:from-gray-950 dark:via-slate-950 dark:to-violet-950/50 transition-colors duration-500">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-amber-50/20 dark:from-gray-950 dark:via-slate-950 dark:to-indigo-950/30 transition-colors duration-500">
       <Toaster
         position="top-center"
         toastOptions={{
@@ -127,9 +127,9 @@ export default function DashboardLayout({
 
       {/* Background orbs - smaller on mobile */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-gradient-to-br from-violet-300/20 to-purple-400/20 dark:from-violet-600/10 dark:to-purple-700/10 rounded-full blur-3xl animate-pulse-ring" />
+        <div className="absolute -top-40 -right-40 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-gradient-to-br from-indigo-300/15 to-indigo-400/15 dark:from-indigo-600/10 dark:to-indigo-700/10 rounded-full blur-3xl animate-pulse-ring" />
         <div
-          className="absolute top-1/3 -left-32 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-gradient-to-br from-blue-300/20 to-cyan-400/20 dark:from-blue-600/10 dark:to-cyan-700/10 rounded-full blur-3xl animate-pulse-ring"
+          className="absolute top-1/3 -left-32 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-gradient-to-br from-amber-200/15 to-amber-300/15 dark:from-amber-700/8 dark:to-amber-800/8 rounded-full blur-3xl animate-pulse-ring"
           style={{ animationDelay: "1s" }}
         />
       </div>
@@ -213,7 +213,7 @@ export default function DashboardLayout({
               <div className="flex items-center gap-2 sm:gap-3">
                 <motion.div
                   whileHover={{ rotate: 15 }}
-                  className="p-1.5 sm:p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg sm:rounded-xl shadow-lg shadow-violet-500/30"
+                  className="p-1.5 sm:p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg sm:rounded-xl shadow-lg shadow-indigo-500/30"
                 >
                   <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </motion.div>
@@ -237,16 +237,16 @@ export default function DashboardLayout({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/dashboard/pomodoro")}
-                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 text-sm font-medium hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors border border-orange-200/50 dark:border-orange-800/30"
+                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-sm font-medium hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors border border-amber-200/50 dark:border-amber-800/30"
               >
-                <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                 Focus Mode
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/dashboard/chat")}
-                className="relative hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-medium hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors border border-violet-200/50 dark:border-violet-800/30"
+                className="relative hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors border border-indigo-200/50 dark:border-indigo-800/30"
               >
                 <MessageCircle className="w-4 h-4" />
                 Chat
@@ -260,7 +260,7 @@ export default function DashboardLayout({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/dashboard/friends")}
-                className="relative hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 text-sm font-medium hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors border border-violet-200/50 dark:border-violet-800/30"
+                className="relative hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors border border-indigo-200/50 dark:border-indigo-800/30"
               >
                 <Users className="w-4 h-4" />
                 Friends
@@ -274,14 +274,14 @@ export default function DashboardLayout({
               <ThemeToggle />
               <UserButton
                 appearance={{
-                  elements: { avatarBox: "w-8 h-8 sm:w-9 sm:h-9 ring-2 ring-violet-500/20" },
+                  elements: { avatarBox: "w-8 h-8 sm:w-9 sm:h-9 ring-2 ring-indigo-500/20" },
                 }}
               />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowModal(true)}
-                className="hidden sm:flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 transition-all hover:from-violet-500 hover:to-purple-500"
+                className="hidden sm:flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all hover:from-indigo-500 hover:to-indigo-400"
               >
                 <Plus className="w-4 h-4" />
                 <span>New Task</span>

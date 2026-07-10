@@ -18,13 +18,13 @@ const steps = [
     title: "Welcome to TaskFlow!",
     description:
       "Your personal task manager with collaboration, focus tools, and beautiful analytics. Let us show you around.",
-    color: "from-violet-500 to-purple-600",
+    color: "from-indigo-500 to-indigo-600",
   },
   {
     icon: CheckCircle2,
     title: "Create & Organize Tasks",
     description:
-      "Add tasks with priorities, categories, due dates, and recurring schedules. Press Ctrl+N to quickly create a new task.",
+      "Add tasks with priorities, categories, and due dates. Press Ctrl+N to quickly create a new task.",
     color: "from-emerald-500 to-teal-600",
   },
   {
@@ -111,9 +111,9 @@ export default function OnboardingModal() {
                     key={i}
                     className={`h-1.5 rounded-full transition-all duration-300 ${
                       i === step
-                        ? "w-8 bg-violet-500"
+                        ? "w-8 bg-indigo-500"
                         : i < step
-                        ? "w-4 bg-violet-300 dark:bg-violet-700"
+                        ? "w-4 bg-indigo-300 dark:bg-indigo-700"
                         : "w-4 bg-gray-200 dark:bg-gray-700"
                     }`}
                   />
@@ -154,7 +154,7 @@ export default function OnboardingModal() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={next}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-lg shadow-violet-500/25 transition-all"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-lg shadow-indigo-500/25 transition-all"
                 >
                   {step < steps.length - 1 ? (
                     <>

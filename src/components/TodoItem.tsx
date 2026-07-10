@@ -13,7 +13,6 @@ import {
   Plus,
   X,
   Share2,
-  Repeat,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { Todo } from "@/types/todo";
@@ -86,7 +85,6 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
   const [editPriority, setEditPriority] = useState<Todo["priority"]>(todo.priority);
   const [editCategory, setEditCategory] = useState(todo.category);
   const [editDueDate, setEditDueDate] = useState(todo.dueDate ? format(new Date(todo.dueDate), "yyyy-MM-dd") : "");
-  const [editRecurring, setEditRecurring] = useState<"none" | "daily" | "weekly" | "monthly">(todo.recurring || "none");
   const [editTags, setEditTags] = useState<string[]>(todo.tags || []);
   const [editTagInput, setEditTagInput] = useState("");
   const [subtaskInput, setSubtaskInput] = useState("");
@@ -107,7 +105,6 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
       priority: editPriority,
       category: editCategory,
       dueDate: editDueDate || null,
-      recurring: editRecurring,
       tags: editTags,
     });
     setEditing(false);
@@ -119,7 +116,6 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
     setEditPriority(todo.priority);
     setEditCategory(todo.category);
     setEditDueDate(todo.dueDate ? format(new Date(todo.dueDate), "yyyy-MM-dd") : "");
-    setEditRecurring(todo.recurring || "none");
     setEditTags(todo.tags || []);
     setEditTagInput("");
     setEditing(true);
@@ -180,7 +176,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
 
   return (
     <div
-      className={`group glass-card rounded-2xl border-l-4 ${config.color} hover:shadow-lg hover:shadow-violet-500/5 transition-all duration-300 overflow-hidden ${
+      className={`group glass-card rounded-2xl border-l-4 ${config.color} hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-300 overflow-hidden ${
         todo.completed ? "opacity-60" : ""
       }`}
     >
@@ -193,7 +189,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
             className={`mt-0.5 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
               todo.completed
                 ? "bg-gradient-to-br from-emerald-400 to-emerald-600 border-emerald-500 shadow-lg shadow-emerald-500/30"
-                : "border-gray-300 dark:border-gray-600 hover:border-violet-500 hover:shadow-md hover:shadow-violet-500/20 hover:scale-110"
+                : "border-gray-300 dark:border-gray-600 hover:border-indigo-500 hover:shadow-md hover:shadow-indigo-500/20 hover:scale-110"
             }`}
           >
             {todo.completed && (
@@ -216,7 +212,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                   type="text"
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white font-medium text-sm"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white font-medium text-sm"
                   autoFocus
                   placeholder="Task title"
                 />
@@ -224,7 +220,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                 <textarea
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white text-sm resize-none"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white text-sm resize-none"
                   rows={2}
                   placeholder="Description (optional)"
                 />
@@ -238,7 +234,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                         type="button"
                         onClick={() => setEditPriority(p.value)}
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${p.color} ${
-                          editPriority === p.value ? "ring-2 ring-violet-500 shadow-sm" : "opacity-60 hover:opacity-100"
+                          editPriority === p.value ? "ring-2 ring-indigo-500 shadow-sm" : "opacity-60 hover:opacity-100"
                         }`}
                       >
                         <span className={`w-1.5 h-1.5 rounded-full ${p.dot}`} />
@@ -258,7 +254,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                         onClick={() => setEditCategory(c.value)}
                         className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
                           editCategory === c.value
-                            ? "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 ring-2 ring-violet-500 shadow-sm"
+                            ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 ring-2 ring-indigo-500 shadow-sm"
                             : "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400 opacity-60 hover:opacity-100"
                         }`}
                       >
@@ -267,7 +263,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                     ))}
                   </div>
                 </div>
-                {/* Due Date & Recurring */}
+                {/* Due Date */}
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 block">Due Date</label>
@@ -275,21 +271,8 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                       type="date"
                       value={editDueDate}
                       onChange={(e) => setEditDueDate(e.target.value)}
-                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white text-sm"
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white text-sm"
                     />
-                  </div>
-                  <div className="flex-1">
-                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 block">Recurring</label>
-                    <select
-                      value={editRecurring}
-                      onChange={(e) => setEditRecurring(e.target.value as "none" | "daily" | "weekly" | "monthly")}
-                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white text-sm"
-                    >
-                      <option value="none">None</option>
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="monthly">Monthly</option>
-                    </select>
                   </div>
                 </div>
                 {/* Tags */}
@@ -316,9 +299,9 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                       onChange={(e) => setEditTagInput(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addEditTag(); } }}
                       placeholder="Add tag..."
-                      className="flex-1 px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white text-xs"
+                      className="flex-1 px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white text-xs"
                     />
-                    <button type="button" onClick={addEditTag} className="px-2.5 py-1.5 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors text-xs font-medium">
+                    <button type="button" onClick={addEditTag} className="px-2.5 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors text-xs font-medium">
                       Add
                     </button>
                   </div>
@@ -327,7 +310,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                 <div className="flex gap-2 pt-1">
                   <button
                     onClick={handleSaveEdit}
-                    className="px-4 py-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-lg text-sm font-medium shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40"
+                    className="px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-lg text-sm font-medium shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40"
                   >
                     Save
                   </button>
@@ -363,7 +346,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                   <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
                   {todo.priority}
                 </span>
-                <span className="px-2 py-0.5 rounded-lg text-xs font-medium bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-300 capitalize">
+                <span className="px-2 py-0.5 rounded-lg text-xs font-medium bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-300 capitalize">
                   {todo.category}
                 </span>
                 {todo.dueDate && (
@@ -378,12 +361,6 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                   >
                     <Calendar className="w-3 h-3" />
                     {format(new Date(todo.dueDate), "MMM d")}
-                  </span>
-                )}
-                {todo.recurring && todo.recurring !== "none" && (
-                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
-                    <Repeat className="w-3 h-3" />
-                    {todo.recurring}
                   </span>
                 )}
                 {tags.map((tag) => (
@@ -417,7 +394,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
             <button
               onClick={() => setShowShare(!showShare)}
               aria-label="Share task"
-              className="p-2 rounded-lg hover:bg-violet-50 dark:hover:bg-violet-900/20 text-gray-400 hover:text-violet-500 transition-colors hidden sm:block"
+              className="p-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/20 text-gray-400 hover:text-indigo-500 transition-colors hidden sm:block"
             >
               <Share2 className="w-4 h-4" />
             </button>
@@ -523,7 +500,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${subtaskProgress}%` }}
-                className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full"
+                className="h-full bg-gradient-to-r from-indigo-500 to-amber-400 rounded-full"
                 transition={{ duration: 0.5, ease: "easeOut" }}
               />
             </div>
@@ -549,7 +526,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                     className={`w-4.5 h-4.5 rounded border-2 flex items-center justify-center transition-all ${
                       subtask.completed
                         ? "bg-emerald-500 border-emerald-500 shadow-sm shadow-emerald-500/30"
-                        : "border-gray-300 dark:border-gray-600 hover:border-violet-500"
+                        : "border-gray-300 dark:border-gray-600 hover:border-indigo-500"
                     }`}
                   >
                     {subtask.completed && <Check className="w-2.5 h-2.5 text-white" />}
@@ -577,7 +554,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                       {subtask.addedBy.avatar ? (
                         <img src={subtask.addedBy.avatar} alt="" className="w-3.5 h-3.5 rounded-full" />
                       ) : (
-                        <span className="w-3.5 h-3.5 rounded-full bg-violet-400 text-white flex items-center justify-center text-[7px] font-bold">
+                        <span className="w-3.5 h-3.5 rounded-full bg-indigo-400 text-white flex items-center justify-center text-[7px] font-bold">
                           {subtask.addedBy.name.charAt(0).toUpperCase()}
                         </span>
                       )}
@@ -606,11 +583,11 @@ export default function TodoItem({ todo, onToggle, onDelete, onUpdate }: TodoIte
                 onChange={(e) => setSubtaskInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && addSubtask()}
                 placeholder="Add subtask..."
-                className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:ring-2 focus:ring-violet-500 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400"
+                className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400"
               />
               <button
                 onClick={addSubtask}
-                className="p-2 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 rounded-xl hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors"
+                className="p-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
               >
                 <Plus className="w-4 h-4" />
               </button>

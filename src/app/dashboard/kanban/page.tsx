@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState, useCallback } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -11,7 +11,6 @@ import {
   CircleDashed,
   Loader2,
   CheckCircle2,
-  GripVertical,
   Calendar,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -57,10 +56,20 @@ const priorityDot: Record<string, string> = {
   urgent: "bg-red-500",
 };
 
+// Determine which column a todo belongs to based on its fields
+function getColumn(todo: Todo): Column {
+  if (todo.completed) return "done";
+  if (todo.priority === "high" || todo.priority === "urgent") return "in-progress";
+  return "todo";
+}
+
 export default function KanbanPage() {
   const ctx = useContext(TodoContext);
   if (!ctx) return null;
-  const { todos, updateTodo, toggleTodo } = ctx;
+  const { todos, updateTodo } = ctx;
+
+  // Local overrides: todoId → target column (for instant drag feedback)
+  const [columnOverrides, setColumnOverrides] = useState<Record<string, Column>>({});
 
   const grouped = useMemo(() => {
     const map: Record<Column, Todo[]> = {
@@ -69,33 +78,54 @@ export default function KanbanPage() {
       done: [],
     };
     for (const t of todos) {
-      if (t.completed) {
-        map.done.push(t);
-      } else if (t.priority === "high" || t.priority === "urgent") {
-        map["in-progress"].push(t);
-      } else {
-        map.todo.push(t);
-      }
+      const col = columnOverrides[t._id] || getColumn(t);
+      map[col].push(t);
     }
     return map;
-  }, [todos]);
+  }, [todos, columnOverrides]);
 
-  const moveTask = (todo: Todo, to: Column) => {
+  const moveTask = useCallback(async (todoId: string, from: Column, to: Column) => {
+    // 1. Immediately move in UI via local override
+    setColumnOverrides((prev) => ({ ...prev, [todoId]: to }));
+
+    // 2. Build the actual field updates for the API
+    const todo = todos.find((t) => t._id === todoId);
+    if (!todo) return;
+
+    const updates: Partial<Todo> = {};
     if (to === "done") {
-      if (!todo.completed) toggleTodo(todo._id);
+      updates.completed = true;
     } else if (to === "todo") {
-      if (todo.completed) toggleTodo(todo._id);
+      updates.completed = false;
       if (todo.priority === "high" || todo.priority === "urgent") {
-        updateTodo(todo._id, { priority: "medium" });
+        updates.priority = "medium";
       }
     } else {
-      // in-progress
-      if (todo.completed) toggleTodo(todo._id);
+      updates.completed = false;
       if (todo.priority !== "high" && todo.priority !== "urgent") {
-        updateTodo(todo._id, { priority: "high" });
+        updates.priority = "high";
       }
     }
-  };
+
+    try {
+      await updateTodo(todoId, updates);
+    } catch {
+      // Rollback: remove override so it goes back to its real column
+      setColumnOverrides((prev) => {
+        const next = { ...prev };
+        delete next[todoId];
+        return next;
+      });
+      return;
+    }
+
+    // 3. Clear override — the context todos now have the correct values
+    setColumnOverrides((prev) => {
+      const next = { ...prev };
+      delete next[todoId];
+      return next;
+    });
+  }, [todos, updateTodo]);
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination, draggableId } = result;
@@ -109,12 +139,9 @@ export default function KanbanPage() {
     const sourceCol = source.droppableId as Column;
     const destCol = destination.droppableId as Column;
 
-    if (sourceCol === destCol) return; // reordering within same column — no-op for now
+    if (sourceCol === destCol) return;
 
-    const todo = grouped[sourceCol].find((t) => t._id === draggableId);
-    if (!todo) return;
-
-    moveTask(todo, destCol);
+    moveTask(draggableId, sourceCol, destCol);
   };
 
   return (
@@ -192,20 +219,14 @@ function KanbanColumn({
                   <div
                     ref={dragProvided.innerRef}
                     {...dragProvided.draggableProps}
-                    className={`group relative p-4 rounded-xl bg-white dark:bg-gray-800/80 border shadow-sm transition-shadow select-none ${
+                    {...dragProvided.dragHandleProps}
+                    className={`group relative p-4 rounded-xl bg-white dark:bg-gray-800/80 border shadow-sm transition-shadow select-none cursor-grab active:cursor-grabbing ${
                       dragSnapshot.isDragging
-                        ? "shadow-xl ring-2 ring-violet-500/40 border-violet-300 dark:border-violet-600 rotate-[2deg]"
+                        ? "shadow-xl ring-2 ring-indigo-500/40 border-indigo-300 dark:border-indigo-600 rotate-[2deg]"
                         : "border-gray-200/50 dark:border-white/5 hover:shadow-md"
                     } ${todo.completed ? "opacity-60" : ""}`}
                   >
                     <div className="flex items-start gap-2">
-                      <div
-                        {...dragProvided.dragHandleProps}
-                        className="mt-0.5 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <GripVertical className="w-3.5 h-3.5" />
-                      </div>
-
                       <div className="flex-1 min-w-0">
                         <p
                           className={`text-sm font-medium ${

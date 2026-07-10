@@ -87,39 +87,60 @@ export function useTodos() {
     });
     if (!res.ok) throw new Error("Failed to create todo");
     const newTodo = await res.json();
-    setTodos((prev) => [newTodo, ...prev]);
+    setTodos((prev) => {
+      // Guard against duplicates from concurrent fetchTodos
+      if (prev.some((t) => t._id === newTodo._id)) return prev;
+      return [newTodo, ...prev];
+    });
     fetchStats();
     return newTodo;
   };
 
   const updateTodo = async (id: string, updates: Partial<Todo>) => {
-    const res = await fetch(`/api/todos/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updates),
+    // Save snapshot for rollback using functional updater to avoid stale closure
+    let snapshot: Todo[] = [];
+    setTodos((t) => {
+      snapshot = t;
+      return t.map((todo) => (todo._id === id ? { ...todo, ...updates } : todo));
     });
-    if (!res.ok) throw new Error("Failed to update todo");
-    const updated = await res.json();
-    setTodos((prev) => prev.map((t) => (t._id === id ? updated : t)));
-    fetchStats();
-    return updated;
+
+    try {
+      const res = await fetch(`/api/todos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      if (!res.ok) {
+        setTodos(snapshot);
+        throw new Error("Failed to update todo");
+      }
+      const updated = await res.json();
+      setTodos((t) => t.map((todo) => (todo._id === id ? updated : todo)));
+      fetchStats();
+      return updated;
+    } catch {
+      setTodos(snapshot);
+      throw new Error("Failed to update todo");
+    }
   };
 
   const deleteTodo = async (id: string) => {
-    // Optimistic delete — remove from UI immediately
-    const prev = todos;
-    setTodos((t) => t.filter((todo) => todo._id !== id));
+    // Optimistic delete — use functional updater to avoid stale closure
+    let snapshot: Todo[] = [];
+    setTodos((t) => {
+      snapshot = t;
+      return t.filter((todo) => todo._id !== id);
+    });
 
     try {
       const res = await fetch(`/api/todos/${id}`, { method: "DELETE" });
       if (!res.ok) {
-        // Rollback on failure
-        setTodos(prev);
+        setTodos(snapshot);
         throw new Error("Failed to delete todo");
       }
       fetchStats();
     } catch {
-      setTodos(prev);
+      setTodos(snapshot);
       throw new Error("Failed to delete todo");
     }
   };
@@ -144,22 +165,17 @@ export function useTodos() {
   };
 
   const toggleTodo = async (id: string) => {
-    const todo = todos.find((t) => t._id === id);
-    if (todo) {
-      // Optimistic toggle
-      setTodos((prev) =>
-        prev.map((t) => (t._id === id ? { ...t, completed: !t.completed } : t))
-      );
-
-      try {
-        const updated = await updateTodo(id, { completed: !todo.completed });
-        return updated;
-      } catch {
-        // Rollback
-        setTodos((prev) =>
-          prev.map((t) => (t._id === id ? { ...t, completed: todo.completed } : t))
-        );
-      }
+    // Read current state from the setter to avoid stale closure
+    let currentCompleted = false;
+    setTodos((t) => {
+      const found = t.find((todo) => todo._id === id);
+      if (found) currentCompleted = found.completed;
+      return t; // no mutation, just reading
+    });
+    try {
+      return await updateTodo(id, { completed: !currentCompleted });
+    } catch {
+      // updateTodo handles its own rollback
     }
   };
 

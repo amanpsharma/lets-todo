@@ -16,7 +16,7 @@ const modeConfig = {
   focus: {
     label: "Focus",
     icon: Brain,
-    color: "from-violet-500 to-purple-600",
+    color: "from-indigo-500 to-indigo-600",
   },
   shortBreak: {
     label: "Short Break",
@@ -102,7 +102,7 @@ export default function PomodoroPage() {
     >
       {/* Header */}
       <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
-        <div className="p-1.5 sm:p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg sm:rounded-xl">
+        <div className="p-1.5 sm:p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg sm:rounded-xl">
           <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
         </div>
         <div>
@@ -247,7 +247,7 @@ export default function PomodoroPage() {
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Sessions completed:{" "}
-            <span className="font-bold text-violet-600 dark:text-violet-400">
+            <span className="font-bold text-indigo-600 dark:text-indigo-400">
               {sessions}
             </span>
           </p>

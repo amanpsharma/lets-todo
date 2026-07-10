@@ -26,7 +26,7 @@ interface Habit {
 }
 
 const colorOptions = [
-  { value: "violet", bg: "bg-violet-500", light: "bg-violet-100 dark:bg-violet-900/30" },
+  { value: "indigo", bg: "bg-indigo-500", light: "bg-indigo-100 dark:bg-indigo-900/30" },
   { value: "blue", bg: "bg-blue-500", light: "bg-blue-100 dark:bg-blue-900/30" },
   { value: "emerald", bg: "bg-emerald-500", light: "bg-emerald-100 dark:bg-emerald-900/30" },
   { value: "orange", bg: "bg-orange-500", light: "bg-orange-100 dark:bg-orange-900/30" },
@@ -37,7 +37,7 @@ const colorOptions = [
 const emojiOptions = ["✅", "💪", "📚", "🧘", "💧", "🏃", "🎯", "🌅", "💤", "🥗", "✍️", "🧠"];
 
 const colorClasses: Record<string, { ring: string; bg: string; text: string }> = {
-  violet: { ring: "ring-violet-500", bg: "bg-violet-500", text: "text-violet-600 dark:text-violet-400" },
+  indigo: { ring: "ring-indigo-500", bg: "bg-indigo-500", text: "text-indigo-600 dark:text-indigo-400" },
   blue: { ring: "ring-blue-500", bg: "bg-blue-500", text: "text-blue-600 dark:text-blue-400" },
   emerald: { ring: "ring-emerald-500", bg: "bg-emerald-500", text: "text-emerald-600 dark:text-emerald-400" },
   orange: { ring: "ring-orange-500", bg: "bg-orange-500", text: "text-orange-600 dark:text-orange-400" },
@@ -50,7 +50,7 @@ export default function HabitsPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newEmoji, setNewEmoji] = useState("✅");
-  const [newColor, setNewColor] = useState("violet");
+  const [newColor, setNewColor] = useState("indigo");
   const [loading, setLoading] = useState(true);
 
   const today = format(new Date(), "yyyy-MM-dd");
@@ -83,7 +83,7 @@ export default function HabitsPage() {
         setHabits((prev) => [habit, ...prev]);
         setNewTitle("");
         setNewEmoji("✅");
-        setNewColor("violet");
+        setNewColor("indigo");
         setShowAdd(false);
         toast.success("Habit created!");
       }
@@ -140,7 +140,7 @@ export default function HabitsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold font-heading text-gray-900 dark:text-white flex items-center gap-3">
-            <Target className="w-6 h-6 text-violet-500" />
+            <Target className="w-6 h-6 text-indigo-500" />
             Habit Tracker
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -151,7 +151,7 @@ export default function HabitsPage() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowAdd(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium shadow-lg shadow-violet-500/25"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/25"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">New Habit</span>
@@ -208,7 +208,7 @@ export default function HabitsPage() {
                   onChange={(e) => setNewTitle(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && addHabit()}
                   placeholder="e.g., Drink 8 glasses of water"
-                  className="flex-1 px-4 py-3 bg-gray-50/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-violet-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400"
+                  className="flex-1 px-4 py-3 bg-gray-50/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400"
                   autoFocus
                 />
                 <button onClick={() => setShowAdd(false)} className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800">
@@ -223,7 +223,7 @@ export default function HabitsPage() {
                   {emojiOptions.map((e) => (
                     <button key={e} onClick={() => setNewEmoji(e)}
                       className={`w-9 h-9 rounded-lg text-lg flex items-center justify-center transition-all ${
-                        newEmoji === e ? "bg-violet-100 dark:bg-violet-900/30 ring-2 ring-violet-500" : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
+                        newEmoji === e ? "bg-indigo-100 dark:bg-indigo-900/30 ring-2 ring-indigo-500" : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
                       }`}
                     >{e}</button>
                   ))}
@@ -245,7 +245,7 @@ export default function HabitsPage() {
               </div>
 
               <button onClick={addHabit} disabled={!newTitle.trim()}
-                className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-violet-600 to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-violet-500/25"
+                className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/25"
               >
                 Create Habit
               </button>
@@ -269,7 +269,7 @@ export default function HabitsPage() {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No habits yet</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Start building good habits today</p>
           <button onClick={() => setShowAdd(true)}
-            className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl font-medium shadow-lg shadow-violet-500/25"
+            className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/25"
           >
             Create Your First Habit
           </button>
@@ -277,7 +277,7 @@ export default function HabitsPage() {
       ) : (
         <div className="space-y-4">
           {habits.map((habit, idx) => {
-            const cc = colorClasses[habit.color] || colorClasses.violet;
+            const cc = colorClasses[habit.color] || colorClasses.indigo;
             const completedToday = habit.completedDates.includes(today);
             return (
               <motion.div
@@ -327,7 +327,7 @@ export default function HabitsPage() {
                           done
                             ? `${cc.bg} text-white shadow-md`
                             : day.isToday
-                            ? "bg-gray-100 dark:bg-gray-800 ring-2 ring-violet-500/30"
+                            ? "bg-gray-100 dark:bg-gray-800 ring-2 ring-indigo-500/30"
                             : "bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800"
                         }`}
                       >

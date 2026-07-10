@@ -154,7 +154,7 @@ export default function FriendsPage() {
     >
       {/* Header */}
       <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-        <div className="p-1.5 sm:p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg sm:rounded-xl">
+        <div className="p-1.5 sm:p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg sm:rounded-xl">
           <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
         </div>
         <div>
@@ -208,7 +208,7 @@ export default function FriendsPage() {
       <div className="glass-card rounded-2xl p-4 sm:p-6">
         {loading && tab !== "search" ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
+            <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
           </div>
         ) : (
           <>
@@ -237,7 +237,7 @@ export default function FriendsPage() {
                             className="w-11 h-11 rounded-full object-cover ring-2 ring-white dark:ring-gray-800"
                           />
                         ) : (
-                          <div className="w-11 h-11 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                          <div className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white font-bold">
                             {friend.name.charAt(0).toUpperCase()}
                           </div>
                         )}
@@ -253,7 +253,7 @@ export default function FriendsPage() {
                       </div>
                       <button
                         onClick={() => router.push(`/dashboard/chat/${friend.clerkId}`)}
-                        className="p-2.5 rounded-xl bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors"
+                        className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
                         title="Chat"
                       >
                         <MessageCircle className="w-4 h-4" />
@@ -375,11 +375,11 @@ export default function FriendsPage() {
                     value={searchQuery}
                     onChange={(e) => searchUsers(e.target.value)}
                     placeholder="Search by name or email..."
-                    className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     autoFocus
                   />
                   {searching && (
-                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-violet-500 animate-spin" />
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500 animate-spin" />
                   )}
                 </div>
 
@@ -404,7 +404,7 @@ export default function FriendsPage() {
                             className="w-11 h-11 rounded-full object-cover"
                           />
                         ) : (
-                          <div className="w-11 h-11 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                          <div className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white font-bold">
                             {user.name.charAt(0).toUpperCase()}
                           </div>
                         )}
@@ -427,7 +427,7 @@ export default function FriendsPage() {
                         ) : (
                           <button
                             onClick={() => sendRequest(user.clerkId)}
-                            className="p-2.5 rounded-xl bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors"
+                            className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
                           >
                             <UserPlus className="w-4 h-4" />
                           </button>

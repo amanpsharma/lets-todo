@@ -62,7 +62,7 @@ export default function SortDropdown({ sortBy, setSortBy }: SortDropdownProps) {
                   onClick={() => { setSortBy(option.value); setOpen(false); }}
                   className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                     sortBy === option.value
-                      ? "bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 font-medium"
+                      ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 font-medium"
                       : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                 >

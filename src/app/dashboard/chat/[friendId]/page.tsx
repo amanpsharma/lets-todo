@@ -262,7 +262,7 @@ export default function ChatPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
+        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
       </div>
     );
   }
@@ -290,7 +290,7 @@ export default function ChatPage() {
                   className="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-800 shadow-sm"
                 />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-sm">
                   {friend.name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -358,7 +358,7 @@ export default function ChatPage() {
             <button
               onClick={loadMore}
               disabled={loadingMore}
-              className="px-4 py-2 text-xs text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 rounded-full hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors disabled:opacity-50 font-medium"
+              className="px-4 py-2 text-xs text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors disabled:opacity-50 font-medium"
             >
               {loadingMore ? (
                 <Loader2 className="w-4 h-4 animate-spin mx-auto" />
@@ -372,8 +372,8 @@ export default function ChatPage() {
         {/* Empty state */}
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="p-5 bg-gradient-to-br from-violet-100 to-purple-100 dark:from-violet-900/30 dark:to-purple-900/30 rounded-3xl mb-4">
-              <MessageCircle className="w-10 h-10 text-violet-500 dark:text-violet-400" />
+            <div className="p-5 bg-gradient-to-br from-indigo-100 to-amber-100 dark:from-indigo-900/30 dark:to-amber-900/20 rounded-3xl mb-4">
+              <MessageCircle className="w-10 h-10 text-indigo-500 dark:text-indigo-400" />
             </div>
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
               Start a conversation
@@ -424,7 +424,7 @@ export default function ChatPage() {
                             className="w-7 h-7 rounded-full object-cover"
                           />
                         ) : (
-                          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white text-[10px] font-bold">
+                          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-[10px] font-bold">
                             {friend.name.charAt(0).toUpperCase()}
                           </div>
                         )
@@ -436,7 +436,7 @@ export default function ChatPage() {
                   <div
                     className={`max-w-[78%] sm:max-w-[65%] px-3.5 py-2.5 ${
                       isMe
-                        ? `bg-gradient-to-br from-violet-600 to-purple-600 text-white shadow-sm shadow-violet-500/10 ${
+                        ? `bg-gradient-to-br from-indigo-600 to-indigo-500 text-white shadow-sm shadow-indigo-500/10 ${
                             isFirstInGroup && isLastInGroup
                               ? "rounded-2xl rounded-br-lg"
                               : isFirstInGroup
@@ -510,7 +510,7 @@ export default function ChatPage() {
             placeholder="Type a message..."
             maxLength={2000}
             rows={1}
-            className="flex-1 min-w-0 px-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-300 dark:focus:border-violet-700 transition-all resize-none overflow-hidden box-border"
+            className="flex-1 min-w-0 px-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-300 dark:focus:border-indigo-700 transition-all resize-none overflow-hidden box-border"
             style={{ minHeight: "46px", maxHeight: "120px", paddingTop: "11px", paddingBottom: "11px", lineHeight: "24px" }}
           />
           <motion.button
@@ -518,7 +518,7 @@ export default function ChatPage() {
             whileTap={{ scale: 0.95 }}
             type="submit"
             disabled={!input.trim() || sending}
-            className="flex items-center justify-center bg-gradient-to-br from-violet-600 to-purple-600 text-white rounded-2xl shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex-shrink-0 box-border"
+            className="flex items-center justify-center bg-gradient-to-br from-indigo-600 to-indigo-500 text-white rounded-2xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex-shrink-0 box-border"
             style={{ width: "46px", height: "46px" }}
           >
             {sending ? (

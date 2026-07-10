@@ -8,7 +8,6 @@ export interface ITodo extends Document {
   category: string;
   dueDate: Date | null;
   tags: string[];
-  recurring: "none" | "daily" | "weekly" | "monthly" | null;
   subtasks: {
     id: string;
     title: string;
@@ -63,11 +62,6 @@ const TodoSchema = new Schema<ITodo>(
     },
     category: { type: String, default: "general", trim: true },
     dueDate: { type: Date, default: null },
-    recurring: {
-      type: String,
-      enum: ["none", "daily", "weekly", "monthly"],
-      default: "none",
-    },
     tags: [{ type: String, trim: true }],
     subtasks: [SubtaskSchema],
     sharedWith: [SharedWithSchema],

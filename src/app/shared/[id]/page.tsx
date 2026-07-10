@@ -41,11 +41,11 @@ export default function SharedTodoPage({ params }: { params: Promise<{ id: strin
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-violet-50 dark:from-gray-950 dark:via-gray-900 dark:to-violet-950">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          className="w-8 h-8 border-3 border-violet-200 border-t-violet-600 rounded-full"
+          className="w-8 h-8 border-3 border-indigo-200 border-t-indigo-600 rounded-full"
         />
       </div>
     );
@@ -53,7 +53,7 @@ export default function SharedTodoPage({ params }: { params: Promise<{ id: strin
 
   if (error || !todo) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-violet-50 dark:from-gray-950 dark:via-gray-900 dark:to-violet-950">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
         <div className="text-center p-8">
           <div className="w-20 h-20 mx-auto mb-4 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
             <Circle className="w-10 h-10 text-red-400" />
@@ -64,7 +64,7 @@ export default function SharedTodoPage({ params }: { params: Promise<{ id: strin
           <p className="text-gray-500 dark:text-gray-400 mb-6">{error}</p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-violet-600 text-white rounded-xl font-medium hover:bg-violet-700 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Go to TaskFlow
@@ -78,9 +78,9 @@ export default function SharedTodoPage({ params }: { params: Promise<{ id: strin
   const tags = todo.tags || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50 dark:from-gray-950 dark:via-gray-900 dark:to-violet-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-200/30 dark:bg-violet-800/10 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-indigo-200/30 dark:bg-indigo-800/10 rounded-full blur-3xl" />
         <div className="absolute top-1/2 -left-40 w-80 h-80 bg-blue-200/30 dark:bg-blue-800/10 rounded-full blur-3xl" />
       </div>
 
@@ -92,7 +92,7 @@ export default function SharedTodoPage({ params }: { params: Promise<{ id: strin
         >
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to TaskFlow
@@ -106,10 +106,10 @@ export default function SharedTodoPage({ params }: { params: Promise<{ id: strin
           className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden"
         >
           {/* Header */}
-          <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30">
+          <div className="p-6 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-indigo-50 to-amber-50 dark:from-indigo-950/30 dark:to-amber-950/20">
             <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-4 h-4 text-violet-500" />
-              <span className="text-xs font-medium text-violet-600 dark:text-violet-400 uppercase tracking-wider">
+              <Sparkles className="w-4 h-4 text-indigo-500" />
+              <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
                 Shared Task
               </span>
             </div>
@@ -150,7 +150,7 @@ export default function SharedTodoPage({ params }: { params: Promise<{ id: strin
                 {todo.priority.charAt(0).toUpperCase() + todo.priority.slice(1)} Priority
               </span>
 
-              <span className="px-3 py-1.5 rounded-lg text-sm font-medium bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-300 capitalize">
+              <span className="px-3 py-1.5 rounded-lg text-sm font-medium bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300 capitalize">
                 {todo.category}
               </span>
 

@@ -93,11 +93,11 @@ export default function FocusPage() {
       <div className="w-full max-w-lg text-center">
         {/* Header */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          <Eye className="w-5 h-5 text-violet-500" />
+          <Eye className="w-5 h-5 text-indigo-500" />
           <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             Focus Mode
           </span>
-          <span className="text-xs px-2 py-0.5 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-full font-medium">
+          <span className="text-xs px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full font-medium">
             {currentIndex + 1}/{activeTodos.length}
           </span>
         </div>
@@ -185,7 +185,7 @@ export default function FocusPage() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={startFocus}
-              className="flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg shadow-violet-500/30"
+              className="flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 shadow-lg shadow-indigo-500/30"
             >
               <Sparkles className="w-4 h-4" />
               Start Focusing

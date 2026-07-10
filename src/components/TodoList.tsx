@@ -27,8 +27,8 @@ export default function TodoList({
         className="flex flex-col items-center justify-center py-20"
       >
         <div className="relative">
-          <div className="w-28 h-28 bg-gradient-to-br from-violet-100 to-purple-100 dark:from-violet-900/20 dark:to-purple-900/20 rounded-3xl flex items-center justify-center shadow-inner">
-            <ClipboardList className="w-12 h-12 text-violet-400 dark:text-violet-500" />
+          <div className="w-28 h-28 bg-gradient-to-br from-indigo-100 to-amber-100 dark:from-indigo-900/20 dark:to-amber-900/15 rounded-3xl flex items-center justify-center shadow-inner">
+            <ClipboardList className="w-12 h-12 text-indigo-400 dark:text-indigo-500" />
           </div>
           <motion.div
             animate={{ rotate: [0, 10, -10, 0], y: [0, -3, 0] }}

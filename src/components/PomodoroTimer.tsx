@@ -78,7 +78,7 @@ export default function PomodoroTimer({ isOpen, onClose }: PomodoroTimerProps) {
   const circumference = 2 * Math.PI * 90;
 
   const modeConfig = {
-    focus: { label: "Focus", icon: Brain, color: "from-violet-500 to-purple-600", bg: "bg-violet-50 dark:bg-violet-900/20" },
+    focus: { label: "Focus", icon: Brain, color: "from-indigo-500 to-indigo-600", bg: "bg-indigo-50 dark:bg-indigo-900/20" },
     shortBreak: { label: "Short Break", icon: Coffee, color: "from-emerald-500 to-teal-600", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
     longBreak: { label: "Long Break", icon: Coffee, color: "from-blue-500 to-cyan-600", bg: "bg-blue-50 dark:bg-blue-900/20" },
   };
@@ -105,7 +105,7 @@ export default function PomodoroTimer({ isOpen, onClose }: PomodoroTimerProps) {
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <Brain className="w-5 h-5 text-violet-500" />
+                  <Brain className="w-5 h-5 text-indigo-500" />
                   Pomodoro Timer
                 </h2>
                 <button
@@ -217,7 +217,7 @@ export default function PomodoroTimer({ isOpen, onClose }: PomodoroTimerProps) {
               {/* Sessions Counter */}
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Sessions completed: <span className="font-bold text-violet-600 dark:text-violet-400">{sessions}</span>
+                  Sessions completed: <span className="font-bold text-indigo-600 dark:text-indigo-400">{sessions}</span>
                 </p>
               </div>
             </div>

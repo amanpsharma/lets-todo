@@ -12,8 +12,8 @@ export default function SharedPage() {
       transition={{ duration: 0.3 }}
     >
       <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-        <div className="p-1.5 sm:p-2 bg-violet-100 dark:bg-violet-900/30 rounded-lg sm:rounded-xl">
-          <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-violet-600 dark:text-violet-400" />
+        <div className="p-1.5 sm:p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg sm:rounded-xl">
+          <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 dark:text-indigo-400" />
         </div>
         <div>
           <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Shared with Me</h2>

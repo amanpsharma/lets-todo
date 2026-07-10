@@ -25,7 +25,7 @@ export default function FilterBar({ filters, setFilters }: FilterBarProps) {
           value={filters.search}
           onChange={(e) => setFilters({ ...filters, search: e.target.value })}
           placeholder="Search tasks..."
-          className="w-full pl-10 pr-9 py-2.5 bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-violet-500/50 focus:border-transparent text-sm text-gray-900 dark:text-white placeholder:text-gray-400 backdrop-blur-sm transition-all"
+          className="w-full pl-10 pr-9 py-2.5 bg-white/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-sm text-gray-900 dark:text-white placeholder:text-gray-400 backdrop-blur-sm transition-all"
         />
         {filters.search && (
           <button
@@ -44,7 +44,7 @@ export default function FilterBar({ filters, setFilters }: FilterBarProps) {
           <select
             value={filters.priority}
             onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
-            className="w-full sm:w-auto pl-8 sm:pl-3 pr-8 py-2.5 bg-white/80 dark:bg-gray-800/80 border border-gray-200/50 dark:border-gray-700/50 rounded-xl text-sm text-gray-600 dark:text-gray-300 focus:ring-2 focus:ring-violet-500/50 backdrop-blur-sm cursor-pointer appearance-none"
+            className="w-full sm:w-auto pl-8 sm:pl-3 pr-8 py-2.5 bg-white/80 dark:bg-gray-800/80 border border-gray-200/50 dark:border-gray-700/50 rounded-xl text-sm text-gray-600 dark:text-gray-300 focus:ring-2 focus:ring-indigo-500/50 backdrop-blur-sm cursor-pointer appearance-none"
           >
             <option value="">All Priorities</option>
             <option value="low">Low</option>

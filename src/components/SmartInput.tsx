@@ -7,7 +7,6 @@ import {
   ArrowRight,
   Calendar,
   Flag,
-  Repeat,
   Tag,
   X,
   Loader2,
@@ -21,7 +20,6 @@ interface ParsedTask {
   category: string;
   dueDate: string | null;
   tags: string[];
-  recurring: "none" | "daily" | "weekly" | "monthly";
 }
 
 const priorityLabel: Record<string, { label: string; color: string }> = {
@@ -79,7 +77,6 @@ export default function SmartInput() {
         category: parsed.category,
         dueDate: parsed.dueDate,
         tags: parsed.tags,
-        recurring: parsed.recurring,
       });
       toast.success("Task created with AI!");
       setInput("");
@@ -105,7 +102,7 @@ export default function SmartInput() {
   return (
     <div className="relative mb-4">
       <div className="relative">
-        <Wand2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-violet-500" />
+        <Wand2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500" />
         <input
           ref={inputRef}
           type="text"
@@ -113,10 +110,10 @@ export default function SmartInput() {
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder='Try: "Buy groceries tomorrow high priority #shopping"'
-          className="w-full pl-11 pr-12 py-3 bg-white/60 dark:bg-white/5 rounded-2xl border border-gray-200/50 dark:border-white/10 focus:ring-2 focus:ring-violet-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400 text-sm backdrop-blur-sm"
+          className="w-full pl-11 pr-12 py-3 bg-white/60 dark:bg-white/5 rounded-2xl border border-gray-200/50 dark:border-white/10 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400 text-sm backdrop-blur-sm"
         />
         {parsing && (
-          <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-violet-500 animate-spin" />
+          <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500 animate-spin" />
         )}
         {input && !parsing && (
           <button
@@ -138,8 +135,8 @@ export default function SmartInput() {
             className="absolute left-0 right-0 top-full mt-2 z-20 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200/60 dark:border-white/5 p-4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Wand2 className="w-3.5 h-3.5 text-violet-500" />
-              <span className="text-xs font-medium text-violet-600 dark:text-violet-400">AI Parsed</span>
+              <Wand2 className="w-3.5 h-3.5 text-indigo-500" />
+              <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">AI Parsed</span>
             </div>
 
             <p className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
@@ -165,13 +162,6 @@ export default function SmartInput() {
                 </span>
               )}
 
-              {parsed.recurring !== "none" && (
-                <span className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400">
-                  <Repeat className="w-3 h-3" />
-                  {parsed.recurring}
-                </span>
-              )}
-
               {parsed.tags.map((tag) => (
                 <span key={tag} className="flex items-center gap-0.5 px-2 py-1 rounded-lg text-xs bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                   <Tag className="w-2.5 h-2.5" />
@@ -191,7 +181,7 @@ export default function SmartInput() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={createTask}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg shadow-violet-500/25"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 shadow-lg shadow-indigo-500/25"
               >
                 Create Task
                 <ArrowRight className="w-3.5 h-3.5" />

@@ -25,7 +25,7 @@ const features = [
     title: "Smart Task Management",
     description:
       "Create, organize, and prioritize tasks with categories, due dates, and priority levels.",
-    color: "from-violet-500 to-purple-600",
+    color: "from-indigo-500 to-indigo-600",
   },
   {
     icon: Users,
@@ -75,18 +75,18 @@ export default async function LandingPage() {
   const isLoggedIn = !!userId;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50 dark:from-gray-950 dark:via-gray-900 dark:to-violet-950 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-900 dark:text-white">
       {/* Background decoration */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-violet-200/30 dark:bg-violet-800/10 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-indigo-200/30 dark:bg-indigo-800/10 rounded-full blur-3xl" />
         <div className="absolute top-1/2 -left-40 w-[500px] h-[500px] bg-blue-200/20 dark:bg-blue-800/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 right-1/3 w-[500px] h-[500px] bg-purple-200/20 dark:bg-purple-800/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 right-1/3 w-[500px] h-[500px] bg-amber-200/15 dark:bg-amber-800/10 rounded-full blur-3xl" />
       </div>
 
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 sm:px-10 lg:px-20 py-5">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-violet-600 to-purple-600 rounded-xl shadow-lg shadow-violet-500/25">
+          <div className="p-2 bg-gradient-to-br from-indigo-600 to-indigo-500 rounded-xl shadow-lg shadow-indigo-500/25">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <span className="text-xl font-bold font-heading">TaskFlow</span>
@@ -95,7 +95,7 @@ export default async function LandingPage() {
           {isLoggedIn ? (
             <Link
               href="/dashboard"
-              className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:from-violet-500 hover:to-purple-500 transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:from-indigo-500 hover:to-indigo-400 transition-all"
             >
               Go to Dashboard
               <ArrowRight className="w-4 h-4" />
@@ -104,13 +104,13 @@ export default async function LandingPage() {
             <>
               <Link
                 href="/sign-in"
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
               >
                 Sign In
               </Link>
               <Link
                 href="/sign-up"
-                className="px-5 py-2.5 text-sm font-medium bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:from-violet-500 hover:to-purple-500 transition-all"
+                className="px-5 py-2.5 text-sm font-medium bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:from-indigo-500 hover:to-indigo-400 transition-all"
               >
                 Get Started Free
               </Link>
@@ -121,14 +121,14 @@ export default async function LandingPage() {
 
       {/* Hero */}
       <section className="relative z-10 px-6 sm:px-10 lg:px-20 pt-16 sm:pt-24 pb-20 sm:pb-32 text-center max-w-5xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-sm font-medium mb-8 border border-violet-200 dark:border-violet-800/40">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-medium mb-8 border border-indigo-200 dark:border-indigo-800/40">
           <Zap className="w-3.5 h-3.5" />
           Now with real-time collaboration
         </div>
 
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold font-heading leading-tight tracking-tight">
           Get Things Done,{" "}
-          <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-indigo-600 via-amber-500 to-indigo-600 bg-clip-text text-transparent">
             Together
           </span>
         </h1>
@@ -142,7 +142,7 @@ export default async function LandingPage() {
           {isLoggedIn ? (
             <Link
               href="/dashboard"
-              className="group flex items-center gap-2 px-8 py-3.5 text-base font-semibold bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-2xl shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 hover:from-violet-500 hover:to-purple-500 transition-all"
+              className="group flex items-center gap-2 px-8 py-3.5 text-base font-semibold bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-2xl shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:from-indigo-500 hover:to-indigo-400 transition-all"
             >
               Open Dashboard
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -151,14 +151,14 @@ export default async function LandingPage() {
             <>
               <Link
                 href="/sign-up"
-                className="group flex items-center gap-2 px-8 py-3.5 text-base font-semibold bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-2xl shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 hover:from-violet-500 hover:to-purple-500 transition-all"
+                className="group flex items-center gap-2 px-8 py-3.5 text-base font-semibold bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-2xl shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:from-indigo-500 hover:to-indigo-400 transition-all"
               >
                 Start for Free
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 href="/sign-in"
-                className="flex items-center gap-2 px-8 py-3.5 text-base font-semibold text-gray-700 dark:text-gray-300 bg-white/60 dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10 hover:border-violet-300 dark:hover:border-violet-700 transition-all backdrop-blur-sm"
+                className="flex items-center gap-2 px-8 py-3.5 text-base font-semibold text-gray-700 dark:text-gray-300 bg-white/60 dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all backdrop-blur-sm"
               >
                 I have an account
               </Link>
@@ -170,7 +170,7 @@ export default async function LandingPage() {
         <div className="mt-16 flex items-center justify-center gap-8 sm:gap-16">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold font-heading text-violet-600 dark:text-violet-400">
+              <div className="text-2xl sm:text-3xl font-bold font-heading text-indigo-600 dark:text-indigo-400">
                 {stat.value}
               </div>
               <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -186,7 +186,7 @@ export default async function LandingPage() {
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold font-heading">
             Everything you need to{" "}
-            <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-indigo-600 to-indigo-500 bg-clip-text text-transparent">
               stay productive
             </span>
           </h2>
@@ -199,7 +199,7 @@ export default async function LandingPage() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group p-6 rounded-2xl bg-white/60 dark:bg-white/5 border border-gray-200/60 dark:border-white/5 hover:border-violet-300 dark:hover:border-violet-700/50 transition-all hover:shadow-lg hover:shadow-violet-500/5 backdrop-blur-sm"
+              className="group p-6 rounded-2xl bg-white/60 dark:bg-white/5 border border-gray-200/60 dark:border-white/5 hover:border-indigo-300 dark:hover:border-indigo-700/50 transition-all hover:shadow-lg hover:shadow-indigo-500/5 backdrop-blur-sm"
             >
               <div
                 className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.color} shadow-lg mb-4`}
@@ -219,20 +219,20 @@ export default async function LandingPage() {
 
       {/* Trust / Security */}
       <section className="relative z-10 px-6 sm:px-10 lg:px-20 py-20 max-w-4xl mx-auto text-center">
-        <div className="p-10 sm:p-16 rounded-3xl bg-gradient-to-br from-violet-600 to-purple-700 text-white relative overflow-hidden">
+        <div className="p-10 sm:p-16 rounded-3xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_60%)]" />
           <div className="relative z-10">
             <Shield className="w-10 h-10 mx-auto mb-6 opacity-80" />
             <h2 className="text-2xl sm:text-3xl font-bold font-heading mb-4">
               Your data is safe with us
             </h2>
-            <p className="text-violet-100 max-w-lg mx-auto mb-8">
+            <p className="text-indigo-100 max-w-lg mx-auto mb-8">
               End-to-end encryption, secure authentication powered by Clerk,
               and your data never shared with third parties.
             </p>
             <Link
               href={isLoggedIn ? "/dashboard" : "/sign-up"}
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-violet-700 font-semibold rounded-2xl hover:bg-violet-50 transition-colors shadow-xl"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-indigo-700 font-semibold rounded-2xl hover:bg-indigo-50 transition-colors shadow-xl"
             >
               {isLoggedIn ? "Go to Dashboard" : "Get Started — It's Free"}
               <ArrowRight className="w-4 h-4" />
@@ -245,7 +245,7 @@ export default async function LandingPage() {
       <footer className="relative z-10 px-6 sm:px-10 lg:px-20 py-10 border-t border-gray-200/60 dark:border-white/5">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-gradient-to-br from-violet-600 to-purple-600 rounded-lg">
+            <div className="p-1.5 bg-gradient-to-br from-indigo-600 to-indigo-500 rounded-lg">
               <Sparkles className="w-3.5 h-3.5 text-white" />
             </div>
             <span className="text-sm font-semibold font-heading">TaskFlow</span>

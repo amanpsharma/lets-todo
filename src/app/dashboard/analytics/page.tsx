@@ -97,7 +97,7 @@ export default function AnalyticsPage() {
       label: "Total Tasks",
       value: analytics.total,
       icon: ListChecks,
-      color: "from-violet-500 to-purple-600",
+      color: "from-indigo-500 to-indigo-600",
     },
     {
       label: "Completed",
@@ -125,7 +125,7 @@ export default function AnalyticsPage() {
     <div className="h-full">
       <div className="mb-6">
         <h2 className="text-2xl font-bold font-heading text-gray-900 dark:text-white flex items-center gap-3">
-          <BarChart3 className="w-6 h-6 text-violet-500" />
+          <BarChart3 className="w-6 h-6 text-indigo-500" />
           Analytics
         </h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -172,7 +172,7 @@ export default function AnalyticsPage() {
           className="glass-card rounded-2xl p-5 sm:p-6"
         >
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Target className="w-4 h-4 text-violet-500" />
+            <Target className="w-4 h-4 text-indigo-500" />
             Completion Rate
           </h3>
           <div className="flex items-center gap-6">
@@ -231,7 +231,7 @@ export default function AnalyticsPage() {
           className="glass-card rounded-2xl p-5 sm:p-6"
         >
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-violet-500" />
+            <TrendingUp className="w-4 h-4 text-indigo-500" />
             Last 7 Days
           </h3>
           <div className="flex items-end gap-2 h-32">
@@ -244,7 +244,7 @@ export default function AnalyticsPage() {
                   {day.count}
                 </span>
                 <div
-                  className="w-full rounded-t-lg bg-gradient-to-t from-violet-500 to-purple-500 transition-all"
+                  className="w-full rounded-t-lg bg-gradient-to-t from-indigo-500 to-indigo-400 transition-all"
                   style={{
                     height: `${Math.max((day.count / maxDailyCount) * 100, 4)}%`,
                   }}
@@ -281,7 +281,7 @@ export default function AnalyticsPage() {
                 </div>
                 <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all"
+                    className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-indigo-400 transition-all"
                     style={{
                       width: `${data.total > 0 ? (data.done / data.total) * 100 : 0}%`,
                     }}
@@ -300,7 +300,7 @@ export default function AnalyticsPage() {
           className="glass-card rounded-2xl p-5 sm:p-6"
         >
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Flame className="w-4 h-4 text-violet-500" />
+            <Flame className="w-4 h-4 text-indigo-500" />
             By Priority
           </h3>
           <div className="space-y-3">

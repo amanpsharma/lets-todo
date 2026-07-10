@@ -9,14 +9,12 @@ function parseTaskInput(input: string) {
     category: string;
     dueDate: string | null;
     tags: string[];
-    recurring: "none" | "daily" | "weekly" | "monthly";
   } = {
     title: input.trim(),
     priority: "medium",
     category: "general",
     dueDate: null,
     tags: [],
-    recurring: "none",
   };
 
   let text = input.trim();
@@ -30,20 +28,6 @@ function parseTaskInput(input: string) {
   for (const [pattern, prio] of priorityPatterns) {
     if (pattern.test(text)) {
       result.priority = prio;
-      text = text.replace(pattern, "").trim();
-      break;
-    }
-  }
-
-  // Extract recurring
-  const recurringPatterns: [RegExp, "daily" | "weekly" | "monthly"][] = [
-    [/\b(every\s*day|daily)\b/i, "daily"],
-    [/\b(every\s*week|weekly)\b/i, "weekly"],
-    [/\b(every\s*month|monthly)\b/i, "monthly"],
-  ];
-  for (const [pattern, freq] of recurringPatterns) {
-    if (pattern.test(text)) {
-      result.recurring = freq;
       text = text.replace(pattern, "").trim();
       break;
     }

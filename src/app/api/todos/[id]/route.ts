@@ -138,48 +138,6 @@ export async function PUT(
       });
     }
 
-    // Auto-create next occurrence for recurring tasks
-    if (
-      body.completed === true &&
-      todo.recurring &&
-      todo.recurring !== "none"
-    ) {
-      let nextDue: Date | null = null;
-      const base = todo.dueDate ? new Date(todo.dueDate) : new Date();
-      if (todo.recurring === "daily") {
-        nextDue = new Date(base);
-        nextDue.setDate(nextDue.getDate() + 1);
-      } else if (todo.recurring === "weekly") {
-        nextDue = new Date(base);
-        nextDue.setDate(nextDue.getDate() + 7);
-      } else if (todo.recurring === "monthly") {
-        nextDue = new Date(base);
-        nextDue.setMonth(nextDue.getMonth() + 1);
-      }
-
-      const count = await Todo.countDocuments({ userId });
-      await Todo.create({
-        title: todo.title,
-        description: todo.description,
-        completed: false,
-        priority: todo.priority,
-        category: todo.category,
-        dueDate: nextDue,
-        recurring: todo.recurring,
-        tags: todo.tags,
-        subtasks: todo.subtasks.map((s: { id: string; title: string }) => ({
-          id: s.id,
-          title: s.title,
-          completed: false,
-          addedBy: undefined,
-          completedBy: undefined,
-        })),
-        sharedWith: [],
-        order: count,
-        userId,
-      });
-    }
-
     return NextResponse.json(todo);
   } catch (error) {
     console.error("PUT /api/todos/[id] error:", error);

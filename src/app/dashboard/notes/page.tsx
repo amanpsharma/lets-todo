@@ -19,7 +19,7 @@ const noteColors: { value: string; bg: string; border: string; text: string }[] 
   { value: "green", bg: "bg-emerald-50 dark:bg-emerald-900/20", border: "border-emerald-200 dark:border-emerald-800/40", text: "text-emerald-900 dark:text-emerald-100" },
   { value: "blue", bg: "bg-blue-50 dark:bg-blue-900/20", border: "border-blue-200 dark:border-blue-800/40", text: "text-blue-900 dark:text-blue-100" },
   { value: "pink", bg: "bg-pink-50 dark:bg-pink-900/20", border: "border-pink-200 dark:border-pink-800/40", text: "text-pink-900 dark:text-pink-100" },
-  { value: "violet", bg: "bg-violet-50 dark:bg-violet-900/20", border: "border-violet-200 dark:border-violet-800/40", text: "text-violet-900 dark:text-violet-100" },
+  { value: "indigo", bg: "bg-indigo-50 dark:bg-indigo-900/20", border: "border-indigo-200 dark:border-indigo-800/40", text: "text-indigo-900 dark:text-indigo-100" },
   { value: "orange", bg: "bg-orange-50 dark:bg-orange-900/20", border: "border-orange-200 dark:border-orange-800/40", text: "text-orange-900 dark:text-orange-100" },
 ];
 
@@ -154,7 +154,7 @@ export default function NotesPage() {
                             c.value === "green" ? "bg-emerald-400" :
                             c.value === "blue" ? "bg-blue-400" :
                             c.value === "pink" ? "bg-pink-400" :
-                            c.value === "violet" ? "bg-violet-400" : "bg-orange-400"
+                            c.value === "indigo" ? "bg-indigo-400" : "bg-orange-400"
                           } ${note.color === c.value ? "border-gray-600 dark:border-white scale-110" : "border-transparent"}`}
                         />
                       ))}
@@ -162,7 +162,7 @@ export default function NotesPage() {
                     <button onClick={() => togglePin(note)}
                       className="p-1.5 rounded-lg bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800"
                     >
-                      {note.pinned ? <PinOff className="w-3.5 h-3.5 text-violet-500" /> : <Pin className="w-3.5 h-3.5 text-gray-400" />}
+                      {note.pinned ? <PinOff className="w-3.5 h-3.5 text-indigo-500" /> : <Pin className="w-3.5 h-3.5 text-gray-400" />}
                     </button>
                     <button onClick={() => deleteNote(note._id)}
                       className="p-1.5 rounded-lg bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm hover:bg-red-50 dark:hover:bg-red-900/30"
@@ -172,7 +172,7 @@ export default function NotesPage() {
                   </div>
 
                   {note.pinned && (
-                    <Pin className="w-3.5 h-3.5 text-violet-500 absolute top-3 left-3" />
+                    <Pin className="w-3.5 h-3.5 text-indigo-500 absolute top-3 left-3" />
                   )}
 
                   <textarea

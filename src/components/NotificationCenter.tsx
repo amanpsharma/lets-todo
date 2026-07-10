@@ -113,7 +113,7 @@ export default function NotificationCenter() {
       case "chat":
         return <MessageCircle className="w-4 h-4 text-blue-500" />;
       case "shared":
-        return <Share2 className="w-4 h-4 text-violet-500" />;
+        return <Share2 className="w-4 h-4 text-indigo-500" />;
       case "completed":
         return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
       case "subtask":
@@ -168,7 +168,7 @@ export default function NotificationCenter() {
                   onClick={() => handleNotificationClick(n)}
                   className={`w-full text-left flex gap-3 px-4 py-3 transition-colors cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800/70 ${
                     !n.read
-                      ? "bg-violet-50/50 dark:bg-violet-900/10"
+                      ? "bg-indigo-50/50 dark:bg-indigo-900/10"
                       : ""
                   }`}
                 >
@@ -189,7 +189,7 @@ export default function NotificationCenter() {
                     </p>
                   </div>
                   {!n.read && (
-                    <span className="w-2 h-2 rounded-full bg-violet-500 flex-shrink-0 mt-2" />
+                    <span className="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-2" />
                   )}
                 </button>
               ))}

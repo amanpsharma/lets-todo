@@ -65,7 +65,7 @@ export default function ChatListPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
+        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
       </div>
     );
   }
@@ -80,7 +80,7 @@ export default function ChatListPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-5 sm:mb-6">
         <div className="flex items-center gap-2.5 sm:gap-3">
-          <div className="p-2 sm:p-2.5 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl shadow-lg shadow-violet-500/20">
+          <div className="p-2 sm:p-2.5 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20">
             <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </div>
           <div>
@@ -112,7 +112,7 @@ export default function ChatListPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search conversations..."
-            className="w-full pl-10 pr-4 py-2.5 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl border border-gray-200/60 dark:border-gray-700/60 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-violet-500/30 focus:border-violet-300 dark:focus:border-violet-700 transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl border border-gray-200/60 dark:border-gray-700/60 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-300 dark:focus:border-indigo-700 transition-all"
           />
         </div>
       )}
@@ -122,8 +122,8 @@ export default function ChatListPage() {
         {conversations.length === 0 ? (
           <div className="glass-card rounded-2xl p-6">
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="p-5 bg-gradient-to-br from-violet-100 to-purple-100 dark:from-violet-900/30 dark:to-purple-900/30 rounded-3xl mb-5">
-                <MessageCircle className="w-10 h-10 text-violet-500 dark:text-violet-400" />
+              <div className="p-5 bg-gradient-to-br from-indigo-100 to-amber-100 dark:from-indigo-900/30 dark:to-amber-900/20 rounded-3xl mb-5">
+                <MessageCircle className="w-10 h-10 text-indigo-500 dark:text-indigo-400" />
               </div>
               <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1">
                 No conversations yet
@@ -133,7 +133,7 @@ export default function ChatListPage() {
               </p>
               <button
                 onClick={() => router.push("/dashboard/friends")}
-                className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl text-sm font-medium shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 transition-shadow"
+                className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl text-sm font-medium shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-shadow"
               >
                 <span className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
@@ -160,7 +160,7 @@ export default function ChatListPage() {
               }
               className={`w-full rounded-2xl p-3.5 sm:p-4 flex items-center gap-3 sm:gap-4 text-left transition-all group ${
                 conv.unreadCount > 0
-                  ? "bg-violet-50/80 dark:bg-violet-900/15 border border-violet-200/50 dark:border-violet-800/30 hover:bg-violet-100/80 dark:hover:bg-violet-900/25"
+                  ? "bg-indigo-50/80 dark:bg-indigo-900/15 border border-indigo-200/50 dark:border-indigo-800/30 hover:bg-indigo-100/80 dark:hover:bg-indigo-900/25"
                   : "glass-card hover:shadow-md"
               }`}
             >
@@ -173,7 +173,7 @@ export default function ChatListPage() {
                     className="w-12 h-12 sm:w-13 sm:h-13 rounded-full object-cover ring-2 ring-white dark:ring-gray-800 shadow-sm"
                   />
                 ) : (
-                  <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white font-bold text-base shadow-sm">
+                  <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white font-bold text-base shadow-sm">
                     {conv.friend.name.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -203,7 +203,7 @@ export default function ChatListPage() {
                       </span>
                     )}
                     {conv.unreadCount > 0 && (
-                      <span className="min-w-[22px] h-[22px] px-1.5 flex items-center justify-center bg-violet-600 text-white text-[11px] font-bold rounded-full shadow-sm">
+                      <span className="min-w-[22px] h-[22px] px-1.5 flex items-center justify-center bg-indigo-600 text-white text-[11px] font-bold rounded-full shadow-sm">
                         {conv.unreadCount > 99 ? "99+" : conv.unreadCount}
                       </span>
                     )}

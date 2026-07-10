@@ -48,7 +48,7 @@ export default function AllTasksPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-3 border-violet-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -62,8 +62,8 @@ export default function AllTasksPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="p-1.5 sm:p-2 bg-violet-100 dark:bg-violet-900/30 rounded-lg sm:rounded-xl">
-            <ListChecks className="w-4 h-4 sm:w-5 sm:h-5 text-violet-600 dark:text-violet-400" />
+          <div className="p-1.5 sm:p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg sm:rounded-xl">
+            <ListChecks className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 dark:text-indigo-400" />
           </div>
           <div>
             <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">All Tasks</h2>

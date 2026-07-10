@@ -21,7 +21,7 @@ interface ShareWithFriendsProps {
 const permissions = [
   { value: "view", label: "View", icon: Eye, desc: "Can only view", color: "text-gray-500" },
   { value: "edit", label: "Edit", icon: Pencil, desc: "Can add subtasks & toggle", color: "text-blue-500" },
-  { value: "admin", label: "Full", icon: Shield, desc: "Can edit everything", color: "text-violet-500" },
+  { value: "admin", label: "Full", icon: Shield, desc: "Can edit everything", color: "text-indigo-500" },
 ];
 
 export default function ShareWithFriends({
@@ -73,7 +73,7 @@ export default function ShareWithFriends({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-4">
-        <Loader2 className="w-4 h-4 text-violet-500 animate-spin" />
+        <Loader2 className="w-4 h-4 text-indigo-500 animate-spin" />
       </div>
     );
   }
@@ -135,13 +135,13 @@ export default function ShareWithFriends({
                 className="w-7 h-7 rounded-full object-cover"
               />
             ) : (
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white text-[10px] font-bold">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-[10px] font-bold">
                 {friend.name.charAt(0).toUpperCase()}
               </div>
             )}
             <span className="flex-1 text-left truncate text-sm">{friend.name}</span>
             {sharing === friend.clerkId ? (
-              <Loader2 className="w-4 h-4 text-violet-500 animate-spin" />
+              <Loader2 className="w-4 h-4 text-indigo-500 animate-spin" />
             ) : existingPerm ? (
               <span className="flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400">
                 <Check className="w-3 h-3" />

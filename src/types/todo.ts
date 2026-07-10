@@ -26,7 +26,6 @@ export interface Todo {
   priority: "low" | "medium" | "high" | "urgent";
   category: string;
   dueDate: string | null;
-  recurring: "none" | "daily" | "weekly" | "monthly" | null;
   tags: string[];
   subtasks: Subtask[];
   sharedWith: SharedWith[];

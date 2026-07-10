@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Tag, Calendar, Flag, Sparkles, Repeat } from "lucide-react";
+import { X, Plus, Tag, Calendar, Flag, Sparkles } from "lucide-react";
 import { Todo } from "@/types/todo";
 
 interface AddTodoModalProps {
@@ -17,7 +17,6 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
   const [priority, setPriority] = useState<Todo["priority"]>("medium");
   const [category, setCategory] = useState("general");
   const [dueDate, setDueDate] = useState("");
-  const [recurring, setRecurring] = useState<"none" | "daily" | "weekly" | "monthly">("none");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -65,7 +64,6 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
       priority,
       category,
       dueDate: dueDate || null,
-      recurring,
       tags: finalTags,
     });
 
@@ -74,7 +72,6 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
     setPriority("medium");
     setCategory("general");
     setDueDate("");
-    setRecurring("none");
     setTags([]);
     setTagInput("");
     setLoading(false);
@@ -106,7 +103,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
               {/* Header */}
               <div className="flex items-center justify-between mb-5 sm:mb-7">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg sm:rounded-xl shadow-lg shadow-violet-500/30">
+                  <div className="p-1.5 sm:p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg sm:rounded-xl shadow-lg shadow-indigo-500/30">
                     <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                   <div>
@@ -133,7 +130,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="What needs to be done?"
-                    className="w-full px-4 py-3.5 bg-gray-50/80 dark:bg-gray-800/80 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-violet-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400 text-lg font-medium backdrop-blur-sm"
+                    className="w-full px-4 py-3.5 bg-gray-50/80 dark:bg-gray-800/80 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400 text-lg font-medium backdrop-blur-sm"
                     autoFocus
                   />
                 </div>
@@ -145,14 +142,14 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Add a description (optional)..."
                     rows={3}
-                    className="w-full px-4 py-3 bg-gray-50/80 dark:bg-gray-800/80 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-violet-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400 resize-none text-sm backdrop-blur-sm"
+                    className="w-full px-4 py-3 bg-gray-50/80 dark:bg-gray-800/80 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400 resize-none text-sm backdrop-blur-sm"
                   />
                 </div>
 
                 {/* Priority */}
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
-                    <Flag className="w-4 h-4 text-violet-500" /> Priority
+                    <Flag className="w-4 h-4 text-indigo-500" /> Priority
                   </label>
                   <div className="flex gap-2 flex-wrap">
                     {priorities.map((p) => (
@@ -176,7 +173,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                 {/* Category */}
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
-                    <ListIcon className="w-4 h-4 text-violet-500" /> Category
+                    <ListIcon className="w-4 h-4 text-indigo-500" /> Category
                   </label>
                   <div className="flex gap-2 flex-wrap">
                     {categories.map((c) => (
@@ -186,7 +183,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                         onClick={() => setCategory(c.value)}
                         className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
                           category === c.value
-                            ? "bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 ring-2 ring-violet-500 shadow-sm"
+                            ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 ring-2 ring-indigo-500 shadow-sm"
                             : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
                         }`}
                       >
@@ -200,48 +197,20 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                 {/* Due Date */}
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
-                    <Calendar className="w-4 h-4 text-violet-500" /> Due Date
+                    <Calendar className="w-4 h-4 text-indigo-500" /> Due Date
                   </label>
                   <input
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-gray-50/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-violet-500/50 focus:border-transparent text-gray-900 dark:text-white text-sm backdrop-blur-sm"
+                    className="w-full px-4 py-2.5 bg-gray-50/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-gray-900 dark:text-white text-sm backdrop-blur-sm"
                   />
-                </div>
-
-                {/* Recurring */}
-                <div>
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
-                    <Repeat className="w-4 h-4 text-violet-500" /> Repeat
-                  </label>
-                  <div className="flex gap-2 flex-wrap">
-                    {([
-                      { value: "none", label: "Never" },
-                      { value: "daily", label: "Daily" },
-                      { value: "weekly", label: "Weekly" },
-                      { value: "monthly", label: "Monthly" },
-                    ] as const).map((r) => (
-                      <button
-                        key={r.value}
-                        type="button"
-                        onClick={() => setRecurring(r.value)}
-                        className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
-                          recurring === r.value
-                            ? "bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 ring-2 ring-violet-500 shadow-sm"
-                            : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                        }`}
-                      >
-                        {r.label}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* Tags */}
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
-                    <Tag className="w-4 h-4 text-violet-500" /> Tags
+                    <Tag className="w-4 h-4 text-indigo-500" /> Tags
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -250,12 +219,12 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
                       placeholder="Add tags..."
-                      className="flex-1 px-4 py-2.5 bg-gray-50/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-violet-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400 text-sm backdrop-blur-sm"
+                      className="flex-1 px-4 py-2.5 bg-gray-50/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400 text-sm backdrop-blur-sm"
                     />
                     <button
                       type="button"
                       onClick={addTag}
-                      className="px-3 py-2.5 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 rounded-xl hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors border border-violet-200/50 dark:border-violet-800/50"
+                      className="px-3 py-2.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-200/50 dark:border-indigo-800/50"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -267,7 +236,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                           key={tag}
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 rounded-lg text-sm border border-violet-200/50 dark:border-violet-800/50"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-lg text-sm border border-indigo-200/50 dark:border-indigo-800/50"
                         >
                           #{tag}
                           <button
@@ -298,7 +267,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={!title.trim() || loading}
-                  className="flex-1 py-3.5 rounded-2xl font-semibold text-white bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40"
+                  className="flex-1 py-3.5 rounded-2xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">

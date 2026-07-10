@@ -1,12 +1,14 @@
 "use client";
 
 import { useContext, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
   Calendar as CalendarIcon,
   CheckCircle2,
+  Plus,
+  X,
 } from "lucide-react";
 import {
   format,
@@ -23,6 +25,7 @@ import {
 } from "date-fns";
 import { TodoContext } from "@/context/TodoContext";
 import { Todo } from "@/types/todo";
+import toast from "react-hot-toast";
 
 const priorityDot: Record<string, string> = {
   low: "bg-emerald-400",
@@ -34,10 +37,42 @@ const priorityDot: Record<string, string> = {
 export default function CalendarPage() {
   const ctx = useContext(TodoContext);
   if (!ctx) return null;
-  const { todos } = ctx;
+  const { todos, addTodo } = ctx;
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [quickTitle, setQuickTitle] = useState("");
+  const [quickPriority, setQuickPriority] = useState<Todo["priority"]>("medium");
+  const [quickCategory, setQuickCategory] = useState("general");
+  const [adding, setAdding] = useState(false);
+
+  const handleQuickAdd = async () => {
+    if (!quickTitle.trim() || !selectedDate) return;
+    setAdding(true);
+    try {
+      await addTodo({
+        title: quickTitle.trim(),
+        priority: quickPriority,
+        category: quickCategory,
+        dueDate: format(selectedDate, "yyyy-MM-dd"),
+      });
+      toast.success("Task added!");
+      setQuickTitle("");
+      setQuickPriority("medium");
+      setQuickCategory("general");
+      setShowQuickAdd(false);
+    } catch {
+      toast.error("Failed to add task");
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const handleDateClick = (day: Date) => {
+    setSelectedDate(day);
+    setShowQuickAdd(false);
+  };
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -121,14 +156,14 @@ export default function CalendarPage() {
               return (
                 <button
                   key={key}
-                  onClick={() => setSelectedDate(day)}
+                  onClick={() => handleDateClick(day)}
                   className={`relative p-2 rounded-xl text-sm transition-all min-h-[52px] sm:min-h-[64px] flex flex-col items-center ${
                     !inMonth
                       ? "text-gray-300 dark:text-gray-600"
                       : selected
-                      ? "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 ring-2 ring-violet-500"
+                      ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 ring-2 ring-indigo-500"
                       : today
-                      ? "bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 font-bold"
+                      ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-bold"
                       : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                   }`}
                 >
@@ -160,21 +195,108 @@ export default function CalendarPage() {
 
         {/* Sidebar: selected day's tasks */}
         <div className="glass-card rounded-2xl p-4 sm:p-6">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <CalendarIcon className="w-4 h-4 text-violet-500" />
-            {selectedDate
-              ? format(selectedDate, "EEEE, MMM d")
-              : "Select a date"}
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+              <CalendarIcon className="w-4 h-4 text-indigo-500" />
+              {selectedDate
+                ? format(selectedDate, "EEEE, MMM d")
+                : "Select a date"}
+            </h3>
+            {selectedDate && !showQuickAdd && (
+              <button
+                onClick={() => setShowQuickAdd(true)}
+                className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Quick Add Form */}
+          <AnimatePresence>
+            {showQuickAdd && selectedDate && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden mb-4"
+              >
+                <div className="p-3 rounded-xl bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-800/30 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">Add task for {format(selectedDate, "MMM d")}</span>
+                    <button onClick={() => setShowQuickAdd(false)} className="p-1 rounded-md hover:bg-indigo-100 dark:hover:bg-indigo-900/20 text-gray-400">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    value={quickTitle}
+                    onChange={(e) => setQuickTitle(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleQuickAdd()}
+                    placeholder="Task title..."
+                    autoFocus
+                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                  />
+                  {/* Priority */}
+                  <div className="flex gap-1.5">
+                    {(["low", "medium", "high", "urgent"] as const).map((p) => (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => setQuickPriority(p)}
+                        className={`px-2 py-1 rounded-md text-[11px] font-medium capitalize transition-all ${
+                          quickPriority === p
+                            ? `${priorityDot[p].replace("bg-", "text-")} ring-1 ring-current bg-white dark:bg-gray-800`
+                            : "text-gray-400 dark:text-gray-500 hover:text-gray-600"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Category */}
+                  <select
+                    value={quickCategory}
+                    onChange={(e) => setQuickCategory(e.target.value)}
+                    className="w-full px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                  >
+                    <option value="general">General</option>
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="health">Health</option>
+                    <option value="learning">Learning</option>
+                    <option value="finance">Finance</option>
+                  </select>
+                  <button
+                    onClick={handleQuickAdd}
+                    disabled={!quickTitle.trim() || adding}
+                    className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {adding ? "Adding..." : "Add Task"}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {!selectedDate ? (
             <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-8">
               Click on a date to see tasks
             </p>
-          ) : selectedTodos.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-8">
-              No tasks due on this date
-            </p>
+          ) : selectedTodos.length === 0 && !showQuickAdd ? (
+            <div className="text-center py-8">
+              <p className="text-sm text-gray-400 dark:text-gray-500 mb-3">
+                No tasks due on this date
+              </p>
+              <button
+                onClick={() => setShowQuickAdd(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add a task
+              </button>
+            </div>
           ) : (
             <div className="space-y-2">
               {selectedTodos.map((todo, i) => (

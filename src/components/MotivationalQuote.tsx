@@ -37,7 +37,7 @@ export default function MotivationalQuote() {
   return (
     <div className="glass-card rounded-2xl p-4 group">
       <div className="flex items-start gap-2 mb-2">
-        <Quote className="w-4 h-4 text-violet-400 flex-shrink-0 mt-0.5" />
+        <Quote className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
         <button
           onClick={nextQuote}
           className="ml-auto opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
