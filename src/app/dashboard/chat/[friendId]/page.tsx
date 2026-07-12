@@ -260,10 +260,12 @@ export default function ChatPage() {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: { xs: "calc(100dvh - 12rem)", sm: "calc(100dvh - 7rem)" },
+        height: { xs: "calc(100dvh - 8rem)", sm: "calc(100dvh - 7rem)" },
         maxWidth: 640,
         mx: "auto",
-        mt: { xs: -0.5, sm: -2 },
+        mt: { xs: -1, sm: -2 },
+        mb: { xs: "-80px", sm: 0 },
+        pb: { xs: 0, sm: 0 },
       }}
     >
       {/* Chat Header */}
@@ -587,7 +589,7 @@ export default function ChatPage() {
       </Box>
 
       {/* Message Input */}
-      <Box sx={{ pt: 1.5, pb: { xs: 1.5, sm: 0.5 }, position: "sticky", bottom: 0, bgcolor: "background.default" }}>
+      <Box sx={{ pt: 1, pb: { xs: 0.5, sm: 0.5 }, mt: "auto", flexShrink: 0, bgcolor: "background.default" }}>
         <Box
           component="form"
           onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
