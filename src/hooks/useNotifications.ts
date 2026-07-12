@@ -13,12 +13,36 @@ function requestNotificationPermission() {
   }
 }
 
+function playNotificationSound() {
+  try {
+    const audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+
+    // Play a pleasant two-tone chime
+    const playTone = (freq: number, startTime: number, duration: number) => {
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime + startTime);
+      gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime + startTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + startTime + duration);
+      oscillator.start(audioCtx.currentTime + startTime);
+      oscillator.stop(audioCtx.currentTime + startTime + duration);
+    };
+
+    playTone(880, 0, 0.15);
+    playTone(1174, 0.12, 0.2);
+  } catch {
+    // Audio not available
+  }
+}
+
 function showBrowserNotification(title: string, body: string, link?: string) {
   if (
     typeof window === "undefined" ||
     !("Notification" in window) ||
-    Notification.permission !== "granted" ||
-    document.hasFocus()
+    Notification.permission !== "granted"
   ) {
     return;
   }
@@ -27,7 +51,7 @@ function showBrowserNotification(title: string, body: string, link?: string) {
     body,
     icon: "/icons/icon-192x192.png",
     badge: "/icons/icon-192x192.png",
-    tag: "taskflow-notification",
+    tag: `taskflow-${Date.now()}`,
   });
 
   notification.onclick = () => {
@@ -42,9 +66,8 @@ export function useNotifications() {
     unreadChats: 0,
     pendingShared: 0,
   });
-  const prevChatsRef = useRef(0);
-  const prevSharedRef = useRef(0);
-  const initializedRef = useRef(false);
+  const prevChatsRef = useRef<number | null>(null);
+  const prevSharedRef = useRef<number | null>(null);
 
   const fetchCounts = useCallback(async () => {
     try {
@@ -59,9 +82,10 @@ export function useNotifications() {
       const newChats = chatData.total || 0;
       const newShared = sharedData.count || 0;
 
-      // Show browser notification if new messages arrived (not on first load)
-      if (initializedRef.current) {
+      // Only notify if counts increased AFTER first load (not on app open)
+      if (prevChatsRef.current !== null && prevSharedRef.current !== null) {
         if (newChats > prevChatsRef.current) {
+          playNotificationSound();
           showBrowserNotification(
             "New message",
             `You have ${newChats - prevChatsRef.current} new message${newChats - prevChatsRef.current > 1 ? "s" : ""}`,
@@ -69,6 +93,7 @@ export function useNotifications() {
           );
         }
         if (newShared > prevSharedRef.current) {
+          playNotificationSound();
           showBrowserNotification(
             "Task shared with you",
             `You have ${newShared - prevSharedRef.current} new shared task${newShared - prevSharedRef.current > 1 ? "s" : ""}`,
@@ -79,7 +104,6 @@ export function useNotifications() {
 
       prevChatsRef.current = newChats;
       prevSharedRef.current = newShared;
-      initializedRef.current = true;
 
       setCounts({
         unreadChats: newChats,
