@@ -265,16 +265,39 @@ export default function DashboardLayout({
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 sm:gap-3">
-                {/* Focus Mode */}
+              <div className="flex items-center gap-1.5 sm:gap-3">
+                {/* Chat icon - mobile only */}
+                <Badge
+                  badgeContent={unreadChats > 0 ? unreadChats : 0}
+                  color="error"
+                  max={9}
+                  className="sm:hidden"
+                  sx={{ "& .MuiBadge-badge": { fontSize: "9px", height: "16px", minWidth: "16px" } }}
+                >
+                  <IconButton
+                    onClick={() => router.push("/dashboard/chat")}
+                    size="small"
+                    sx={{ color: "text.secondary", "&:hover": { color: "primary.main" } }}
+                    aria-label="Chat"
+                  >
+                    <MessageCircle className="w-[18px] h-[18px]" />
+                  </IconButton>
+                </Badge>
+
+                {/* Theme toggle - mobile only (icon) */}
+                <span className="sm:hidden">
+                  <ThemeToggle />
+                </span>
+
+                {/* Focus Mode - desktop only */}
                 <Button
                   onClick={() => router.push("/dashboard/pomodoro")}
                   size="small"
                   startIcon={
                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                   }
-                  className="hidden lg:flex"
                   sx={{
+                    display: { xs: "none", lg: "flex" },
                     textTransform: "none",
                     borderRadius: "0.75rem",
                     border: "1px solid",
@@ -297,13 +320,12 @@ export default function DashboardLayout({
                   Focus Mode
                 </Button>
 
-                {/* Chat */}
+                {/* Chat - desktop only */}
                 <Badge
                   badgeContent={unreadChats > 99 ? "99+" : unreadChats}
                   color="error"
                   max={99}
-                  className="hidden lg:flex"
-                  sx={{ "& .MuiBadge-badge": { fontSize: "10px", height: "18px", minWidth: "18px" } }}
+                  sx={{ display: { xs: "none", lg: "flex" }, "& .MuiBadge-badge": { fontSize: "10px", height: "18px", minWidth: "18px" } }}
                 >
                   <Button
                     onClick={() => router.push("/dashboard/chat")}
@@ -333,13 +355,12 @@ export default function DashboardLayout({
                   </Button>
                 </Badge>
 
-                {/* Friends */}
+                {/* Friends - desktop only */}
                 <Badge
                   badgeContent={pendingShared > 99 ? "99+" : pendingShared}
                   color="error"
                   max={99}
-                  className="hidden lg:flex"
-                  sx={{ "& .MuiBadge-badge": { fontSize: "10px", height: "18px", minWidth: "18px" } }}
+                  sx={{ display: { xs: "none", lg: "flex" }, "& .MuiBadge-badge": { fontSize: "10px", height: "18px", minWidth: "18px" } }}
                 >
                   <Button
                     onClick={() => router.push("/dashboard/friends")}
@@ -369,15 +390,19 @@ export default function DashboardLayout({
                   </Button>
                 </Badge>
 
-                <NotificationCenter />
+                <span className="hidden sm:inline-flex">
+                  <NotificationCenter />
+                </span>
                 <span className="hidden sm:inline-flex">
                   <ThemeToggle />
                 </span>
-                <UserButton
-                  appearance={{
-                    elements: { avatarBox: "w-7 h-7 sm:w-9 sm:h-9 ring-2 ring-indigo-500/20" },
-                  }}
-                />
+                <span className="hidden sm:inline-flex">
+                  <UserButton
+                    appearance={{
+                      elements: { avatarBox: "w-9 h-9 ring-2 ring-indigo-500/20" },
+                    }}
+                  />
+                </span>
 
                 {/* New Task - hidden on mobile, MobileNav has FAB */}
                 <Button
