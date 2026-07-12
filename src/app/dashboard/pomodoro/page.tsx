@@ -3,6 +3,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Play, Pause, RotateCcw, Coffee, Brain } from "lucide-react";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  IconButton,
+  Typography,
+} from "@mui/material";
 
 type TimerMode = "focus" | "shortBreak" | "longBreak";
 
@@ -12,22 +21,36 @@ const TIMER_DURATIONS: Record<TimerMode, number> = {
   longBreak: 15 * 60,
 };
 
-const modeConfig = {
+const modeConfig: Record<TimerMode, { label: string; Icon: typeof Brain; gradient: string; color: string }> = {
   focus: {
     label: "Focus",
-    icon: Brain,
-    color: "from-indigo-500 to-indigo-600",
+    Icon: Brain,
+    gradient: "linear-gradient(to right, #6366f1, #4f46e5)",
+    color: "#6366f1",
   },
   shortBreak: {
     label: "Short Break",
-    icon: Coffee,
-    color: "from-emerald-500 to-teal-600",
+    Icon: Coffee,
+    gradient: "linear-gradient(to right, #10b981, #0d9488)",
+    color: "#10b981",
   },
   longBreak: {
     label: "Long Break",
-    icon: Coffee,
-    color: "from-blue-500 to-cyan-600",
+    Icon: Coffee,
+    gradient: "linear-gradient(to right, #3b82f6, #06b6d4)",
+    color: "#3b82f6",
   },
+};
+
+const modeStrokeStart: Record<TimerMode, string> = {
+  focus: "#8b5cf6",
+  shortBreak: "#10b981",
+  longBreak: "#3b82f6",
+};
+const modeStrokeEnd: Record<TimerMode, string> = {
+  focus: "#a855f7",
+  shortBreak: "#14b8a6",
+  longBreak: "#06b6d4",
 };
 
 export default function PomodoroPage() {
@@ -65,8 +88,7 @@ export default function PomodoroPage() {
             Notification.requestPermission();
           }
         }
-        const nextMode =
-          (sessions + 1) % 4 === 0 ? "longBreak" : "shortBreak";
+        const nextMode = (sessions + 1) % 4 === 0 ? "longBreak" : "shortBreak";
         setMode(nextMode);
         setTimeLeft(TIMER_DURATIONS[nextMode]);
       } else {
@@ -93,166 +115,213 @@ export default function PomodoroPage() {
   const progress = 1 - timeLeft / TIMER_DURATIONS[mode];
   const circumference = 2 * Math.PI * 90;
 
+  const cfg = modeConfig[mode];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="max-w-md mx-auto"
     >
-      {/* Header */}
-      <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
-        <div className="p-1.5 sm:p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg sm:rounded-xl">
-          <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-        </div>
-        <div>
-          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-            Pomodoro Timer
-          </h2>
-          <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400">
-            Stay focused and productive
-          </p>
-        </div>
-      </div>
+      <Box sx={{ maxWidth: 448, mx: "auto" }}>
+        {/* Header */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 1.5 }, mb: { xs: 3, sm: 4 } }}>
+          <Box
+            sx={{
+              p: { xs: 0.75, sm: 1 },
+              background: "linear-gradient(135deg, #6366f1, #4f46e5)",
+              borderRadius: { xs: 1.5, sm: 2 },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Brain size={20} color="#fff" />
+          </Box>
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: "1rem", sm: "1.125rem" } }}>
+              Pomodoro Timer
+            </Typography>
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
+              Stay focused and productive
+            </Typography>
+          </Box>
+        </Box>
 
-      <div className="glass-card rounded-3xl p-8">
-        {/* Mode Switcher */}
-        <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-2xl mb-8">
-          {(Object.keys(modeConfig) as TimerMode[]).map((m) => {
-            const config = modeConfig[m];
-            return (
-              <button
-                key={m}
-                onClick={() => switchMode(m)}
-                className={`relative flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  mode === m
-                    ? "text-white"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                }`}
-              >
-                {mode === m && (
-                  <motion.div
-                    layoutId="pomodoroPageMode"
-                    className={`absolute inset-0 bg-gradient-to-r ${config.color} rounded-xl shadow-lg`}
-                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                  />
-                )}
-                <span className="relative flex items-center gap-1.5">
-                  <config.icon className="w-4 h-4" />
-                  <span className="hidden sm:inline">{config.label}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <Card variant="outlined" sx={{ borderRadius: 4, boxShadow: "none" }}>
+          <CardContent sx={{ p: 4 }}>
+            {/* Mode Switcher */}
+            <Box
+              sx={{
+                display: "flex",
+                gap: 0.75,
+                p: 0.625,
+                bgcolor: "action.hover",
+                borderRadius: 3,
+                mb: 4,
+              }}
+            >
+              {(Object.keys(modeConfig) as TimerMode[]).map((m) => {
+                const c = modeConfig[m];
+                const isActive = mode === m;
+                return (
+                  <Box
+                    key={m}
+                    component="button"
+                    onClick={() => switchMode(m)}
+                    sx={{
+                      position: "relative",
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 0.75,
+                      px: 1.5,
+                      py: 1.25,
+                      borderRadius: 2.5,
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      border: "none",
+                      background: isActive ? c.gradient : "transparent",
+                      color: isActive ? "#fff" : "text.secondary",
+                      boxShadow: isActive ? "0 2px 8px rgba(0,0,0,0.12)" : "none",
+                      transition: "all 0.2s",
+                      "&:hover": { color: isActive ? "#fff" : "text.primary" },
+                    }}
+                  >
+                    <c.Icon size={16} />
+                    <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+                      {c.label}
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Box>
 
-        {/* Timer Display */}
-        <div className="flex justify-center mb-6 sm:mb-8">
-          <div className="relative w-[180px] h-[180px] sm:w-[220px] sm:h-[220px]">
-            <svg viewBox="0 0 220 220" className="w-full h-full progress-ring">
-              <circle
-                cx="110"
-                cy="110"
-                r="90"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="6"
-                className="text-gray-200 dark:text-gray-700"
-              />
-              <motion.circle
-                cx="110"
-                cy="110"
-                r="90"
-                fill="none"
-                stroke="url(#pomodoroPageGradient)"
-                strokeWidth="6"
-                strokeLinecap="round"
-                strokeDasharray={circumference}
-                animate={{
-                  strokeDashoffset: circumference * (1 - progress),
+            {/* Timer Display */}
+            <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 3, sm: 4 } }}>
+              <Box
+                sx={{
+                  position: "relative",
+                  width: { xs: 180, sm: 220 },
+                  height: { xs: 180, sm: 220 },
                 }}
-                transition={{ duration: 0.5 }}
-              />
-              <defs>
-                <linearGradient
-                  id="pomodoroPageGradient"
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="100%"
+              >
+                <svg
+                  viewBox="0 0 220 220"
+                  style={{ width: "100%", height: "100%", transform: "rotate(-90deg)" }}
                 >
-                  <stop
-                    offset="0%"
-                    stopColor={
-                      mode === "focus"
-                        ? "#8b5cf6"
-                        : mode === "shortBreak"
-                        ? "#10b981"
-                        : "#3b82f6"
-                    }
+                  <circle
+                    cx="110" cy="110" r="90" fill="none"
+                    stroke="currentColor" strokeWidth="6"
+                    style={{ color: "#e5e7eb" }}
                   />
-                  <stop
-                    offset="100%"
-                    stopColor={
-                      mode === "focus"
-                        ? "#a855f7"
-                        : mode === "shortBreak"
-                        ? "#14b8a6"
-                        : "#06b6d4"
-                    }
+                  <motion.circle
+                    cx="110" cy="110" r="90" fill="none"
+                    stroke={`url(#pomodoroPageGradient)`}
+                    strokeWidth="6" strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    animate={{ strokeDashoffset: circumference * (1 - progress) }}
+                    transition={{ duration: 0.5 }}
                   />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white font-mono">
-                {String(minutes).padStart(2, "0")}:
-                {String(seconds).padStart(2, "0")}
-              </span>
-              <span className="text-sm text-gray-500 dark:text-gray-400 mt-2 capitalize">
-                {modeConfig[mode].label}
-              </span>
-            </div>
-          </div>
-        </div>
+                  <defs>
+                    <linearGradient id="pomodoroPageGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor={modeStrokeStart[mode]} />
+                      <stop offset="100%" stopColor={modeStrokeEnd[mode]} />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography
+                    variant="h1"
+                    sx={{
+                      fontSize: { xs: "2.5rem", sm: "3rem" },
+                      fontWeight: 700,
+                      fontFamily: "monospace",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+                  </Typography>
+                  <Chip
+                    label={cfg.label}
+                    size="small"
+                    sx={{
+                      mt: 1,
+                      height: 22,
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      bgcolor: `${cfg.color}18`,
+                      color: cfg.color,
+                      textTransform: "capitalize",
+                    }}
+                  />
+                </Box>
+              </Box>
+            </Box>
 
-        {/* Controls */}
-        <div className="flex items-center justify-center gap-4">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => resetTimer()}
-            className="p-3.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          >
-            <RotateCcw className="w-5 h-5" />
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={toggleTimer}
-            className={`px-10 py-4 rounded-2xl font-semibold text-white shadow-lg transition-all bg-gradient-to-r ${modeConfig[mode].color}`}
-          >
-            <span className="flex items-center gap-2">
-              {isRunning ? (
-                <Pause className="w-5 h-5" />
-              ) : (
-                <Play className="w-5 h-5" />
-              )}
-              {isRunning ? "Pause" : "Start"}
-            </span>
-          </motion.button>
-        </div>
+            {/* Controls */}
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2 }}>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <IconButton
+                  onClick={() => resetTimer()}
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    bgcolor: "action.hover",
+                    color: "text.secondary",
+                    borderRadius: 2.5,
+                    "&:hover": { bgcolor: "action.selected" },
+                  }}
+                >
+                  <RotateCcw size={20} />
+                </IconButton>
+              </motion.div>
 
-        {/* Sessions Counter */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Sessions completed:{" "}
-            <span className="font-bold text-indigo-600 dark:text-indigo-400">
-              {sessions}
-            </span>
-          </p>
-        </div>
-      </div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  variant="contained"
+                  startIcon={isRunning ? <Pause size={20} /> : <Play size={20} />}
+                  onClick={toggleTimer}
+                  sx={{
+                    px: 5,
+                    py: 2,
+                    borderRadius: 3,
+                    textTransform: "none",
+                    fontWeight: 700,
+                    fontSize: "1rem",
+                    background: cfg.gradient,
+                    boxShadow: `0 4px 14px ${cfg.color}44`,
+                    "&:hover": { background: cfg.gradient, filter: "brightness(0.92)" },
+                  }}
+                >
+                  {isRunning ? "Pause" : "Start"}
+                </Button>
+              </motion.div>
+            </Box>
+
+            {/* Sessions counter */}
+            <Box sx={{ mt: 4, textAlign: "center" }}>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                Sessions completed:{" "}
+                <Typography component="span" variant="body2" sx={{ fontWeight: 700, color: "primary.main" }}>
+                  {sessions}
+                </Typography>
+              </Typography>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
     </motion.div>
   );
 }

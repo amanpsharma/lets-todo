@@ -13,6 +13,17 @@ import {
 } from "lucide-react";
 import { format, subDays, isToday } from "date-fns";
 import toast from "react-hot-toast";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  IconButton,
+  LinearProgress,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 interface Habit {
   _id: string;
@@ -26,23 +37,23 @@ interface Habit {
 }
 
 const colorOptions = [
-  { value: "indigo", bg: "bg-indigo-500", light: "bg-indigo-100 dark:bg-indigo-900/30" },
-  { value: "blue", bg: "bg-blue-500", light: "bg-blue-100 dark:bg-blue-900/30" },
-  { value: "emerald", bg: "bg-emerald-500", light: "bg-emerald-100 dark:bg-emerald-900/30" },
-  { value: "orange", bg: "bg-orange-500", light: "bg-orange-100 dark:bg-orange-900/30" },
-  { value: "pink", bg: "bg-pink-500", light: "bg-pink-100 dark:bg-pink-900/30" },
-  { value: "cyan", bg: "bg-cyan-500", light: "bg-cyan-100 dark:bg-cyan-900/30" },
+  { value: "indigo", bg: "#6366f1" },
+  { value: "blue", bg: "#3b82f6" },
+  { value: "emerald", bg: "#10b981" },
+  { value: "orange", bg: "#f97316" },
+  { value: "pink", bg: "#ec4899" },
+  { value: "cyan", bg: "#06b6d4" },
 ];
 
 const emojiOptions = ["✅", "💪", "📚", "🧘", "💧", "🏃", "🎯", "🌅", "💤", "🥗", "✍️", "🧠"];
 
-const colorClasses: Record<string, { ring: string; bg: string; text: string }> = {
-  indigo: { ring: "ring-indigo-500", bg: "bg-indigo-500", text: "text-indigo-600 dark:text-indigo-400" },
-  blue: { ring: "ring-blue-500", bg: "bg-blue-500", text: "text-blue-600 dark:text-blue-400" },
-  emerald: { ring: "ring-emerald-500", bg: "bg-emerald-500", text: "text-emerald-600 dark:text-emerald-400" },
-  orange: { ring: "ring-orange-500", bg: "bg-orange-500", text: "text-orange-600 dark:text-orange-400" },
-  pink: { ring: "ring-pink-500", bg: "bg-pink-500", text: "text-pink-600 dark:text-pink-400" },
-  cyan: { ring: "ring-cyan-500", bg: "bg-cyan-500", text: "text-cyan-600 dark:text-cyan-400" },
+const colorHex: Record<string, string> = {
+  indigo: "#6366f1",
+  blue: "#3b82f6",
+  emerald: "#10b981",
+  orange: "#f97316",
+  pink: "#ec4899",
+  cyan: "#06b6d4",
 };
 
 export default function HabitsPage() {
@@ -93,7 +104,6 @@ export default function HabitsPage() {
   };
 
   const toggleDay = async (habitId: string, date: string) => {
-    // Optimistic update
     setHabits((prev) =>
       prev.map((h) => {
         if (h._id !== habitId) return h;
@@ -134,61 +144,78 @@ export default function HabitsPage() {
 
   const totalToday = habits.filter((h) => h.completedDates.includes(today)).length;
   const totalHabits = habits.length;
+  const progressPercent = totalHabits > 0 ? (totalToday / totalHabits) * 100 : 0;
 
   return (
-    <div className="h-full max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-bold font-heading text-gray-900 dark:text-white flex items-center gap-3">
-            <Target className="w-6 h-6 text-indigo-500" />
+    <Box sx={{ height: "100%", maxWidth: 768, mx: "auto" }}>
+      {/* Header */}
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
+        <Box>
+          <Typography variant="h5" sx={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 1 }}>
+            <Target size={22} color="#6366f1" />
             Habit Tracker
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 0.5, color: "text.secondary" }}>
             Build consistency, one day at a time
-          </p>
-        </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowAdd(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/25"
-        >
-          <Plus className="w-4 h-4" />
-          <span className="hidden sm:inline">New Habit</span>
-        </motion.button>
-      </div>
+          </Typography>
+        </Box>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+            variant="contained"
+            startIcon={<Plus size={16} />}
+            onClick={() => setShowAdd(true)}
+            sx={{
+              background: "linear-gradient(to right, #4f46e5, #6366f1)",
+              borderRadius: 3,
+              boxShadow: "0 4px 14px rgba(99,102,241,0.35)",
+              textTransform: "none",
+              fontWeight: 600,
+              "&:hover": { background: "linear-gradient(to right, #4338ca, #4f46e5)" },
+            }}
+          >
+            New Habit
+          </Button>
+        </motion.div>
+      </Box>
 
       {/* Today's progress */}
       {totalHabits > 0 && (
-        <div className="glass-card rounded-2xl p-5 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Today&apos;s Progress</p>
-              <p className="text-3xl font-bold font-heading text-gray-900 dark:text-white mt-1">
-                {totalToday}/{totalHabits}
-              </p>
-            </div>
-            <div className="relative w-16 h-16">
-              <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" className="text-gray-200 dark:text-gray-700" />
-                <circle cx="50" cy="50" r="42" fill="none" stroke="url(#habitGrad)" strokeWidth="8" strokeLinecap="round"
-                  strokeDasharray={`${totalHabits > 0 ? (totalToday / totalHabits) * 264 : 0} 264`}
-                />
-                <defs>
-                  <linearGradient id="habitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#8b5cf6" />
-                    <stop offset="100%" stopColor="#a855f7" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-sm font-bold text-gray-900 dark:text-white">
-                  {totalHabits > 0 ? Math.round((totalToday / totalHabits) * 100) : 0}%
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Card variant="outlined" sx={{ borderRadius: 3, mb: 3, boxShadow: "none" }}>
+          <CardContent>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+              <Box>
+                <Typography variant="body2" sx={{ color: "text.secondary", fontWeight: 500 }}>Today&apos;s Progress</Typography>
+                <Typography variant="h4" sx={{ fontWeight: 700, mt: 0.5 }}>
+                  {totalToday}/{totalHabits}
+                </Typography>
+              </Box>
+              <Chip
+                label={`${Math.round(progressPercent)}%`}
+                sx={{
+                  fontWeight: 700,
+                  bgcolor: "#ede9fe",
+                  color: "#7c3aed",
+                  fontSize: "0.875rem",
+                  height: 36,
+                  px: 1,
+                }}
+              />
+            </Box>
+            <LinearProgress
+              variant="determinate"
+              value={progressPercent}
+              sx={{
+                height: 8,
+                borderRadius: 4,
+                bgcolor: "action.hover",
+                "& .MuiLinearProgress-bar": {
+                  background: "linear-gradient(to right, #8b5cf6, #a855f7)",
+                  borderRadius: 4,
+                },
+              }}
+            />
+          </CardContent>
+        </Card>
       )}
 
       {/* Add habit form */}
@@ -198,86 +225,139 @@ export default function HabitsPage() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden mb-6"
+            style={{ overflow: "hidden" }}
           >
-            <div className="glass-card rounded-2xl p-5 space-y-4">
-              <div className="flex items-center gap-3">
-                <input
-                  type="text"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && addHabit()}
-                  placeholder="e.g., Drink 8 glasses of water"
-                  className="flex-1 px-4 py-3 bg-gray-50/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400"
-                  autoFocus
-                />
-                <button onClick={() => setShowAdd(false)} className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <X className="w-5 h-5 text-gray-400" />
-                </button>
-              </div>
+            <Card variant="outlined" sx={{ borderRadius: 3, mb: 3, boxShadow: "none" }}>
+              <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                  <TextField
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && addHabit()}
+                    placeholder="e.g., Drink 8 glasses of water"
+                    variant="outlined"
+                    size="small"
+                    fullWidth
+                    autoFocus
+                    sx={{ "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
+                  />
+                  <IconButton onClick={() => setShowAdd(false)}>
+                    <X size={20} />
+                  </IconButton>
+                </Box>
 
-              {/* Emoji picker */}
-              <div>
-                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Icon</p>
-                <div className="flex flex-wrap gap-2">
-                  {emojiOptions.map((e) => (
-                    <button key={e} onClick={() => setNewEmoji(e)}
-                      className={`w-9 h-9 rounded-lg text-lg flex items-center justify-center transition-all ${
-                        newEmoji === e ? "bg-indigo-100 dark:bg-indigo-900/30 ring-2 ring-indigo-500" : "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
-                      }`}
-                    >{e}</button>
-                  ))}
-                </div>
-              </div>
+                {/* Emoji picker */}
+                <Box>
+                  <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600, mb: 1, display: "block" }}>Icon</Typography>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
+                    {emojiOptions.map((e) => (
+                      <Box
+                        key={e}
+                        component="button"
+                        onClick={() => setNewEmoji(e)}
+                        sx={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 2,
+                          fontSize: "1.125rem",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          bgcolor: newEmoji === e ? "#ede9fe" : "action.hover",
+                          border: newEmoji === e ? "2px solid #6366f1" : "2px solid transparent",
+                          transition: "all 0.15s",
+                        }}
+                      >{e}</Box>
+                    ))}
+                  </Box>
+                </Box>
 
-              {/* Color picker */}
-              <div>
-                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Color</p>
-                <div className="flex gap-2">
-                  {colorOptions.map((c) => (
-                    <button key={c.value} onClick={() => setNewColor(c.value)}
-                      className={`w-8 h-8 rounded-full ${c.bg} transition-all ${
-                        newColor === c.value ? "ring-2 ring-offset-2 ring-offset-white dark:ring-offset-gray-900 ring-gray-400" : "opacity-60 hover:opacity-100"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
+                {/* Color picker */}
+                <Box>
+                  <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: 600, mb: 1, display: "block" }}>Color</Typography>
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    {colorOptions.map((c) => (
+                      <Box
+                        key={c.value}
+                        component="button"
+                        onClick={() => setNewColor(c.value)}
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: "50%",
+                          bgcolor: c.bg,
+                          cursor: "pointer",
+                          border: newColor === c.value ? "3px solid rgba(0,0,0,0.3)" : "3px solid transparent",
+                          outline: newColor === c.value ? "2px solid rgba(0,0,0,0.15)" : "none",
+                          outlineOffset: 2,
+                          opacity: newColor === c.value ? 1 : 0.6,
+                          transition: "all 0.15s",
+                          "&:hover": { opacity: 1 },
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
 
-              <button onClick={addHabit} disabled={!newTitle.trim()}
-                className="w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/25"
-              >
-                Create Habit
-              </button>
-            </div>
+                <Button
+                  variant="contained"
+                  onClick={addHabit}
+                  disabled={!newTitle.trim()}
+                  fullWidth
+                  sx={{
+                    py: 1.5,
+                    borderRadius: 3,
+                    textTransform: "none",
+                    fontWeight: 700,
+                    background: "linear-gradient(to right, #4f46e5, #6366f1)",
+                    boxShadow: "0 4px 14px rgba(99,102,241,0.35)",
+                    "&:hover": { background: "linear-gradient(to right, #4338ca, #4f46e5)" },
+                  }}
+                >
+                  Create Habit
+                </Button>
+              </CardContent>
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Habits list */}
       {loading ? (
-        <div className="space-y-4">
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {[1, 2, 3].map((i) => (
-            <div key={i} className="glass-card rounded-2xl p-5 animate-pulse">
-              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
-            </div>
+            <Card key={i} variant="outlined" sx={{ borderRadius: 3, boxShadow: "none" }}>
+              <CardContent>
+                <Box sx={{ height: 24, width: "33%", borderRadius: 1, bgcolor: "action.hover" }} />
+              </CardContent>
+            </Card>
           ))}
-        </div>
+        </Box>
       ) : habits.length === 0 ? (
-        <div className="text-center py-16">
-          <Target className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No habits yet</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Start building good habits today</p>
-          <button onClick={() => setShowAdd(true)}
-            className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/25"
+        <Box sx={{ textAlign: "center", py: 8 }}>
+          <Target size={48} color="#d1d5db" style={{ marginBottom: 16 }} />
+          <Typography variant="h6" sx={{ fontWeight: 600 }} gutterBottom>No habits yet</Typography>
+          <Typography variant="body2" sx={{ mb: 3, color: "text.secondary" }}>
+            Start building good habits today
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => setShowAdd(true)}
+            sx={{
+              background: "linear-gradient(to right, #4f46e5, #6366f1)",
+              borderRadius: 3,
+              textTransform: "none",
+              fontWeight: 600,
+            }}
           >
             Create Your First Habit
-          </button>
-        </div>
+          </Button>
+        </Box>
       ) : (
-        <div className="space-y-4">
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {habits.map((habit, idx) => {
-            const cc = colorClasses[habit.color] || colorClasses.indigo;
+            const hex = colorHex[habit.color] || colorHex.indigo;
             const completedToday = habit.completedDates.includes(today);
             return (
               <motion.div
@@ -285,64 +365,101 @@ export default function HabitsPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className="glass-card rounded-2xl p-5"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{habit.emoji}</span>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">{habit.title}</h3>
-                      <div className="flex items-center gap-3 mt-0.5">
-                        {habit.streak > 0 && (
-                          <span className={`flex items-center gap-1 text-xs font-medium ${cc.text}`}>
-                            <Flame className="w-3 h-3" />
-                            {habit.streak} day streak
-                          </span>
-                        )}
-                        {habit.bestStreak > 0 && (
-                          <span className="flex items-center gap-1 text-xs text-gray-400">
-                            <Trophy className="w-3 h-3" />
-                            Best: {habit.bestStreak}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <button onClick={() => deleteHabit(habit._id)}
-                    className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* 7-day grid */}
-                <div className="flex items-center gap-2">
-                  {last7Days.map((day) => {
-                    const done = habit.completedDates.includes(day.date);
-                    return (
-                      <button
-                        key={day.date}
-                        onClick={() => toggleDay(habit._id, day.date)}
-                        className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-xl transition-all ${
-                          done
-                            ? `${cc.bg} text-white shadow-md`
-                            : day.isToday
-                            ? "bg-gray-100 dark:bg-gray-800 ring-2 ring-indigo-500/30"
-                            : "bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800"
-                        }`}
+                <Card variant="outlined" sx={{ borderRadius: 3, boxShadow: "none" }}>
+                  <CardContent>
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                        <Typography sx={{ fontSize: "1.5rem" }}>{habit.emoji}</Typography>
+                        <Box>
+                          <Typography sx={{ fontWeight: 600 }}>{habit.title}</Typography>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mt: 0.25 }}>
+                            {habit.streak > 0 && (
+                              <Chip
+                                icon={<Flame size={12} />}
+                                label={`${habit.streak} day streak`}
+                                size="small"
+                                sx={{
+                                  height: 22,
+                                  fontSize: "0.7rem",
+                                  fontWeight: 600,
+                                  bgcolor: `${hex}18`,
+                                  color: hex,
+                                  "& .MuiChip-icon": { color: hex, ml: 0.5 },
+                                }}
+                              />
+                            )}
+                            {habit.bestStreak > 0 && (
+                              <Chip
+                                icon={<Trophy size={12} />}
+                                label={`Best: ${habit.bestStreak}`}
+                                size="small"
+                                sx={{
+                                  height: 22,
+                                  fontSize: "0.7rem",
+                                  fontWeight: 500,
+                                  bgcolor: "action.hover",
+                                  color: "text.secondary",
+                                  "& .MuiChip-icon": { color: "inherit", ml: 0.5 },
+                                }}
+                              />
+                            )}
+                          </Box>
+                        </Box>
+                      </Box>
+                      <IconButton
+                        size="small"
+                        onClick={() => deleteHabit(habit._id)}
+                        sx={{ "&:hover": { bgcolor: "#fee2e2", color: "#ef4444" } }}
                       >
-                        <span className="text-[10px] font-medium opacity-70">{day.label}</span>
-                        <span className="text-xs font-bold">{day.day}</span>
-                        {done && <Check className="w-3 h-3" />}
-                      </button>
-                    );
-                  })}
-                </div>
+                        <Trash2 size={16} />
+                      </IconButton>
+                    </Box>
+
+                    {/* 7-day grid */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, sm: 0.75 } }}>
+                      {last7Days.map((day) => {
+                        const done = habit.completedDates.includes(day.date);
+                        return (
+                          <Box
+                            key={day.date}
+                            component="button"
+                            onClick={() => toggleDay(habit._id, day.date)}
+                            sx={{
+                              flex: 1,
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              gap: 0.25,
+                              py: { xs: 0.75, sm: 1 },
+                              minWidth: 0,
+                              borderRadius: 2,
+                              cursor: "pointer",
+                              border: day.isToday && !done ? `2px solid ${hex}4d` : "2px solid transparent",
+                              bgcolor: done ? hex : "action.hover",
+                              color: done ? "#fff" : "text.secondary",
+                              transition: "all 0.15s",
+                              "&:hover": { opacity: 0.85 },
+                            }}
+                          >
+                            <Typography variant="caption" sx={{ fontSize: "0.625rem", fontWeight: 500, opacity: 0.7 }}>
+                              {day.label}
+                            </Typography>
+                            <Typography variant="caption" sx={{ fontSize: "0.75rem", fontWeight: 700 }}>
+                              {day.day}
+                            </Typography>
+                            {done && <Check size={12} />}
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  </CardContent>
+                </Card>
               </motion.div>
             );
           })}
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

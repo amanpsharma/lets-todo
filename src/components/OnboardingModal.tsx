@@ -11,6 +11,14 @@ import {
   ArrowRight,
   Columns3,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  Button,
+  Typography,
+  Box,
+  MobileStepper,
+} from "@mui/material";
 
 const steps = [
   {
@@ -18,42 +26,42 @@ const steps = [
     title: "Welcome to TaskFlow!",
     description:
       "Your personal task manager with collaboration, focus tools, and beautiful analytics. Let us show you around.",
-    color: "from-indigo-500 to-indigo-600",
+    color: "linear-gradient(135deg, #6366f1, #4f46e5)",
   },
   {
     icon: CheckCircle2,
     title: "Create & Organize Tasks",
     description:
       "Add tasks with priorities, categories, and due dates. Press Ctrl+N to quickly create a new task.",
-    color: "from-emerald-500 to-teal-600",
+    color: "linear-gradient(135deg, #10b981, #0d9488)",
   },
   {
     icon: Users,
     title: "Collaborate with Friends",
     description:
       "Add friends, share tasks, and chat in real-time. Stay connected and productive together.",
-    color: "from-blue-500 to-cyan-600",
+    color: "linear-gradient(135deg, #3b82f6, #06b6d4)",
   },
   {
     icon: Timer,
     title: "Stay Focused",
     description:
       "Use the built-in Pomodoro timer to work in focused sprints. Press Ctrl+P to start a focus session.",
-    color: "from-orange-500 to-red-600",
+    color: "linear-gradient(135deg, #f97316, #ef4444)",
   },
   {
     icon: Columns3,
     title: "Multiple Views",
     description:
       "Switch between list, Kanban board, and calendar views. Find the layout that works best for you.",
-    color: "from-pink-500 to-rose-600",
+    color: "linear-gradient(135deg, #ec4899, #f43f5e)",
   },
   {
     icon: BarChart3,
     title: "Track Your Progress",
     description:
       "View completion rates, streaks, and category breakdowns in the Analytics dashboard. Stay motivated!",
-    color: "from-amber-500 to-yellow-600",
+    color: "linear-gradient(135deg, #f59e0b, #eab308)",
   },
 ];
 
@@ -64,7 +72,6 @@ export default function OnboardingModal() {
   useEffect(() => {
     const seen = localStorage.getItem("taskflow-onboarding-complete");
     if (!seen) {
-      // Small delay so the app loads first
       const timer = setTimeout(() => setShow(true), 1000);
       return () => clearTimeout(timer);
     }
@@ -87,89 +94,97 @@ export default function OnboardingModal() {
   const Icon = current.icon;
 
   return (
-    <AnimatePresence>
-      {show && (
-        <>
+    <Dialog
+      open={show}
+      onClose={finish}
+      maxWidth="xs"
+      fullWidth
+      slotProps={{
+        paper: { sx: { borderRadius: 4, overflow: "hidden" } },
+      }}
+    >
+      <DialogContent sx={{ p: { xs: 3, sm: 4 }, textAlign: "center" }}>
+        {/* Step dots */}
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 0.75, mb: 3 }}>
+          {steps.map((_, i) => (
+            <Box
+              key={i}
+              sx={{
+                height: 6,
+                borderRadius: 3,
+                width: i === step ? 32 : 16,
+                bgcolor: i === step ? "primary.main" : i < step ? "primary.200" : "grey.200",
+                transition: "all 0.3s ease",
+              }}
+            />
+          ))}
+        </Box>
+
+        <AnimatePresence mode="wait">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60]"
-          />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 30 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-x-4 top-[15%] md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-md z-[60]"
+            key={step}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
           >
-            <div className="glass-card rounded-3xl shadow-2xl p-6 sm:p-8 text-center">
-              {/* Step indicator */}
-              <div className="flex items-center justify-center gap-1.5 mb-6">
-                {steps.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      i === step
-                        ? "w-8 bg-indigo-500"
-                        : i < step
-                        ? "w-4 bg-indigo-300 dark:bg-indigo-700"
-                        : "w-4 bg-gray-200 dark:bg-gray-700"
-                    }`}
-                  />
-                ))}
-              </div>
+            <Box
+              sx={{
+                display: "inline-flex",
+                p: 2,
+                borderRadius: 3,
+                background: current.color,
+                boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+                mb: 2.5,
+              }}
+            >
+              <Icon style={{ width: 32, height: 32, color: "white" }} />
+            </Box>
 
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={step}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div
-                    className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${current.color} shadow-xl mb-5`}
-                  >
-                    <Icon className="w-8 h-8 text-white" />
-                  </div>
-
-                  <h2 className="text-xl font-bold font-heading text-gray-900 dark:text-white mb-3">
-                    {current.title}
-                  </h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed max-w-sm mx-auto">
-                    {current.description}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-
-              <div className="mt-8 flex items-center gap-3">
-                <button
-                  onClick={finish}
-                  className="flex-1 py-3 rounded-2xl text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                >
-                  Skip
-                </button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={next}
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-lg shadow-indigo-500/25 transition-all"
-                >
-                  {step < steps.length - 1 ? (
-                    <>
-                      Next
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  ) : (
-                    "Get Started"
-                  )}
-                </motion.button>
-              </div>
-            </div>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1.5 }}>
+              {current.title}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", lineHeight: 1.6, maxWidth: 320, mx: "auto" }}
+            >
+              {current.description}
+            </Typography>
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+        </AnimatePresence>
+
+        <Box sx={{ mt: 4, display: "flex", gap: 1.5 }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={finish}
+            sx={{ borderRadius: "16px", py: 1.25, textTransform: "none" }}
+          >
+            Skip
+          </Button>
+          <motion.div style={{ flex: 1 }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={next}
+              endIcon={step < steps.length - 1 ? <ArrowRight style={{ width: 16, height: 16 }} /> : null}
+              sx={{
+                borderRadius: "16px",
+                py: 1.25,
+                textTransform: "none",
+                fontWeight: 600,
+                background: "linear-gradient(135deg, #4f46e5, #6366f1)",
+                boxShadow: "0 4px 16px rgba(99,102,241,0.35)",
+                "&:hover": {
+                  background: "linear-gradient(135deg, #6366f1, #818cf8)",
+                },
+              }}
+            >
+              {step < steps.length - 1 ? "Next" : "Get Started"}
+            </Button>
+          </motion.div>
+        </Box>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -23,6 +23,17 @@ import {
   startOfWeek,
   endOfWeek,
 } from "date-fns";
+import {
+  Box,
+  Typography,
+  Paper,
+  Card,
+  IconButton,
+  TextField,
+  Select,
+  MenuItem,
+  Button,
+} from "@mui/material";
 import { TodoContext } from "@/context/TodoContext";
 import { Todo } from "@/types/todo";
 import toast from "react-hot-toast";
@@ -101,51 +112,74 @@ export default function CalendarPage() {
   }, [selectedDate, todosByDate]);
 
   return (
-    <div className="h-full">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold font-heading text-gray-900 dark:text-white">
+    <Box sx={{ height: "100%" }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
           Calendar
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           View your tasks by due date
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
-      <div className="grid lg:grid-cols-[1fr,320px] gap-6">
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", lg: "1fr 320px" },
+          gap: 3,
+        }}
+      >
         {/* Calendar grid */}
-        <div className="glass-card rounded-2xl p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-6">
-            <button
+        <Paper elevation={0} variant="outlined" sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
+            <IconButton
               onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-              className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              size="small"
+              sx={{ borderRadius: 2 }}
             >
-              <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            </button>
-            <h3 className="text-lg font-bold font-heading text-gray-900 dark:text-white">
+              <ChevronLeft className="w-5 h-5" />
+            </IconButton>
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               {format(currentMonth, "MMMM yyyy")}
-            </h3>
-            <button
+            </Typography>
+            <IconButton
               onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-              className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              size="small"
+              sx={{ borderRadius: 2 }}
             >
-              <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            </button>
-          </div>
+              <ChevronRight className="w-5 h-5" />
+            </IconButton>
+          </Box>
 
           {/* Day headers */}
-          <div className="grid grid-cols-7 gap-1 mb-2">
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(7, 1fr)",
+              gap: 0.25,
+              mb: 0.5,
+            }}
+          >
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-              <div
+              <Typography
                 key={d}
-                className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 py-2"
+                variant="caption"
+                align="center"
+                sx={{ display: "block", color: "text.secondary", fontWeight: "medium", py: 1 }}
               >
                 {d}
-              </div>
+              </Typography>
             ))}
-          </div>
+          </Box>
 
           {/* Days */}
-          <div className="grid grid-cols-7 gap-1">
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(7, 1fr)",
+              gap: 0.25,
+            }}
+          >
             {days.map((day) => {
               const key = format(day, "yyyy-MM-dd");
               const dayTodos = todosByDate.get(key) || [];
@@ -154,63 +188,91 @@ export default function CalendarPage() {
               const selected = selectedDate && isSameDay(day, selectedDate);
 
               return (
-                <button
+                <Box
                   key={key}
+                  component="button"
                   onClick={() => handleDateClick(day)}
-                  className={`relative p-2 rounded-xl text-sm transition-all min-h-[52px] sm:min-h-[64px] flex flex-col items-center ${
-                    !inMonth
-                      ? "text-gray-300 dark:text-gray-600"
+                  sx={{
+                    position: "relative",
+                    p: 1,
+                    borderRadius: 2,
+                    minHeight: { xs: 52, sm: 64 },
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    border: "none",
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                    color: !inMonth
+                      ? "text.disabled"
                       : selected
-                      ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 ring-2 ring-indigo-500"
+                      ? "primary.dark"
                       : today
-                      ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-bold"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`}
+                      ? "primary.main"
+                      : "text.primary",
+                    bgcolor: selected
+                      ? "primary.50"
+                      : today
+                      ? "primary.50"
+                      : "transparent",
+                    outline: selected ? "2px solid" : "none",
+                    outlineColor: selected ? "primary.main" : "transparent",
+                    fontWeight: today ? "bold" : "normal",
+                    "&:hover": {
+                      bgcolor: !selected ? "action.hover" : undefined,
+                    },
+                  }}
                 >
-                  <span className="text-xs sm:text-sm">{format(day, "d")}</span>
+                  <Typography
+                    component="span"
+                    sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                  >
+                    {format(day, "d")}
+                  </Typography>
                   {dayTodos.length > 0 && (
-                    <div className="flex items-center gap-0.5 mt-1">
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.25, mt: 0.5 }}>
                       {dayTodos.slice(0, 3).map((t) => (
                         <span
                           key={t._id}
                           className={`w-1.5 h-1.5 rounded-full ${
-                            t.completed
-                              ? "bg-gray-300 dark:bg-gray-600"
-                              : priorityDot[t.priority]
+                            t.completed ? "bg-gray-300" : priorityDot[t.priority]
                           }`}
                         />
                       ))}
                       {dayTodos.length > 3 && (
-                        <span className="text-[9px] text-gray-400">
+                        <Typography component="span" sx={{ fontSize: "0.5625rem", color: "text.disabled" }}>
                           +{dayTodos.length - 3}
-                        </span>
+                        </Typography>
                       )}
-                    </div>
+                    </Box>
                   )}
-                </button>
+                </Box>
               );
             })}
-          </div>
-        </div>
+          </Box>
+        </Paper>
 
         {/* Sidebar: selected day's tasks */}
-        <div className="glass-card rounded-2xl p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+        <Card variant="outlined" sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: "600", display: "flex", alignItems: "center", gap: 1 }}
+            >
               <CalendarIcon className="w-4 h-4 text-indigo-500" />
-              {selectedDate
-                ? format(selectedDate, "EEEE, MMM d")
-                : "Select a date"}
-            </h3>
+              {selectedDate ? format(selectedDate, "EEEE, MMM d") : "Select a date"}
+            </Typography>
             {selectedDate && !showQuickAdd && (
-              <button
+              <IconButton
                 onClick={() => setShowQuickAdd(true)}
-                className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
+                size="small"
+                color="primary"
+                sx={{ borderRadius: 2 }}
               >
                 <Plus className="w-4 h-4" />
-              </button>
+              </IconButton>
             )}
-          </div>
+          </Box>
 
           {/* Quick Add Form */}
           <AnimatePresence>
@@ -219,126 +281,181 @@ export default function CalendarPage() {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden mb-4"
+                style={{ overflow: "hidden" }}
               >
-                <div className="p-3 rounded-xl bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-800/30 space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">Add task for {format(selectedDate, "MMM d")}</span>
-                    <button onClick={() => setShowQuickAdd(false)} className="p-1 rounded-md hover:bg-indigo-100 dark:hover:bg-indigo-900/20 text-gray-400">
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: 1.5,
+                    mb: 2,
+                    borderRadius: 2,
+                    bgcolor: "primary.50",
+                    borderColor: "primary.100",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <Typography variant="caption" sx={{ color: "primary.main", fontWeight: "medium" }}>
+                      Add task for {format(selectedDate, "MMM d")}
+                    </Typography>
+                    <IconButton
+                      onClick={() => setShowQuickAdd(false)}
+                      size="small"
+                      sx={{ p: 0.5 }}
+                    >
                       <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                  <input
-                    type="text"
+                    </IconButton>
+                  </Box>
+
+                  <TextField
+                    size="small"
                     value={quickTitle}
                     onChange={(e) => setQuickTitle(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleQuickAdd()}
                     placeholder="Task title..."
                     autoFocus
-                    className="w-full px-3 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                    fullWidth
+                    sx={{ bgcolor: "background.paper", borderRadius: 1 }}
                   />
-                  {/* Priority */}
-                  <div className="flex gap-1.5">
+
+                  {/* Priority buttons */}
+                  <Box sx={{ display: "flex", gap: 0.5 }}>
                     {(["low", "medium", "high", "urgent"] as const).map((p) => (
-                      <button
+                      <Button
                         key={p}
-                        type="button"
+                        size="small"
+                        variant={quickPriority === p ? "outlined" : "text"}
                         onClick={() => setQuickPriority(p)}
-                        className={`px-2 py-1 rounded-md text-[11px] font-medium capitalize transition-all ${
-                          quickPriority === p
-                            ? `${priorityDot[p].replace("bg-", "text-")} ring-1 ring-current bg-white dark:bg-gray-800`
-                            : "text-gray-400 dark:text-gray-500 hover:text-gray-600"
-                        }`}
+                        sx={{
+                          textTransform: "capitalize",
+                          fontSize: "0.6875rem",
+                          minWidth: 0,
+                          px: 0.75,
+                          py: 0.5,
+                        }}
                       >
                         {p}
-                      </button>
+                      </Button>
                     ))}
-                  </div>
+                  </Box>
+
                   {/* Category */}
-                  <select
+                  <Select
+                    size="small"
                     value={quickCategory}
                     onChange={(e) => setQuickCategory(e.target.value)}
-                    className="w-full px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+                    fullWidth
+                    sx={{ bgcolor: "background.paper", fontSize: "0.75rem" }}
                   >
-                    <option value="general">General</option>
-                    <option value="work">Work</option>
-                    <option value="personal">Personal</option>
-                    <option value="shopping">Shopping</option>
-                    <option value="health">Health</option>
-                    <option value="learning">Learning</option>
-                    <option value="finance">Finance</option>
-                  </select>
-                  <button
+                    <MenuItem value="general">General</MenuItem>
+                    <MenuItem value="work">Work</MenuItem>
+                    <MenuItem value="personal">Personal</MenuItem>
+                    <MenuItem value="shopping">Shopping</MenuItem>
+                    <MenuItem value="health">Health</MenuItem>
+                    <MenuItem value="learning">Learning</MenuItem>
+                    <MenuItem value="finance">Finance</MenuItem>
+                  </Select>
+
+                  <Button
+                    variant="contained"
                     onClick={handleQuickAdd}
                     disabled={!quickTitle.trim() || adding}
-                    className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    fullWidth
+                    size="small"
                   >
                     {adding ? "Adding..." : "Add Task"}
-                  </button>
-                </div>
+                  </Button>
+                </Paper>
               </motion.div>
             )}
           </AnimatePresence>
 
           {!selectedDate ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-8">
+            <Typography
+              variant="body2"
+              align="center"
+              sx={{ color: "text.secondary", py: 4 }}
+            >
               Click on a date to see tasks
-            </p>
+            </Typography>
           ) : selectedTodos.length === 0 && !showQuickAdd ? (
-            <div className="text-center py-8">
-              <p className="text-sm text-gray-400 dark:text-gray-500 mb-3">
+            <Box sx={{ textAlign: "center", py: 4 }}>
+              <Typography variant="body2" sx={{ color: "text.secondary", mb: 1.5 }}>
                 No tasks due on this date
-              </p>
-              <button
+              </Typography>
+              <Button
+                size="small"
+                startIcon={<Plus className="w-3.5 h-3.5" />}
                 onClick={() => setShowQuickAdd(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
+                sx={{ textTransform: "none" }}
               >
-                <Plus className="w-3.5 h-3.5" />
                 Add a task
-              </button>
-            </div>
+              </Button>
+            </Box>
           ) : (
-            <div className="space-y-2">
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
               {selectedTodos.map((todo, i) => (
                 <motion.div
                   key={todo._id}
                   initial={{ opacity: 0, x: 10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className={`p-3 rounded-xl border ${
-                    todo.completed
-                      ? "bg-gray-50 dark:bg-gray-800/50 border-gray-200/50 dark:border-white/5 opacity-60"
-                      : "bg-white dark:bg-gray-800 border-gray-200/50 dark:border-white/5"
-                  }`}
                 >
-                  <div className="flex items-center gap-2">
-                    {todo.completed && (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 1.5,
+                      borderRadius: 2,
+                      opacity: todo.completed ? 0.6 : 1,
+                      bgcolor: todo.completed ? "action.hover" : "background.paper",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      {todo.completed && (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                      )}
+                      <span
+                        className={`w-2 h-2 rounded-full flex-shrink-0 ${priorityDot[todo.priority]}`}
+                      />
+                      <Typography
+                        variant="body2"
+                        noWrap
+                        sx={{
+                          fontWeight: "medium",
+                          textDecoration: todo.completed ? "line-through" : "none",
+                          color: todo.completed ? "text.disabled" : "text.primary",
+                        }}
+                      >
+                        {todo.title}
+                      </Typography>
+                    </Box>
+                    {todo.category && todo.category !== "general" && (
+                      <Typography
+                        component="span"
+                        variant="caption"
+                        sx={{
+                          display: "inline-block",
+                          mt: 0.75,
+                          px: 1,
+                          py: 0.25,
+                          borderRadius: 1,
+                          bgcolor: "action.selected",
+                          color: "text.secondary",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {todo.category}
+                      </Typography>
                     )}
-                    <span
-                      className={`w-2 h-2 rounded-full flex-shrink-0 ${priorityDot[todo.priority]}`}
-                    />
-                    <p
-                      className={`text-sm font-medium truncate ${
-                        todo.completed
-                          ? "line-through text-gray-400"
-                          : "text-gray-900 dark:text-white"
-                      }`}
-                    >
-                      {todo.title}
-                    </p>
-                  </div>
-                  {todo.category && todo.category !== "general" && (
-                    <span className="inline-block mt-1.5 text-[11px] px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
-                      {todo.category}
-                    </span>
-                  )}
+                  </Paper>
                 </motion.div>
               ))}
-            </div>
+            </Box>
           )}
-        </div>
-      </div>
-    </div>
+        </Card>
+      </Box>
+    </Box>
   );
 }

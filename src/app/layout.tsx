@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import MuiThemeProvider from "@/components/MuiThemeProvider";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -46,7 +47,7 @@ export default function RootLayout({
         <body
           className={`${plusJakarta.variable} ${spaceGrotesk.variable} font-sans antialiased`}
         >
-          {children}
+          <MuiThemeProvider>{children}</MuiThemeProvider>
         </body>
       </html>
     </ClerkProvider>

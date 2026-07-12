@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Users,
   Search,
@@ -13,6 +12,24 @@ import {
   Loader2,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import {
+  Drawer,
+  TextField,
+  InputAdornment,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+  IconButton,
+  Box,
+  Typography,
+  CircularProgress,
+  Badge,
+  Tabs,
+  Tab,
+  Chip,
+} from "@mui/material";
 
 interface UserResult {
   clerkId: string;
@@ -49,7 +66,7 @@ interface FriendsPanelProps {
 }
 
 export default function FriendsPanel({ isOpen, onClose }: FriendsPanelProps) {
-  const [tab, setTab] = useState<"friends" | "requests" | "search">("friends");
+  const [tab, setTab] = useState(0);
   const [friendsData, setFriendsData] = useState<FriendsData>({
     friends: [],
     pendingRequests: [],
@@ -137,334 +154,356 @@ export default function FriendsPanel({ isOpen, onClose }: FriendsPanelProps) {
     }
   };
 
-  if (!isOpen) return null;
-
   const pendingCount = friendsData.pendingRequests.length;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        onClick={onClose}
+    <Drawer
+      anchor="right"
+      open={isOpen}
+      onClose={onClose}
+      slotProps={{
+        paper: { sx: { width: { xs: "100%", sm: 420 }, display: "flex", flexDirection: "column" } },
+      }}
+    >
+      {/* Header */}
+      <Box
+        sx={{
+          p: 3,
+          pb: 0,
+          borderBottom: 1,
+          borderColor: "divider",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-md glass-card rounded-3xl shadow-2xl overflow-hidden max-h-[80vh] flex flex-col"
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Box
+              sx={{
+                p: 1,
+                background: "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+                borderRadius: 2,
+                display: "flex",
+              }}
+            >
+              <Users style={{ width: 20, height: 20, color: "white" }} />
+            </Box>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              Friends
+            </Typography>
+          </Box>
+          <IconButton onClick={onClose} size="small">
+            <X style={{ width: 20, height: 20 }} />
+          </IconButton>
+        </Box>
+
+        <Tabs
+          value={tab}
+          onChange={(_, v) => setTab(v)}
+          variant="fullWidth"
+          sx={{ minHeight: 40 }}
         >
-          {/* Header */}
-          <div className="p-6 pb-4 border-b border-white/10 dark:border-white/5">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl">
-                  <Users className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                  Friends
-                </h2>
-              </div>
-              <button
-                onClick={onClose}
-                className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+          <Tab
+            label={`Friends (${friendsData.friends.length})`}
+            sx={{ minHeight: 40, fontSize: "0.8rem" }}
+          />
+          <Tab
+            label={
+              <Badge badgeContent={pendingCount} color="error" sx={{ "& .MuiBadge-badge": { fontSize: "0.65rem" } }}>
+                <span>Requests</span>
+              </Badge>
+            }
+            sx={{ minHeight: 40, fontSize: "0.8rem" }}
+          />
+          <Tab label="Add" sx={{ minHeight: 40, fontSize: "0.8rem" }} />
+        </Tabs>
+      </Box>
 
-            {/* Tabs */}
-            <div className="flex gap-1 bg-gray-100 dark:bg-gray-800/80 rounded-xl p-1">
-              <button
-                onClick={() => setTab("friends")}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                  tab === "friends"
-                    ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                }`}
-              >
-                Friends ({friendsData.friends.length})
-              </button>
-              <button
-                onClick={() => setTab("requests")}
-                className={`relative flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                  tab === "requests"
-                    ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                }`}
-              >
-                Requests
-                {pendingCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                    {pendingCount}
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => setTab("search")}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                  tab === "search"
-                    ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                }`}
-              >
-                Add
-              </button>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6 pt-4">
-            {loading && tab !== "search" ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
-              </div>
-            ) : (
+      {/* Content */}
+      <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
+        {loading && tab !== 2 ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+            <CircularProgress size={24} sx={{ color: "#6366f1" }} />
+          </Box>
+        ) : (
+          <>
+            {/* Friends List */}
+            {tab === 0 && (
               <>
-                {/* Friends List */}
-                {tab === "friends" && (
-                  <div className="space-y-2">
-                    {friendsData.friends.length === 0 ? (
-                      <div className="text-center py-8">
-                        <Users className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          No friends yet. Search and add friends to share todos!
-                        </p>
-                      </div>
-                    ) : (
-                      friendsData.friends.map((friend) => (
-                        <div
-                          key={friend.clerkId}
-                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                        >
-                          <div className="relative">
-                            {friend.avatar ? (
-                              <img
-                                src={friend.avatar}
-                                alt={friend.name}
-                                className="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-800"
-                              />
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
-                                {friend.name.charAt(0).toUpperCase()}
-                              </div>
-                            )}
-                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                              {friend.name}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                              {friend.email}
-                            </p>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
-
-                {/* Requests */}
-                {tab === "requests" && (
-                  <div className="space-y-4">
-                    {friendsData.pendingRequests.length > 0 && (
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                          Received
-                        </p>
-                        <div className="space-y-2">
-                          {friendsData.pendingRequests.map((req) => (
-                            <div
-                              key={req._id}
-                              className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50"
+                {friendsData.friends.length === 0 ? (
+                  <Box sx={{ textAlign: "center", py: 4 }}>
+                    <Users style={{ width: 48, height: 48, color: "#d1d5db", margin: "0 auto 12px" }} />
+                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                      No friends yet. Search and add friends to share todos!
+                    </Typography>
+                  </Box>
+                ) : (
+                  <List disablePadding>
+                    {friendsData.friends.map((friend) => (
+                      <ListItem
+                        key={friend.clerkId}
+                        sx={{ borderRadius: 2, "&:hover": { bgcolor: "action.hover" }, px: 1 }}
+                      >
+                        <ListItemAvatar>
+                          <Box sx={{ position: "relative", display: "inline-block" }}>
+                            <Avatar
+                              src={friend.avatar || undefined}
+                              alt={friend.name}
+                              sx={{
+                                width: 40,
+                                height: 40,
+                                background: !friend.avatar
+                                  ? "linear-gradient(135deg, #818cf8, #6366f1)"
+                                  : undefined,
+                                fontWeight: 700,
+                              }}
                             >
-                              {req.fromUser?.avatar ? (
-                                <img
-                                  src={req.fromUser.avatar}
-                                  alt={req.fromUser.name}
-                                  className="w-10 h-10 rounded-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
-                                  {req.fromUser?.name?.charAt(0)?.toUpperCase() || "?"}
-                                </div>
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                  {req.fromUser?.name || "Unknown"}
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  Wants to be friends
-                                </p>
-                              </div>
-                              <div className="flex gap-1">
-                                <button
-                                  onClick={() => handleRequest(req._id, "accept")}
-                                  className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
-                                >
-                                  <Check className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleRequest(req._id, "reject")}
-                                  className="p-2 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {friendsData.sentRequests.length > 0 && (
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                          Sent
-                        </p>
-                        <div className="space-y-2">
-                          {friendsData.sentRequests.map((req) => (
-                            <div
-                              key={req._id}
-                              className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50"
-                            >
-                              {req.toUser?.avatar ? (
-                                <img
-                                  src={req.toUser.avatar}
-                                  alt={req.toUser.name}
-                                  className="w-10 h-10 rounded-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold text-sm">
-                                  {req.toUser?.name?.charAt(0)?.toUpperCase() || "?"}
-                                </div>
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                  {req.toUser?.name || "Unknown"}
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                                  <Clock className="w-3 h-3" /> Pending
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {friendsData.pendingRequests.length === 0 &&
-                      friendsData.sentRequests.length === 0 && (
-                        <div className="text-center py-8">
-                          <Clock className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            No pending requests
-                          </p>
-                        </div>
-                      )}
-                  </div>
-                )}
-
-                {/* Search */}
-                {tab === "search" && (
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => searchUsers(e.target.value)}
-                        placeholder="Search by name or email..."
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                        autoFocus
-                      />
-                      {searching && (
-                        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500 animate-spin" />
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      {searchResults.map((user) => {
-                        const isFriend = friendsData.friends.some(
-                          (f) => f.clerkId === user.clerkId
-                        );
-                        const isPending = friendsData.sentRequests.some(
-                          (r) => r.to === user.clerkId
-                        );
-
-                        return (
-                          <div
-                            key={user.clerkId}
-                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                          >
-                            {user.avatar ? (
-                              <img
-                                src={user.avatar}
-                                alt={user.name}
-                                className="w-10 h-10 rounded-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
-                                {user.name.charAt(0).toUpperCase()}
-                              </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                {user.name}
-                              </p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {user.email}
-                              </p>
-                            </div>
-                            {isFriend ? (
-                              <span className="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-medium rounded-lg">
-                                Friends
-                              </span>
-                            ) : isPending ? (
-                              <span className="px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-xs font-medium rounded-lg flex items-center gap-1">
-                                <Send className="w-3 h-3" /> Sent
-                              </span>
-                            ) : (
-                              <button
-                                onClick={() => sendRequest(user.clerkId)}
-                                className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
-                              >
-                                <UserPlus className="w-4 h-4" />
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })}
-
-                      {searchQuery.length >= 2 && !searching && searchResults.length === 0 && (
-                        <div className="text-center py-6">
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            No users found
-                          </p>
-                        </div>
-                      )}
-
-                      {searchQuery.length < 2 && (
-                        <div className="text-center py-6">
-                          <UserPlus className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            Type at least 2 characters to search
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                              {!friend.avatar && friend.name.charAt(0).toUpperCase()}
+                            </Avatar>
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                bottom: 0,
+                                right: 0,
+                                width: 12,
+                                height: 12,
+                                bgcolor: "#34d399",
+                                borderRadius: "50%",
+                                border: "2px solid",
+                                borderColor: "background.paper",
+                              }}
+                            />
+                          </Box>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={<Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>{friend.name}</Typography>}
+                          secondary={<Typography variant="caption" noWrap sx={{ display: "block" }}>{friend.email}</Typography>}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
                 )}
               </>
             )}
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+
+            {/* Requests */}
+            {tab === 1 && (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {friendsData.pendingRequests.length > 0 && (
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "text.secondary", display: "block", mb: 1 }}
+                    >
+                      Received
+                    </Typography>
+                    <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                      {friendsData.pendingRequests.map((req) => (
+                        <ListItem
+                          key={req._id}
+                          sx={{ bgcolor: "action.hover", borderRadius: 2, px: 1.5 }}
+                          secondaryAction={
+                            <Box sx={{ display: "flex", gap: 0.5 }}>
+                              <IconButton
+                                size="small"
+                                onClick={() => handleRequest(req._id, "accept")}
+                                sx={{
+                                  color: "success.main",
+                                  "&:hover": { bgcolor: "action.selected" },
+                                }}
+                              >
+                                <Check style={{ width: 16, height: 16 }} />
+                              </IconButton>
+                              <IconButton
+                                size="small"
+                                onClick={() => handleRequest(req._id, "reject")}
+                                sx={{
+                                  color: "error.main",
+                                  "&:hover": { bgcolor: "action.selected" },
+                                }}
+                              >
+                                <X style={{ width: 16, height: 16 }} />
+                              </IconButton>
+                            </Box>
+                          }
+                        >
+                          <ListItemAvatar>
+                            <Avatar
+                              src={req.fromUser?.avatar || undefined}
+                              sx={{
+                                width: 40,
+                                height: 40,
+                                background: "linear-gradient(135deg, #60a5fa, #6366f1)",
+                                fontWeight: 700,
+                              }}
+                            >
+                              {req.fromUser?.name?.charAt(0)?.toUpperCase() || "?"}
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={<Typography variant="body2" sx={{ fontWeight: 500 }}>{req.fromUser?.name || "Unknown"}</Typography>}
+                            secondary={<Typography variant="caption">Wants to be friends</Typography>}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Box>
+                )}
+
+                {friendsData.sentRequests.length > 0 && (
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "text.secondary", display: "block", mb: 1 }}
+                    >
+                      Sent
+                    </Typography>
+                    <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                      {friendsData.sentRequests.map((req) => (
+                        <ListItem
+                          key={req._id}
+                          sx={{ bgcolor: "action.hover", borderRadius: 2, px: 1.5 }}
+                        >
+                          <ListItemAvatar>
+                            <Avatar
+                              src={req.toUser?.avatar || undefined}
+                              sx={{
+                                width: 40,
+                                height: 40,
+                                background: "linear-gradient(135deg, #fb923c, #f59e0b)",
+                                fontWeight: 700,
+                              }}
+                            >
+                              {req.toUser?.name?.charAt(0)?.toUpperCase() || "?"}
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={<Typography variant="body2" sx={{ fontWeight: 500 }}>{req.toUser?.name || "Unknown"}</Typography>}
+                            secondary={
+                              <Typography variant="caption" component="span" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                                <Clock style={{ width: 12, height: 12 }} /> Pending
+                              </Typography>
+                            }
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Box>
+                )}
+
+                {friendsData.pendingRequests.length === 0 && friendsData.sentRequests.length === 0 && (
+                  <Box sx={{ textAlign: "center", py: 4 }}>
+                    <Clock style={{ width: 48, height: 48, color: "#d1d5db", margin: "0 auto 12px" }} />
+                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                      No pending requests
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            )}
+
+            {/* Search */}
+            {tab === 2 && (
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  value={searchQuery}
+                  onChange={(e) => searchUsers(e.target.value)}
+                  placeholder="Search by name or email..."
+                  autoFocus
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search style={{ width: 16, height: 16, color: "#9ca3af" }} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: searching ? (
+                        <InputAdornment position="end">
+                          <CircularProgress size={16} sx={{ color: "#6366f1" }} />
+                        </InputAdornment>
+                      ) : null,
+                    },
+                  }}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
+                />
+
+                <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
+                  {searchResults.map((user) => {
+                    const isFriend = friendsData.friends.some((f) => f.clerkId === user.clerkId);
+                    const isPending = friendsData.sentRequests.some((r) => r.to === user.clerkId);
+
+                    return (
+                      <ListItem
+                        key={user.clerkId}
+                        sx={{ borderRadius: 2, "&:hover": { bgcolor: "action.hover" }, px: 1 }}
+                        secondaryAction={
+                          isFriend ? (
+                            <Chip label="Friends" size="small" color="success" variant="outlined" />
+                          ) : isPending ? (
+                            <Chip
+                              icon={<Send style={{ width: 12, height: 12 }} />}
+                              label="Sent"
+                              size="small"
+                              color="warning"
+                              variant="outlined"
+                            />
+                          ) : (
+                            <IconButton
+                              size="small"
+                              onClick={() => sendRequest(user.clerkId)}
+                              sx={{ color: "primary.main", "&:hover": { bgcolor: "action.hover" } }}
+                            >
+                              <UserPlus style={{ width: 16, height: 16 }} />
+                            </IconButton>
+                          )
+                        }
+                      >
+                        <ListItemAvatar>
+                          <Avatar
+                            src={user.avatar || undefined}
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              background: !user.avatar
+                                ? "linear-gradient(135deg, #818cf8, #6366f1)"
+                                : undefined,
+                              fontWeight: 700,
+                            }}
+                          >
+                            {!user.avatar && user.name.charAt(0).toUpperCase()}
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={<Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>{user.name}</Typography>}
+                          secondary={<Typography variant="caption" noWrap sx={{ display: "block" }}>{user.email}</Typography>}
+                        />
+                      </ListItem>
+                    );
+                  })}
+                </List>
+
+                {searchQuery.length >= 2 && !searching && searchResults.length === 0 && (
+                  <Typography variant="body2" sx={{ color: "text.secondary", textAlign: "center", py: 3 }}>
+                    No users found
+                  </Typography>
+                )}
+
+                {searchQuery.length < 2 && (
+                  <Box sx={{ textAlign: "center", py: 3 }}>
+                    <UserPlus style={{ width: 48, height: 48, color: "#d1d5db", margin: "0 auto 12px" }} />
+                    <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                      Type at least 2 characters to search
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            )}
+          </>
+        )}
+      </Box>
+    </Drawer>
   );
 }

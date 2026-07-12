@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Share2 } from "lucide-react";
 import SharedWithMe from "@/components/SharedWithMe";
+import { Box, Typography } from "@mui/material";
 
 export default function SharedPage() {
   return (
@@ -11,15 +12,28 @@ export default function SharedPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-        <div className="p-1.5 sm:p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg sm:rounded-xl">
-          <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 dark:text-indigo-400" />
-        </div>
-        <div>
-          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Shared with Me</h2>
-          <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400">Tasks others have shared with you</p>
-        </div>
-      </div>
+      <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 1.5 }, mb: { xs: 2, sm: 3 } }}>
+        <Box
+          sx={{
+            p: { xs: 0.75, sm: 1 },
+            bgcolor: "#ede9fe",
+            borderRadius: { xs: 1.5, sm: 2 },
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Share2 size={18} color="#6366f1" />
+        </Box>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 700, fontSize: { xs: "1rem", sm: "1.125rem" } }}>
+            Shared with Me
+          </Typography>
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
+            Tasks others have shared with you
+          </Typography>
+        </Box>
+      </Box>
 
       <SharedWithMe />
     </motion.div>

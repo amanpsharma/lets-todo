@@ -1,20 +1,23 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { Badge } from "@mui/material";
 
 export default function NotificationBadge({ count }: { count: number }) {
   if (count <= 0) return null;
 
   return (
-    <AnimatePresence>
-      <motion.span
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        exit={{ scale: 0 }}
-        className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full shadow-lg shadow-red-500/30"
-      >
-        {count > 99 ? "99+" : count}
-      </motion.span>
-    </AnimatePresence>
+    <Badge
+      badgeContent={count > 99 ? "99+" : count}
+      color="error"
+      max={99}
+      sx={{
+        "& .MuiBadge-badge": {
+          fontSize: "0.6rem",
+          height: 18,
+          minWidth: 18,
+          boxShadow: "0 2px 8px rgba(239,68,68,0.3)",
+        },
+      }}
+    />
   );
 }

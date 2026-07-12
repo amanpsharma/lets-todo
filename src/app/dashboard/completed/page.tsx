@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
+import { Box, Typography } from "@mui/material";
 import { useTodoContext } from "@/context/TodoContext";
 import TodoList from "@/components/TodoList";
 import SortDropdown from "@/components/SortDropdown";
@@ -42,9 +43,9 @@ export default function CompletedTasksPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", py: 10 }}>
         <div className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-      </div>
+      </Box>
     );
   }
 
@@ -54,18 +55,35 @@ export default function CompletedTasksPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="p-1.5 sm:p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg sm:rounded-xl">
-            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400" />
-          </div>
-          <div>
-            <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Completed</h2>
-            <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400">{completedTodos.length} tasks done</p>
-          </div>
-        </div>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: { xs: 2, sm: 3 } }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 1, sm: 1.5 } }}>
+          <Box
+            sx={{
+              p: { xs: 0.75, sm: 1 },
+              bgcolor: "success.50",
+              borderRadius: { xs: 2, sm: 3 },
+              display: "flex",
+            }}
+          >
+            <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
+          </Box>
+          <Box>
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: "bold", fontSize: { xs: "0.875rem", sm: "1rem" } }}
+            >
+              Completed
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", fontSize: { xs: "0.6875rem", sm: "0.75rem" } }}
+            >
+              {completedTodos.length} tasks done
+            </Typography>
+          </Box>
+        </Box>
         <SortDropdown sortBy={sortBy} setSortBy={setSortBy} />
-      </div>
+      </Box>
 
       <TodoList
         todos={sortedTodos}

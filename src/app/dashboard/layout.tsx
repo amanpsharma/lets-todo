@@ -21,6 +21,7 @@ import NotificationCenter from "@/components/NotificationCenter";
 import OnboardingModal from "@/components/OnboardingModal";
 import { useNotifications } from "@/hooks/useNotifications";
 import toast from "react-hot-toast";
+import { AppBar, Toolbar, Button, IconButton, Badge, Chip } from "@mui/material";
 
 type TabType = "all" | "active" | "completed" | "shared";
 
@@ -169,7 +170,7 @@ export default function DashboardLayout({
                 animate={{ x: 0 }}
                 exit={{ x: -300 }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="fixed left-0 top-0 bottom-0 w-80 z-50 md:hidden"
+                className="fixed left-0 top-0 bottom-0 w-[85vw] max-w-80 z-50 md:hidden"
               >
                 <Sidebar
                   stats={stats}
@@ -196,98 +197,213 @@ export default function DashboardLayout({
         {/* Main Content */}
         <main className="flex-1 flex flex-col overflow-hidden">
           {/* Top Bar */}
-          <motion.header
+          <AppBar
+            component={motion.header}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b border-white/20 dark:border-white/5 glass"
+            position="static"
+            elevation={0}
+            sx={{
+              flexShrink: 0,
+              backgroundColor: "transparent",
+              borderBottom: "1px solid",
+              borderColor: "rgba(255,255,255,0.2)",
+              backdropFilter: "blur(12px)",
+            }}
+            className="glass"
           >
-            <div className="flex items-center gap-2 sm:gap-4">
-              {/* Mobile hamburger */}
-              <button
-                onClick={() => setMobileMenuOpen(true)}
-                className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 md:hidden"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-
-              <div className="flex items-center gap-2 sm:gap-3">
-                <motion.div
-                  whileHover={{ rotate: 15 }}
-                  className="p-1.5 sm:p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg sm:rounded-xl shadow-lg shadow-indigo-500/30"
+            <Toolbar
+              disableGutters
+              className="flex items-center justify-between px-3 sm:px-6 lg:px-8 py-2 sm:py-4"
+              sx={{ minHeight: "unset !important" }}
+            >
+              <div className="flex items-center gap-1.5 sm:gap-4">
+                {/* Mobile hamburger */}
+                <IconButton
+                  onClick={() => setMobileMenuOpen(true)}
+                  size="small"
+                  className="md:hidden text-gray-600 dark:text-gray-400"
+                  sx={{
+                    borderRadius: "0.75rem",
+                    "&:hover": { backgroundColor: "rgba(156,163,175,0.1)" },
+                  }}
+                  aria-label="Open menu"
                 >
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </motion.div>
-                <div>
-                  <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white font-heading">
-                    TaskFlow
-                  </h1>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
-                    Press{" "}
-                    <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px] font-mono">
-                      Ctrl+K
-                    </kbd>{" "}
-                    for commands
-                  </p>
+                  <Menu className="w-5 h-5" />
+                </IconButton>
+
+                <div className="flex items-center gap-1.5 sm:gap-3">
+                  <motion.div
+                    whileHover={{ rotate: 15 }}
+                    className="p-1.5 sm:p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg sm:rounded-xl shadow-lg shadow-indigo-500/30"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-white" />
+                  </motion.div>
+                  <div>
+                    <h1 className="text-sm sm:text-xl font-bold text-gray-900 dark:text-white font-heading">
+                      TaskFlow
+                    </h1>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
+                      Press{" "}
+                      <Chip
+                        label="Ctrl+K"
+                        size="small"
+                        variant="outlined"
+                        component="span"
+                        sx={{
+                          height: "18px",
+                          fontSize: "10px",
+                          fontFamily: "monospace",
+                          borderRadius: "4px",
+                          "& .MuiChip-label": { px: "6px", py: 0 },
+                        }}
+                        className="bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400"
+                      />{" "}
+                      for commands
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-1.5 sm:gap-3">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => router.push("/dashboard/pomodoro")}
-                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 text-sm font-medium hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors border border-amber-200/50 dark:border-amber-800/30"
-              >
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                Focus Mode
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => router.push("/dashboard/chat")}
-                className="relative hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors border border-indigo-200/50 dark:border-indigo-800/30"
-              >
-                <MessageCircle className="w-4 h-4" />
-                Chat
-                {unreadChats > 0 && (
-                  <span className="min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
-                    {unreadChats > 99 ? "99+" : unreadChats}
-                  </span>
-                )}
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => router.push("/dashboard/friends")}
-                className="relative hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors border border-indigo-200/50 dark:border-indigo-800/30"
-              >
-                <Users className="w-4 h-4" />
-                Friends
-                {pendingShared > 0 && (
-                  <span className="min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
-                    {pendingShared > 99 ? "99+" : pendingShared}
-                  </span>
-                )}
-              </motion.button>
-              <NotificationCenter />
-              <ThemeToggle />
-              <UserButton
-                appearance={{
-                  elements: { avatarBox: "w-8 h-8 sm:w-9 sm:h-9 ring-2 ring-indigo-500/20" },
-                }}
-              />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowModal(true)}
-                className="hidden sm:flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all hover:from-indigo-500 hover:to-indigo-400"
-              >
-                <Plus className="w-4 h-4" />
-                <span>New Task</span>
-              </motion.button>
-            </div>
-          </motion.header>
+              <div className="flex items-center gap-1 sm:gap-3">
+                {/* Focus Mode */}
+                <Button
+                  onClick={() => router.push("/dashboard/pomodoro")}
+                  size="small"
+                  startIcon={
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  }
+                  className="hidden lg:flex"
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: "0.75rem",
+                    border: "1px solid",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    px: 1.5,
+                    py: 1,
+                    color: "rgb(217 119 6)",
+                    borderColor: "rgba(253,230,138,0.5)",
+                    backgroundColor: "rgb(255 251 235 / 1)",
+                    "&:hover": { backgroundColor: "rgb(254 243 199 / 1)" },
+                    ".dark &": {
+                      color: "rgb(251 191 36)",
+                      borderColor: "rgba(120,53,15,0.3)",
+                      backgroundColor: "rgba(120,53,15,0.2)",
+                      "&:hover": { backgroundColor: "rgba(120,53,15,0.3)" },
+                    },
+                  }}
+                >
+                  Focus Mode
+                </Button>
+
+                {/* Chat */}
+                <Badge
+                  badgeContent={unreadChats > 99 ? "99+" : unreadChats}
+                  color="error"
+                  max={99}
+                  className="hidden lg:flex"
+                  sx={{ "& .MuiBadge-badge": { fontSize: "10px", height: "18px", minWidth: "18px" } }}
+                >
+                  <Button
+                    onClick={() => router.push("/dashboard/chat")}
+                    size="small"
+                    startIcon={<MessageCircle className="w-4 h-4" />}
+                    sx={{
+                      textTransform: "none",
+                      borderRadius: "0.75rem",
+                      border: "1px solid",
+                      fontSize: "0.875rem",
+                      fontWeight: 500,
+                      px: 1.5,
+                      py: 1,
+                      color: "rgb(99 102 241)",
+                      borderColor: "rgba(199,210,254,0.5)",
+                      backgroundColor: "rgb(238 242 255 / 1)",
+                      "&:hover": { backgroundColor: "rgb(224 231 255 / 1)" },
+                      ".dark &": {
+                        color: "rgb(165 180 252)",
+                        borderColor: "rgba(49,46,129,0.3)",
+                        backgroundColor: "rgba(49,46,129,0.2)",
+                        "&:hover": { backgroundColor: "rgba(49,46,129,0.3)" },
+                      },
+                    }}
+                  >
+                    Chat
+                  </Button>
+                </Badge>
+
+                {/* Friends */}
+                <Badge
+                  badgeContent={pendingShared > 99 ? "99+" : pendingShared}
+                  color="error"
+                  max={99}
+                  className="hidden lg:flex"
+                  sx={{ "& .MuiBadge-badge": { fontSize: "10px", height: "18px", minWidth: "18px" } }}
+                >
+                  <Button
+                    onClick={() => router.push("/dashboard/friends")}
+                    size="small"
+                    startIcon={<Users className="w-4 h-4" />}
+                    sx={{
+                      textTransform: "none",
+                      borderRadius: "0.75rem",
+                      border: "1px solid",
+                      fontSize: "0.875rem",
+                      fontWeight: 500,
+                      px: 1.5,
+                      py: 1,
+                      color: "rgb(99 102 241)",
+                      borderColor: "rgba(199,210,254,0.5)",
+                      backgroundColor: "rgb(238 242 255 / 1)",
+                      "&:hover": { backgroundColor: "rgb(224 231 255 / 1)" },
+                      ".dark &": {
+                        color: "rgb(165 180 252)",
+                        borderColor: "rgba(49,46,129,0.3)",
+                        backgroundColor: "rgba(49,46,129,0.2)",
+                        "&:hover": { backgroundColor: "rgba(49,46,129,0.3)" },
+                      },
+                    }}
+                  >
+                    Friends
+                  </Button>
+                </Badge>
+
+                <NotificationCenter />
+                <span className="hidden sm:inline-flex">
+                  <ThemeToggle />
+                </span>
+                <UserButton
+                  appearance={{
+                    elements: { avatarBox: "w-7 h-7 sm:w-9 sm:h-9 ring-2 ring-indigo-500/20" },
+                  }}
+                />
+
+                {/* New Task - hidden on mobile, MobileNav has FAB */}
+                <Button
+                  onClick={() => setShowModal(true)}
+                  variant="contained"
+                  startIcon={<Plus className="w-4 h-4" />}
+                  className="hidden sm:flex"
+                  sx={{
+                    textTransform: "none",
+                    borderRadius: "0.75rem",
+                    fontWeight: 500,
+                    px: { sm: 2, lg: 2.5 },
+                    py: { sm: 1, lg: 1.25 },
+                    background: "linear-gradient(to right, #4f46e5, #6366f1)",
+                    boxShadow: "0 4px 14px 0 rgba(99,102,241,0.3)",
+                    "&:hover": {
+                      background: "linear-gradient(to right, #6366f1, #818cf8)",
+                      boxShadow: "0 4px 20px 0 rgba(99,102,241,0.5)",
+                    },
+                  }}
+                >
+                  New Task
+                </Button>
+              </div>
+            </Toolbar>
+          </AppBar>
 
           {/* Page Content — extra bottom padding on mobile for bottom nav */}
           <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-24 md:pb-6">

@@ -12,6 +12,20 @@ import {
   ListChecks,
   AlertTriangle,
 } from "lucide-react";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+} from "@mui/material";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import WorkIcon from "@mui/icons-material/Work";
+import HomeIcon from "@mui/icons-material/Home";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import SchoolIcon from "@mui/icons-material/School";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import { SvgIconComponent } from "@mui/icons-material";
 import { TodoContext } from "@/context/TodoContext";
 import { Todo } from "@/types/todo";
 import { isPast, isToday, format, subDays, startOfDay } from "date-fns";
@@ -23,14 +37,14 @@ const priorityColors: Record<string, string> = {
   urgent: "bg-red-500",
 };
 
-const categoryEmoji: Record<string, string> = {
-  general: "📋",
-  work: "💼",
-  personal: "🏠",
-  shopping: "🛒",
-  health: "💪",
-  learning: "📚",
-  finance: "💰",
+const categoryIconMap: Record<string, SvgIconComponent> = {
+  general: AssignmentIcon,
+  work: WorkIcon,
+  personal: HomeIcon,
+  shopping: ShoppingCartIcon,
+  health: FitnessCenterIcon,
+  learning: SchoolIcon,
+  finance: AccountBalanceIcon,
 };
 
 export default function AnalyticsPage() {
@@ -122,19 +136,30 @@ export default function AnalyticsPage() {
   const maxDailyCount = Math.max(...analytics.last7.map((d) => d.count), 1);
 
   return (
-    <div className="h-full">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold font-heading text-gray-900 dark:text-white flex items-center gap-3">
+    <Box sx={{ height: "100%" }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1.5 }}
+        >
           <BarChart3 className="w-6 h-6 text-indigo-500" />
           Analytics
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Track your productivity and progress
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "repeat(2, 1fr)", lg: "repeat(4, 1fr)" },
+          gap: 2,
+          mb: 3,
+        }}
+      >
         {statCards.map((card, i) => {
           const Icon = card.icon;
           return (
@@ -143,84 +168,112 @@ export default function AnalyticsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="glass-card rounded-2xl p-4 sm:p-5"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <div
-                  className={`p-2 rounded-xl bg-gradient-to-br ${card.color} shadow-lg`}
-                >
-                  <Icon className="w-4 h-4 text-white" />
-                </div>
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {card.label}
-                </span>
-              </div>
-              <p className="text-2xl sm:text-3xl font-bold font-heading text-gray-900 dark:text-white">
-                {card.value}
-              </p>
+              <Card variant="outlined" sx={{ borderRadius: 3 }}>
+                <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
+                    <Box
+                      className={`p-2 rounded-xl bg-gradient-to-br ${card.color} shadow-lg`}
+                      sx={{ display: "flex" }}
+                    >
+                      <Icon className="w-4 h-4 text-white" />
+                    </Box>
+                    <Typography variant="caption" sx={{ color: "text.secondary", fontWeight: "medium" }}>
+                      {card.label}
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="h4"
+                    noWrap
+                    sx={{ fontWeight: "bold", fontSize: { xs: "1.25rem", sm: "1.875rem" } }}
+                  >
+                    {card.value}
+                  </Typography>
+                </CardContent>
+              </Card>
             </motion.div>
           );
         })}
-      </div>
+      </Box>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", lg: "repeat(2, 1fr)" },
+          gap: 3,
+        }}
+      >
         {/* Completion Rate */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="glass-card rounded-2xl p-5 sm:p-6"
         >
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Target className="w-4 h-4 text-indigo-500" />
-            Completion Rate
-          </h3>
-          <div className="flex items-center gap-6">
-            <div className="relative w-28 h-28">
-              <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="42"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="8"
-                  className="text-gray-200 dark:text-gray-700"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="42"
-                  fill="none"
-                  stroke="url(#grad)"
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                  strokeDasharray={`${analytics.completionRate * 2.64} 264`}
-                />
-                <defs>
-                  <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#8b5cf6" />
-                    <stop offset="100%" stopColor="#a855f7" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold font-heading text-gray-900 dark:text-white">
-                  {analytics.completionRate}%
-                </span>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {analytics.completed} of {analytics.total} tasks completed
-              </p>
-              {analytics.overdue > 0 && (
-                <p className="text-xs text-red-500 mt-1">
-                  {analytics.overdue} overdue
-                </p>
-              )}
-            </div>
-          </div>
+          <Card variant="outlined" sx={{ borderRadius: 3 }}>
+            <CardContent sx={{ p: { xs: 2.5, sm: 3 } }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, mb: 2, display: "flex", alignItems: "center", gap: 1 }}
+              >
+                <Target className="w-4 h-4 text-indigo-500" />
+                Completion Rate
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 2, sm: 3 }, flexWrap: { xs: "wrap", sm: "nowrap" }, justifyContent: { xs: "center", sm: "flex-start" } }}>
+                <Box sx={{ position: "relative", width: { xs: 96, sm: 112 }, height: { xs: 96, sm: 112 }, flexShrink: 0 }}>
+                  <svg viewBox="0 0 100 100" style={{ width: "100%", height: "100%", transform: "rotate(-90deg)" }}>
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="42"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      style={{ color: "#e5e7eb" }}
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="42"
+                      fill="none"
+                      stroke="url(#grad)"
+                      strokeWidth="8"
+                      strokeLinecap="round"
+                      strokeDasharray={`${analytics.completionRate * 2.64} 264`}
+                    />
+                    <defs>
+                      <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#8b5cf6" />
+                        <stop offset="100%" stopColor="#a855f7" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      inset: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                      {analytics.completionRate}%
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box>
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                    {analytics.completed} of {analytics.total} tasks completed
+                  </Typography>
+                  {analytics.overdue > 0 && (
+                    <Typography variant="caption" sx={{ color: "error.main", display: "block", mt: 0.5 }}>
+                      {analytics.overdue} overdue
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Last 7 Days */}
@@ -228,33 +281,51 @@ export default function AnalyticsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="glass-card rounded-2xl p-5 sm:p-6"
         >
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-indigo-500" />
-            Last 7 Days
-          </h3>
-          <div className="flex items-end gap-2 h-32">
-            {analytics.last7.map((day) => (
-              <div
-                key={day.label}
-                className="flex-1 flex flex-col items-center gap-1"
+          <Card variant="outlined" sx={{ borderRadius: 3 }}>
+            <CardContent sx={{ p: { xs: 2.5, sm: 3 } }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, mb: 2, display: "flex", alignItems: "center", gap: 1 }}
               >
-                <span className="text-[11px] font-medium text-gray-900 dark:text-white">
-                  {day.count}
-                </span>
-                <div
-                  className="w-full rounded-t-lg bg-gradient-to-t from-indigo-500 to-indigo-400 transition-all"
-                  style={{
-                    height: `${Math.max((day.count / maxDailyCount) * 100, 4)}%`,
-                  }}
-                />
-                <span className="text-[10px] text-gray-500 dark:text-gray-400">
-                  {day.label}
-                </span>
-              </div>
-            ))}
-          </div>
+                <TrendingUp className="w-4 h-4 text-indigo-500" />
+                Last 7 Days
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "flex-end", gap: 1, height: 128 }}>
+                {analytics.last7.map((day) => (
+                  <Box
+                    key={day.label}
+                    sx={{
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 0.25,
+                      height: "100%",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <Typography variant="caption" sx={{ fontWeight: "medium", fontSize: "0.6875rem" }}>
+                      {day.count}
+                    </Typography>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        borderTopLeftRadius: 4,
+                        borderTopRightRadius: 4,
+                        background: "linear-gradient(to top, #6366f1, #818cf8)",
+                        transition: "height 0.3s",
+                        height: `${Math.max((day.count / maxDailyCount) * 100, 4)}%`,
+                      }}
+                    />
+                    <Typography variant="caption" sx={{ color: "text.secondary", fontSize: "0.625rem" }}>
+                      {day.label}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Category Breakdown */}
@@ -262,34 +333,50 @@ export default function AnalyticsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="glass-card rounded-2xl p-5 sm:p-6"
         >
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
-            Categories
-          </h3>
-          <div className="space-y-3">
-            {analytics.categories.map(([cat, data]) => (
-              <div key={cat}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
-                    <span>{categoryEmoji[cat] || "📋"}</span>
-                    <span className="capitalize">{cat}</span>
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {data.done}/{data.total}
-                  </span>
-                </div>
-                <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-indigo-400 transition-all"
-                    style={{
-                      width: `${data.total > 0 ? (data.done / data.total) * 100 : 0}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+          <Card variant="outlined" sx={{ borderRadius: 3 }}>
+            <CardContent sx={{ p: { xs: 2.5, sm: 3 } }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 2 }}>
+                Categories
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                {analytics.categories.map(([cat, data]) => (
+                  <Box key={cat}>
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 0.5 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary", display: "flex", alignItems: "center", gap: 0.75, textTransform: "capitalize" }}
+                      >
+                        {(() => { const Icon = categoryIconMap[cat] || AssignmentIcon; return <Icon fontSize="small" />; })()}
+                        {cat}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                        {data.done}/{data.total}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        height: 8,
+                        bgcolor: "action.hover",
+                        borderRadius: 4,
+                        overflow: "hidden",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          height: "100%",
+                          borderRadius: 4,
+                          background: "linear-gradient(to right, #6366f1, #818cf8)",
+                          transition: "width 0.3s",
+                          width: `${data.total > 0 ? (data.done / data.total) * 100 : 0}%`,
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Priority Breakdown */}
@@ -297,38 +384,45 @@ export default function AnalyticsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="glass-card rounded-2xl p-5 sm:p-6"
         >
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Flame className="w-4 h-4 text-indigo-500" />
-            By Priority
-          </h3>
-          <div className="space-y-3">
-            {["urgent", "high", "medium", "low"].map((p) => {
-              const data = analytics.priorities.find(([k]) => k === p)?.[1] || {
-                total: 0,
-                done: 0,
-              };
-              return (
-                <div key={p} className="flex items-center gap-3">
-                  <span
-                    className={`w-3 h-3 rounded-full ${priorityColors[p]}`}
-                  />
-                  <span className="text-sm capitalize text-gray-700 dark:text-gray-300 flex-1">
-                    {p}
-                  </span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {data.total}
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    ({data.done} done)
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+          <Card variant="outlined" sx={{ borderRadius: 3 }}>
+            <CardContent sx={{ p: { xs: 2.5, sm: 3 } }}>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 600, mb: 2, display: "flex", alignItems: "center", gap: 1 }}
+              >
+                <Flame className="w-4 h-4 text-indigo-500" />
+                By Priority
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                {["urgent", "high", "medium", "low"].map((p) => {
+                  const data = analytics.priorities.find(([k]) => k === p)?.[1] || {
+                    total: 0,
+                    done: 0,
+                  };
+                  return (
+                    <Box key={p} sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                      <span className={`w-3 h-3 rounded-full ${priorityColors[p]}`} />
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "text.secondary", flex: 1, textTransform: "capitalize" }}
+                      >
+                        {p}
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "medium" }}>
+                        {data.total}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                        ({data.done} done)
+                      </Typography>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </CardContent>
+          </Card>
         </motion.div>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

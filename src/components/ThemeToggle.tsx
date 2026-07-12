@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
+import { IconButton, Tooltip } from "@mui/material";
 
 export default function ThemeToggle() {
   const [dark, setDark] = useState(false);
@@ -20,24 +21,28 @@ export default function ThemeToggle() {
   };
 
   return (
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={toggle}
-      className="relative p-2.5 rounded-xl bg-white/80 dark:bg-gray-800/80 border border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all backdrop-blur-sm shadow-sm"
-      aria-label="Toggle theme"
-    >
-      <motion.div
-        initial={false}
-        animate={{ rotate: dark ? 180 : 0, scale: dark ? 0.9 : 1 }}
-        transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
-      >
-        {dark ? (
-          <Moon className="w-4.5 h-4.5 text-indigo-400" />
-        ) : (
-          <Sun className="w-4.5 h-4.5 text-amber-500" />
-        )}
+    <Tooltip title={dark ? "Switch to light mode" : "Switch to dark mode"} arrow>
+      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <IconButton
+          onClick={toggle}
+          aria-label="Toggle theme"
+          size="small"
+          sx={{ borderRadius: 3 }}
+        >
+          <motion.div
+            initial={false}
+            animate={{ rotate: dark ? 180 : 0, scale: dark ? 0.9 : 1 }}
+            transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
+            style={{ display: "flex", alignItems: "center" }}
+          >
+            {dark ? (
+              <Moon style={{ width: 18, height: 18, color: "#818cf8" }} />
+            ) : (
+              <Sun style={{ width: 18, height: 18, color: "#f59e0b" }} />
+            )}
+          </motion.div>
+        </IconButton>
       </motion.div>
-    </motion.button>
+    </Tooltip>
   );
 }

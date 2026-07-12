@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import TodoItem from "./TodoItem";
 import { Todo } from "@/types/todo";
 import { ClipboardList, Sparkles } from "lucide-react";
+import { Stack, Box, Typography } from "@mui/material";
 
 interface TodoListProps {
   todos: Todo[];
@@ -26,30 +27,69 @@ export default function TodoList({
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col items-center justify-center py-20"
       >
-        <div className="relative">
-          <div className="w-28 h-28 bg-gradient-to-br from-indigo-100 to-amber-100 dark:from-indigo-900/20 dark:to-amber-900/15 rounded-3xl flex items-center justify-center shadow-inner">
-            <ClipboardList className="w-12 h-12 text-indigo-400 dark:text-indigo-500" />
-          </div>
+        <Box sx={{ position: "relative" }}>
+          <Box
+            sx={{
+              width: 112,
+              height: 112,
+              background: "linear-gradient(135deg, #e0e7ff 0%, #fef3c7 100%)",
+              borderRadius: 4,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "inset 0 2px 8px rgba(0,0,0,0.08)",
+            }}
+          >
+            <ClipboardList style={{ width: 48, height: 48, color: "#818cf8" }} />
+          </Box>
           <motion.div
             animate={{ rotate: [0, 10, -10, 0], y: [0, -3, 0] }}
             transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-            className="absolute -top-2 -right-2 p-2 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl shadow-lg"
+            style={{
+              position: "absolute",
+              top: -8,
+              right: -8,
+              padding: 8,
+              background: "linear-gradient(135deg, #fbbf24 0%, #f97316 100%)",
+              borderRadius: 12,
+              boxShadow: "0 4px 12px rgba(251,191,36,0.4)",
+            }}
           >
-            <Sparkles className="w-4 h-4 text-white" />
+            <Sparkles style={{ width: 16, height: 16, color: "white" }} />
           </motion.div>
-        </div>
-        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mt-6">
+        </Box>
+        <Typography
+          variant="h6"
+          sx={{ color: "text.primary", mt: 3, fontWeight: 700 }}
+        >
           No tasks here yet
-        </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 text-center max-w-xs">
-          Press <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs font-mono">Ctrl+N</kbd> or click the + button to create your first task
-        </p>
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary", mt: 1, textAlign: "center", maxWidth: 280 }}
+        >
+          Press{" "}
+          <Box
+            component="kbd"
+            sx={{
+              px: 0.75,
+              py: 0.25,
+              bgcolor: "grey.100",
+              borderRadius: 1,
+              fontFamily: "monospace",
+              fontSize: "0.7rem",
+            }}
+          >
+            Ctrl+N
+          </Box>{" "}
+          or click the + button to create your first task
+        </Typography>
       </motion.div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <Stack spacing={1.5}>
       <AnimatePresence mode="popLayout">
         {todos.map((todo, index) => (
           <motion.div
@@ -68,6 +108,6 @@ export default function TodoList({
           </motion.div>
         ))}
       </AnimatePresence>
-    </div>
+    </Stack>
   );
 }

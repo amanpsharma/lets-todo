@@ -1,8 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Download, X, Share, Plus } from "lucide-react";
+import {
+  Snackbar,
+  Alert,
+  Button,
+  Box,
+  Typography,
+  IconButton,
+} from "@mui/material";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -17,28 +24,22 @@ export default function PWAInstallPrompt() {
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // Check if already installed
-    const standalone = window.matchMedia(
-      "(display-mode: standalone)"
-    ).matches;
+    const standalone = window.matchMedia("(display-mode: standalone)").matches;
     setIsStandalone(standalone);
 
     if (standalone) return;
 
-    // Check if dismissed recently (don't show again for 7 days)
     const dismissed = localStorage.getItem("pwa-install-dismissed");
     if (dismissed) {
       const dismissedAt = parseInt(dismissed, 10);
       if (Date.now() - dismissedAt < 7 * 24 * 60 * 60 * 1000) return;
     }
 
-    // iOS detection
     const ios =
       /iPad|iPhone|iPod/.test(navigator.userAgent) &&
       !(window as unknown as { MSStream?: unknown }).MSStream;
     setIsIOS(ios);
 
-    // Android/Chrome install prompt
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -46,7 +47,6 @@ export default function PWAInstallPrompt() {
     };
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Show iOS banner after a short delay
     if (ios) {
       const timer = setTimeout(() => setShowBanner(true), 3000);
       return () => {
@@ -73,69 +73,115 @@ export default function PWAInstallPrompt() {
     localStorage.setItem("pwa-install-dismissed", Date.now().toString());
   };
 
-  if (isStandalone || !showBanner) return null;
+  if (isStandalone) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 50 }}
-        className="fixed bottom-20 md:bottom-6 left-4 right-4 sm:left-auto sm:right-6 sm:w-96 z-50"
+    <Snackbar
+      open={showBanner}
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      sx={{
+        bottom: { xs: 80, md: 24 },
+        right: { xs: 16, sm: 24 },
+        left: { xs: 16, sm: "auto" },
+        width: { xs: "auto", sm: 384 },
+      }}
+    >
+      <Alert
+        severity="info"
+        icon={false}
+        sx={{
+          width: "100%",
+          borderRadius: 3,
+          bgcolor: "background.paper",
+          border: "1px solid",
+          borderColor: "divider",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+          backdropFilter: "blur(12px)",
+          p: 2,
+          "& .MuiAlert-message": { width: "100%", p: 0 },
+        }}
+        action={
+          <IconButton size="small" onClick={handleDismiss} sx={{ alignSelf: "flex-start", mt: -0.5 }}>
+            <X style={{ width: 16, height: 16 }} />
+          </IconButton>
+        }
       >
-        <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-4 sm:p-5">
-          <button
-            onClick={handleDismiss}
-            className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 transition-colors"
+        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, pr: 1 }}>
+          <Box
+            sx={{
+              p: 1.25,
+              background: "linear-gradient(135deg, #6366f1, #4f46e5)",
+              borderRadius: 2,
+              boxShadow: "0 4px 12px rgba(99,102,241,0.4)",
+              flexShrink: 0,
+            }}
           >
-            <X className="w-4 h-4" />
-          </button>
+            <Download style={{ width: 20, height: 20, color: "white" }} />
+          </Box>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography variant="body2" sx={{ mb: 0.25, fontWeight: 700 }}>
+              Install TaskFlow
+            </Typography>
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
+              {isIOS
+                ? "Add to your home screen for the best experience"
+                : "Install for quick access and offline support"}
+            </Typography>
 
-          <div className="flex items-start gap-3">
-            <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-lg shadow-indigo-500/30 flex-shrink-0">
-              <Download className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0 pr-6">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">
-                Install TaskFlow
-              </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                {isIOS
-                  ? "Add to your home screen for the best experience"
-                  : "Install for quick access and offline support"}
-              </p>
-            </div>
-          </div>
-
-          {isIOS ? (
-            <div className="mt-3 flex items-center gap-2 px-3 py-2.5 bg-gray-50 dark:bg-gray-800/80 rounded-xl">
-              <span className="text-xs text-gray-600 dark:text-gray-300">
-                Tap{" "}
-                <Share className="w-3.5 h-3.5 inline-block text-blue-500 -mt-0.5" />{" "}
-                then{" "}
-                <span className="inline-flex items-center gap-0.5 font-medium">
-                  <Plus className="w-3 h-3" /> Add to Home Screen
-                </span>
-              </span>
-            </div>
-          ) : (
-            <div className="mt-3 flex gap-2">
-              <button
-                onClick={handleDismiss}
-                className="flex-1 py-2.5 rounded-xl text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            {isIOS ? (
+              <Box
+                sx={{
+                  mt: 1.5,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.75,
+                  px: 1.5,
+                  py: 1,
+                  bgcolor: "action.hover",
+                  borderRadius: 2,
+                }}
               >
-                Not now
-              </button>
-              <button
-                onClick={handleInstall}
-                className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 shadow-lg shadow-indigo-500/25 transition-all"
-              >
-                Install
-              </button>
-            </div>
-          )}
-        </div>
-      </motion.div>
-    </AnimatePresence>
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                  Tap{" "}
+                  <Share style={{ width: 14, height: 14, display: "inline", color: "#3b82f6", verticalAlign: "middle" }} />{" "}
+                  then{" "}
+                  <Box component="span" sx={{ fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 0.25 }}>
+                    <Plus style={{ width: 12, height: 12 }} /> Add to Home Screen
+                  </Box>
+                </Typography>
+              </Box>
+            ) : (
+              <Box sx={{ mt: 1.5, display: "flex", gap: 1 }}>
+                <Button
+                  fullWidth
+                  size="small"
+                  variant="outlined"
+                  onClick={handleDismiss}
+                  sx={{ borderRadius: "10px", textTransform: "none", fontSize: "0.75rem" }}
+                >
+                  Not now
+                </Button>
+                <Button
+                  fullWidth
+                  size="small"
+                  variant="contained"
+                  onClick={handleInstall}
+                  sx={{
+                    borderRadius: "10px",
+                    textTransform: "none",
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                    background: "linear-gradient(135deg, #4f46e5, #6366f1)",
+                    "&:hover": { background: "linear-gradient(135deg, #6366f1, #818cf8)" },
+                  }}
+                >
+                  Install
+                </Button>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Alert>
+    </Snackbar>
   );
 }

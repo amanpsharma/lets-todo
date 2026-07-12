@@ -3,31 +3,47 @@
 import { motion } from "framer-motion";
 import { FileQuestion } from "lucide-react";
 import Link from "next/link";
+import { Box, Typography, Button } from "@mui/material";
 
 export default function DashboardNotFound() {
   return (
-    <div className="flex flex-col items-center justify-center py-20">
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", py: 10 }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center"
       >
-        <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/20 rounded-3xl flex items-center justify-center mx-auto mb-5">
-          <FileQuestion className="w-10 h-10 text-indigo-500" />
-        </div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          Page not found
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-          The page you&apos;re looking for doesn&apos;t exist.
-        </p>
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all"
-        >
-          Back to Dashboard
-        </Link>
+        <Box sx={{ textAlign: "center" }}>
+          <Box
+            sx={{
+              width: 80,
+              height: 80,
+              bgcolor: "primary.50",
+              borderRadius: 4,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mx: "auto",
+              mb: 2.5,
+            }}
+          >
+            <FileQuestion className="w-10 h-10 text-indigo-500" />
+          </Box>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
+            Page not found
+          </Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary", mb: 3 }}>
+            The page you&apos;re looking for doesn&apos;t exist.
+          </Typography>
+          <Button
+            component={Link}
+            href="/dashboard"
+            variant="contained"
+            sx={{ borderRadius: 2, textTransform: "none", px: 3, py: 1.25 }}
+          >
+            Back to Dashboard
+          </Button>
+        </Box>
       </motion.div>
-    </div>
+    </Box>
   );
 }

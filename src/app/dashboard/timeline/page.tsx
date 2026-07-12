@@ -10,6 +10,14 @@ import {
   Share2,
 } from "lucide-react";
 import { format, isToday, isYesterday, formatDistanceToNow } from "date-fns";
+import {
+  Box,
+  Typography,
+  Paper,
+  Card,
+  Chip,
+  Divider,
+} from "@mui/material";
 import { TodoContext } from "@/context/TodoContext";
 import { Todo } from "@/types/todo";
 
@@ -64,7 +72,6 @@ export default function TimelinePage() {
           category: todo.category,
         });
       }
-
     }
 
     list.sort((a, b) => b.date.getTime() - a.date.getTime());
@@ -94,13 +101,13 @@ export default function TimelinePage() {
   const iconForType = (type: string) => {
     switch (type) {
       case "created":
-        return { icon: Plus, color: "bg-blue-500", ring: "ring-blue-200 dark:ring-blue-900" };
+        return { icon: Plus, color: "bg-blue-500" };
       case "completed":
-        return { icon: CheckCircle2, color: "bg-emerald-500", ring: "ring-emerald-200 dark:ring-emerald-900" };
+        return { icon: CheckCircle2, color: "bg-emerald-500" };
       case "shared":
-        return { icon: Share2, color: "bg-indigo-500", ring: "ring-indigo-200 dark:ring-indigo-900" };
+        return { icon: Share2, color: "bg-indigo-500" };
       default:
-        return { icon: Edit3, color: "bg-gray-500", ring: "ring-gray-200 dark:ring-gray-800" };
+        return { icon: Edit3, color: "bg-gray-500" };
     }
   };
 
@@ -113,78 +120,149 @@ export default function TimelinePage() {
     }
   };
 
+  const chipColorForType = (type: string): "primary" | "success" | "secondary" | "default" => {
+    switch (type) {
+      case "created": return "primary";
+      case "completed": return "success";
+      case "shared": return "secondary";
+      default: return "default";
+    }
+  };
+
   return (
-    <div className="h-full max-w-2xl mx-auto">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold font-heading text-gray-900 dark:text-white flex items-center gap-3">
+    <Box sx={{ height: "100%", maxWidth: 672, mx: "auto" }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1.5 }}
+        >
           <Clock className="w-6 h-6 text-indigo-500" />
           Activity Timeline
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           See everything that happened with your tasks
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
       {events.length === 0 ? (
-        <div className="text-center py-16">
-          <Clock className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No activity yet</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Create your first task to see activity here</p>
-        </div>
+        <Box sx={{ textAlign: "center", py: 8 }}>
+          <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+            No activity yet
+          </Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            Create your first task to see activity here
+          </Typography>
+        </Box>
       ) : (
-        <div className="space-y-8">
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
           {grouped.map((group) => (
-            <div key={group.label}>
-              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 sticky top-0 bg-gradient-to-r from-slate-50 via-blue-50/30 to-indigo-50 dark:from-gray-950 dark:via-slate-950 dark:to-indigo-950/50 py-2 z-10">
+            <Box key={group.label}>
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: 600,
+                  color: "text.secondary",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  display: "block",
+                  mb: 2,
+                  py: 1,
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 10,
+                  bgcolor: "background.default",
+                }}
+              >
                 {group.label}
-              </h3>
-              <div className="relative pl-8 border-l-2 border-gray-200 dark:border-gray-800 space-y-4">
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              <Box
+                sx={{
+                  position: "relative",
+                  pl: 4,
+                  borderLeft: "2px solid",
+                  borderColor: "divider",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                }}
+              >
                 {group.events.map((event, idx) => {
-                  const { icon: Icon, color, ring } = iconForType(event.type);
+                  const { icon: Icon, color } = iconForType(event.type);
                   return (
                     <motion.div
                       key={event.id}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.03 }}
-                      className="relative"
+                      style={{ position: "relative" }}
                     >
                       {/* Dot on timeline */}
-                      <div className={`absolute -left-[calc(2rem+5px)] w-3 h-3 rounded-full ${color} ring-4 ${ring}`} />
+                      <Box
+                        className={`absolute w-3 h-3 rounded-full ${color}`}
+                        sx={{
+                          left: "calc(-2rem - 5px)",
+                          top: 16,
+                          width: 12,
+                          height: 12,
+                          borderRadius: "50%",
+                          position: "absolute",
+                        }}
+                      />
 
-                      <div className="glass-card rounded-xl p-4">
-                        <div className="flex items-start gap-3">
-                          <div className={`p-1.5 rounded-lg ${color} flex-shrink-0`}>
+                      <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                        <Box sx={{ p: 2, display: "flex", alignItems: "flex-start", gap: 1.5 }}>
+                          <Box
+                            className={`p-1.5 rounded-lg ${color} flex-shrink-0`}
+                            sx={{ display: "flex" }}
+                          >
                             <Icon className="w-3 h-3 text-white" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                                {labelForType(event.type)}
-                              </span>
+                          </Box>
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                              <Chip
+                                label={labelForType(event.type)}
+                                size="small"
+                                color={chipColorForType(event.type)}
+                                variant="outlined"
+                                sx={{ height: 20, fontSize: "0.6875rem" }}
+                              />
                               {event.category && event.category !== "general" && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 capitalize">
-                                  {event.category}
-                                </span>
+                                <Chip
+                                  label={event.category}
+                                  size="small"
+                                  variant="outlined"
+                                  sx={{
+                                    height: 18,
+                                    fontSize: "0.625rem",
+                                    textTransform: "capitalize",
+                                  }}
+                                />
                               )}
-                            </div>
-                            <p className="text-sm font-medium text-gray-900 dark:text-white mt-0.5 truncate">
+                            </Box>
+                            <Typography
+                              variant="body2"
+                              noWrap
+                              sx={{ fontWeight: "medium", mt: 0.5 }}
+                            >
                               {event.title}
-                            </p>
-                            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: "text.disabled", display: "block", mt: 0.5 }}>
                               {formatDistanceToNow(event.date, { addSuffix: true })}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Card>
                     </motion.div>
                   );
                 })}
-              </div>
-            </div>
+              </Box>
+            </Box>
           ))}
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

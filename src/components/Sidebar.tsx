@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
   ListTodo,
   Clock,
@@ -23,6 +22,28 @@ import {
 } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { Stats, Todo } from "@/types/todo";
+import {
+  Badge,
+  Button,
+  Chip,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  ListSubheader,
+  Typography,
+} from "@mui/material";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import WorkIcon from "@mui/icons-material/Work";
+import HomeIcon from "@mui/icons-material/Home";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import SchoolIcon from "@mui/icons-material/School";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import { SvgIconComponent } from "@mui/icons-material";
 
 type TabType = "all" | "active" | "completed" | "shared";
 
@@ -44,14 +65,14 @@ interface SidebarProps {
   pendingShared?: number;
 }
 
-const categoryIcons: Record<string, string> = {
-  general: "📋",
-  work: "💼",
-  personal: "🏠",
-  shopping: "🛒",
-  health: "💪",
-  learning: "📚",
-  finance: "💰",
+const categoryIcons: Record<string, SvgIconComponent> = {
+  general: AssignmentIcon,
+  work: WorkIcon,
+  personal: HomeIcon,
+  shopping: ShoppingCartIcon,
+  health: FitnessCenterIcon,
+  learning: SchoolIcon,
+  finance: AccountBalanceIcon,
 };
 
 export default function Sidebar({
@@ -80,203 +101,373 @@ export default function Sidebar({
 
   const categories = stats?.categories || [];
 
+  const drawerWidth = collapsed && !isMobile ? 80 : 320;
+
   return (
-    <motion.aside
-      initial={isMobile ? false : { x: -20, opacity: 0 }}
-      animate={isMobile ? undefined : { x: 0, opacity: 1 }}
-      className={`flex-shrink-0 h-full flex flex-col overflow-y-auto border-r border-white/20 dark:border-white/5 glass transition-all duration-300 ${
-        collapsed && !isMobile ? "w-20" : "w-80"
-      } ${isMobile ? "bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl" : "hidden md:flex"}`}
+    <Drawer
+      variant="permanent"
+      sx={{
+        display: isMobile ? "flex" : { xs: "none", md: "flex" },
+        width: drawerWidth,
+        flexShrink: 0,
+        transition: "width 0.3s",
+        "& .MuiDrawer-paper": {
+          width: drawerWidth,
+          transition: "width 0.3s",
+          overflowX: "hidden",
+          boxSizing: "border-box",
+          position: "relative",
+          height: "100%",
+          border: "none",
+          borderRight: "1px solid",
+          borderColor: "divider",
+          display: "flex",
+          flexDirection: "column",
+          overflowY: "auto",
+          bgcolor: isMobile ? "background.paper" : "transparent",
+        },
+      }}
     >
       {/* Collapse Toggle */}
-      <div className="flex items-center justify-end p-3">
-        <button
+      <List disablePadding sx={{ px: 1, pt: 1 }}>
+        <ListItemButton
+          sx={{ justifyContent: "flex-end", borderRadius: 2, px: 1 }}
           onClick={() => setCollapsed(!collapsed)}
-          className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </button>
-      </div>
+          <IconButton size="small" disableRipple>
+            {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </IconButton>
+        </ListItemButton>
+      </List>
 
-      {/* Quick Add Button */}
-      {!collapsed && (
-        <div className="px-4 mb-4">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+      {/* New Task Button */}
+      <List disablePadding sx={{ px: 2, mb: 1 }}>
+        {!collapsed ? (
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
             onClick={onNewTask}
-            className="w-full flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-2xl font-medium shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-shadow"
+            startIcon={<Plus size={18} />}
+            sx={{
+              borderRadius: 3,
+              py: 1.25,
+              boxShadow: "0 4px 14px rgba(99,102,241,0.35)",
+              "&:hover": { boxShadow: "0 6px 20px rgba(99,102,241,0.45)" },
+            }}
           >
-            <Plus className="w-5 h-5" />
-            <span>New Task</span>
-            <kbd className="ml-auto px-1.5 py-0.5 bg-white/20 rounded text-[10px] font-mono">Ctrl+N</kbd>
-          </motion.button>
-        </div>
-      )}
-
-      {collapsed && (
-        <div className="px-3 mb-4 flex justify-center">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            New Task
+          </Button>
+        ) : (
+          <IconButton
             onClick={onNewTask}
-            className="p-3 bg-gradient-to-br from-indigo-600 to-indigo-500 text-white rounded-xl shadow-lg"
+            color="primary"
+            sx={{
+              mx: "auto",
+              display: "flex",
+              bgcolor: "primary.main",
+              color: "primary.contrastText",
+              borderRadius: 2,
+              "&:hover": { bgcolor: "primary.dark" },
+              boxShadow: "0 4px 14px rgba(99,102,241,0.35)",
+            }}
           >
-            <Plus className="w-5 h-5" />
-          </motion.button>
-        </div>
-      )}
-
-      {/* Navigation */}
-      <nav className="px-3 space-y-1">
-        {!collapsed && (
-          <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-            Tasks
-          </p>
+            <Plus size={18} />
+          </IconButton>
         )}
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setActiveTab(item.id)}
-            className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-              activeTab === item.id
-                ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300"
-                : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
-            } ${collapsed ? "justify-center" : ""}`}
-          >
-            {activeTab === item.id && (
-              <motion.div
-                layoutId="sidebarActiveTab"
-                className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-indigo-600 rounded-r-full"
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              />
-            )}
-            <div className="relative flex-shrink-0">
-              <item.icon className="w-5 h-5" />
-              {collapsed && item.id === "shared" && pendingShared > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] px-0.5 flex items-center justify-center bg-red-500 text-white text-[8px] font-bold rounded-full">
-                  {pendingShared > 9 ? "9+" : pendingShared}
-                </span>
-              )}
-            </div>
-            {!collapsed && (
-              <>
-                <span>{item.label}</span>
-                {item.count !== null && (
-                  <span className={`ml-auto px-2 py-0.5 rounded-lg text-xs font-bold ${
-                    item.id === "shared" && pendingShared > 0
-                      ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
-                  }`}>
-                    {item.count}
-                  </span>
+      </List>
+
+      {/* Navigation — Tasks */}
+      <List
+        disablePadding
+        sx={{ px: 1 }}
+        subheader={
+          !collapsed ? (
+            <ListSubheader
+              disableSticky
+              sx={{
+                lineHeight: 2,
+                px: 1.5,
+                bgcolor: "transparent",
+              }}
+            >
+              <Typography variant="overline" sx={{ color: "text.secondary" }}>
+                Tasks
+              </Typography>
+            </ListSubheader>
+          ) : undefined
+        }
+      >
+        {navItems.map((item) => {
+          const isSharedActive = item.id === "shared";
+          const hasSharedBadge = isSharedActive && (pendingShared ?? 0) > 0;
+          return (
+            <ListItemButton
+              key={item.id}
+              selected={activeTab === item.id}
+              onClick={() => setActiveTab(item.id)}
+              sx={{
+                borderRadius: 2,
+                mb: 0.25,
+                justifyContent: collapsed ? "center" : "flex-start",
+                px: collapsed ? 1 : 1.5,
+                "&.Mui-selected": {
+                  bgcolor: "primary.main",
+                  color: "primary.contrastText",
+                  "& .MuiListItemIcon-root": { color: "primary.contrastText" },
+                  "&:hover": { bgcolor: "primary.dark" },
+                },
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: collapsed ? 0 : 36,
+                  color: activeTab === item.id ? "inherit" : "text.secondary",
+                }}
+              >
+                {collapsed && hasSharedBadge ? (
+                  <Badge badgeContent={pendingShared} color="error" max={9}>
+                    <item.icon size={20} />
+                  </Badge>
+                ) : (
+                  <item.icon size={20} />
                 )}
-              </>
-            )}
-          </button>
-        ))}
-      </nav>
+              </ListItemIcon>
+              {!collapsed && (
+                <ListItemText
+                  primary={item.label}
+                  slotProps={{ primary: { variant: "body2", sx: { fontWeight: 500 } } }}
+                />
+              )}
+              {!collapsed && item.count !== null && (
+                <Chip
+                  label={item.count}
+                  size="small"
+                  color={hasSharedBadge ? "error" : "default"}
+                  sx={{ height: 20, fontSize: "0.7rem", fontWeight: 700, ml: 0.5 }}
+                />
+              )}
+            </ListItemButton>
+          );
+        })}
+      </List>
 
       {/* Categories */}
       {!collapsed && categories.length > 0 && (
-        <div className="px-3 mt-6">
-          <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 flex items-center gap-2">
-            <FolderOpen className="w-3.5 h-3.5" />
-            Categories
-          </p>
-          <div className="space-y-1">
-            <button
+        <>
+          <Divider sx={{ mx: 2, my: 1 }} />
+          <List
+            disablePadding
+            sx={{ px: 1 }}
+            subheader={
+              <ListSubheader
+                disableSticky
+                sx={{ lineHeight: 2, px: 1.5, bgcolor: "transparent" }}
+              >
+                <Typography
+                  variant="overline"
+                  sx={{ color: "text.secondary", display: "flex", alignItems: "center", gap: 0.5 }}
+                >
+                  <FolderOpen size={14} />
+                  Categories
+                </Typography>
+              </ListSubheader>
+            }
+          >
+            {/* All Categories */}
+            <ListItemButton
+              selected={selectedCategory === ""}
               onClick={() => setSelectedCategory("")}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all ${
-                selectedCategory === ""
-                  ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium"
-                  : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-              }`}
+              sx={{
+                borderRadius: 2,
+                mb: 0.25,
+                px: 1.5,
+                "&.Mui-selected": {
+                  bgcolor: "action.selected",
+                  fontWeight: 600,
+                },
+              }}
             >
-              <span>📁</span>
-              <span>All Categories</span>
-            </button>
+              <ListItemIcon sx={{ minWidth: 32 }}>
+                <AssignmentIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText
+                primary="All Categories"
+                slotProps={{ primary: { variant: "body2" } }}
+              />
+            </ListItemButton>
+
             {categories.map((cat) => {
               const count = todos.filter((t) => t.category === cat).length;
               return (
-                <button
+                <ListItemButton
                   key={cat}
+                  selected={selectedCategory === cat}
                   onClick={() => setSelectedCategory(selectedCategory === cat ? "" : cat)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all ${
-                    selectedCategory === cat
-                      ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 font-medium"
-                      : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                  }`}
+                  sx={{
+                    borderRadius: 2,
+                    mb: 0.25,
+                    px: 1.5,
+                    "&.Mui-selected": {
+                      bgcolor: "primary.main",
+                      color: "primary.contrastText",
+                      "& .MuiListItemIcon-root": { color: "primary.contrastText" },
+                      "&:hover": { bgcolor: "primary.dark" },
+                    },
+                  }}
                 >
-                  <span>{categoryIcons[cat] || "📌"}</span>
-                  <span className="capitalize">{cat}</span>
-                  <span className="ml-auto text-xs text-gray-400">{count}</span>
-                </button>
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    {(() => { const Icon = categoryIcons[cat] || AssignmentIcon; return <Icon fontSize="small" />; })()}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={cat}
+                    slotProps={{
+                      primary: {
+                        variant: "body2",
+                        sx: { textTransform: "capitalize" },
+                      },
+                    }}
+                  />
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                    {count}
+                  </Typography>
+                </ListItemButton>
               );
             })}
-          </div>
-        </div>
+          </List>
+        </>
       )}
 
       {/* Quick Actions */}
-      <div className="px-3 mt-6">
-        {!collapsed && (
-          <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 flex items-center gap-2">
-            <Zap className="w-3.5 h-3.5" />
-            Quick Actions
-          </p>
-        )}
-        <button
+      <Divider sx={{ mx: 2, my: 1 }} />
+      <List
+        disablePadding
+        sx={{ px: 1 }}
+        subheader={
+          !collapsed ? (
+            <ListSubheader
+              disableSticky
+              sx={{ lineHeight: 2, px: 1.5, bgcolor: "transparent" }}
+            >
+              <Typography
+                variant="overline"
+                sx={{ color: "text.secondary", display: "flex", alignItems: "center", gap: 0.5 }}
+              >
+                <Zap size={14} />
+                Quick Actions
+              </Typography>
+            </ListSubheader>
+          ) : undefined
+        }
+      >
+        {/* Focus Timer */}
+        <ListItemButton
           onClick={onOpenPomodoro}
           title="Focus Timer"
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-amber-50 dark:hover:bg-amber-900/10 hover:text-amber-600 dark:hover:text-amber-400 transition-all ${collapsed ? "justify-center" : ""}`}
+          sx={{
+            borderRadius: 2,
+            mb: 0.25,
+            justifyContent: collapsed ? "center" : "flex-start",
+            px: collapsed ? 1 : 1.5,
+            "&:hover": {
+              bgcolor: "rgba(245,158,11,0.08)",
+              color: "secondary.main",
+              "& .MuiListItemIcon-root": { color: "secondary.main" },
+            },
+          }}
         >
-          <Timer className="w-5 h-5 flex-shrink-0" />
+          <ListItemIcon
+            sx={{ minWidth: collapsed ? 0 : 36, color: "text.secondary" }}
+          >
+            <Timer size={20} />
+          </ListItemIcon>
           {!collapsed && (
-            <>
-              <span>Focus Timer</span>
-              <kbd className="ml-auto px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-[10px] font-mono text-gray-400">Ctrl+P</kbd>
-            </>
+            <ListItemText
+              primary="Focus Timer"
+              slotProps={{ primary: { variant: "body2", sx: { fontWeight: 500 } } }}
+            />
           )}
-        </button>
-        <button
+        </ListItemButton>
+
+        {/* Chat */}
+        <ListItemButton
           onClick={onOpenChat}
           title="Chat"
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all ${collapsed ? "justify-center" : ""}`}
+          sx={{
+            borderRadius: 2,
+            mb: 0.25,
+            justifyContent: collapsed ? "center" : "flex-start",
+            px: collapsed ? 1 : 1.5,
+            "&:hover": {
+              bgcolor: "rgba(99,102,241,0.08)",
+              color: "primary.main",
+              "& .MuiListItemIcon-root": { color: "primary.main" },
+            },
+          }}
         >
-          <div className="relative flex-shrink-0">
-            <MessageCircle className="w-5 h-5" />
-            {unreadChats > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] px-0.5 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full">
-                {unreadChats > 99 ? "99+" : unreadChats}
-              </span>
+          <ListItemIcon
+            sx={{ minWidth: collapsed ? 0 : 36, color: "text.secondary" }}
+          >
+            {collapsed && unreadChats > 0 ? (
+              <Badge badgeContent={unreadChats} color="error" max={99}>
+                <MessageCircle size={20} />
+              </Badge>
+            ) : (
+              <MessageCircle size={20} />
             )}
-          </div>
+          </ListItemIcon>
           {!collapsed && (
             <>
-              <span>Chat</span>
+              <ListItemText
+                primary="Chat"
+                slotProps={{ primary: { variant: "body2", sx: { fontWeight: 500 } } }}
+              />
               {unreadChats > 0 && (
-                <span className="ml-auto px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-xs font-bold">
-                  {unreadChats}
-                </span>
+                <Chip
+                  label={unreadChats}
+                  size="small"
+                  color="error"
+                  sx={{ height: 20, fontSize: "0.7rem", fontWeight: 700, ml: 0.5 }}
+                />
               )}
             </>
           )}
-        </button>
-        <button
+        </ListItemButton>
+
+        {/* Friends */}
+        <ListItemButton
           onClick={onOpenFriends}
           title="Friends"
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 dark:text-gray-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all ${collapsed ? "justify-center" : ""}`}
+          sx={{
+            borderRadius: 2,
+            mb: 0.25,
+            justifyContent: collapsed ? "center" : "flex-start",
+            px: collapsed ? 1 : 1.5,
+            "&:hover": {
+              bgcolor: "rgba(99,102,241,0.08)",
+              color: "primary.main",
+              "& .MuiListItemIcon-root": { color: "primary.main" },
+            },
+          }}
         >
-          <Users className="w-5 h-5 flex-shrink-0" />
-          {!collapsed && <span>Friends</span>}
-        </button>
-      </div>
+          <ListItemIcon
+            sx={{ minWidth: collapsed ? 0 : 36, color: "text.secondary" }}
+          >
+            <Users size={20} />
+          </ListItemIcon>
+          {!collapsed && (
+            <ListItemText
+              primary="Friends"
+              slotProps={{ primary: { variant: "body2", sx: { fontWeight: 500 } } }}
+            />
+          )}
+        </ListItemButton>
+      </List>
 
       {/* Views */}
       <ViewLinks collapsed={collapsed} />
-
-    </motion.aside>
+    </Drawer>
   );
 }
 
@@ -295,31 +486,64 @@ function ViewLinks({ collapsed }: { collapsed: boolean }) {
   ];
 
   return (
-    <div className="px-3 mt-4">
-      {!collapsed && (
-        <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-          Views
-        </p>
-      )}
-      {views.map((view) => {
-        const active = pathname === view.path;
-        const Icon = view.icon;
-        return (
-          <button
-            key={view.path}
-            onClick={() => router.push(view.path)}
-            title={view.label}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              active
-                ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300"
-                : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white"
-            } ${collapsed ? "justify-center" : ""}`}
-          >
-            <Icon className="w-5 h-5 flex-shrink-0" />
-            {!collapsed && <span>{view.label}</span>}
-          </button>
-        );
-      })}
-    </div>
+    <>
+      <Divider sx={{ mx: 2, my: 1 }} />
+      <List
+        disablePadding
+        sx={{ px: 1, pb: 2 }}
+        subheader={
+          !collapsed ? (
+            <ListSubheader
+              disableSticky
+              sx={{ lineHeight: 2, px: 1.5, bgcolor: "transparent" }}
+            >
+              <Typography variant="overline" sx={{ color: "text.secondary" }}>
+                Views
+              </Typography>
+            </ListSubheader>
+          ) : undefined
+        }
+      >
+        {views.map((view) => {
+          const active = pathname === view.path;
+          const Icon = view.icon;
+          return (
+            <ListItemButton
+              key={view.path}
+              selected={active}
+              onClick={() => router.push(view.path)}
+              title={view.label}
+              sx={{
+                borderRadius: 2,
+                mb: 0.25,
+                justifyContent: collapsed ? "center" : "flex-start",
+                px: collapsed ? 1 : 1.5,
+                "&.Mui-selected": {
+                  bgcolor: "primary.main",
+                  color: "primary.contrastText",
+                  "& .MuiListItemIcon-root": { color: "primary.contrastText" },
+                  "&:hover": { bgcolor: "primary.dark" },
+                },
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: collapsed ? 0 : 36,
+                  color: active ? "inherit" : "text.secondary",
+                }}
+              >
+                <Icon size={20} />
+              </ListItemIcon>
+              {!collapsed && (
+                <ListItemText
+                  primary={view.label}
+                  slotProps={{ primary: { variant: "body2", sx: { fontWeight: 500 } } }}
+                />
+              )}
+            </ListItemButton>
+          );
+        })}
+      </List>
+    </>
   );
 }

@@ -1,27 +1,28 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Box, Skeleton } from "@mui/material";
 
 export default function DashboardLoading() {
   return (
-    <div className="space-y-6 animate-pulse">
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
       {/* Header skeleton */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-gray-800" />
-          <div>
-            <div className="w-32 h-5 rounded-lg bg-gray-200 dark:bg-gray-800" />
-            <div className="w-20 h-3 rounded-lg bg-gray-200 dark:bg-gray-800 mt-1.5" />
-          </div>
-        </div>
-        <div className="w-28 h-9 rounded-xl bg-gray-200 dark:bg-gray-800" />
-      </div>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Skeleton variant="rounded" width={40} height={40} sx={{ borderRadius: 2 }} />
+          <Box>
+            <Skeleton variant="rounded" width={128} height={20} sx={{ borderRadius: 1.5 }} />
+            <Skeleton variant="rounded" width={80} height={12} sx={{ borderRadius: 1.5, mt: 0.75 }} />
+          </Box>
+        </Box>
+        <Skeleton variant="rounded" width={112} height={36} sx={{ borderRadius: 2 }} />
+      </Box>
 
       {/* Filter bar skeleton */}
-      <div className="flex gap-3">
-        <div className="flex-1 max-w-sm h-10 rounded-xl bg-gray-200 dark:bg-gray-800" />
-        <div className="w-32 h-10 rounded-xl bg-gray-200 dark:bg-gray-800 hidden sm:block" />
-      </div>
+      <Box sx={{ display: "flex", gap: 1.5 }}>
+        <Skeleton variant="rounded" sx={{ flex: 1, maxWidth: 384, height: 40, borderRadius: 2 }} />
+        <Skeleton variant="rounded" width={128} height={40} sx={{ borderRadius: 2, display: { xs: "none", sm: "block" } }} />
+      </Box>
 
       {/* Todo card skeletons */}
       {[1, 2, 3, 4, 5].map((i) => (
@@ -30,22 +31,33 @@ export default function DashboardLoading() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.05 }}
-          className="glass-card rounded-2xl border-l-4 border-l-gray-200 dark:border-l-gray-700 p-5"
         >
-          <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-800 mt-0.5" />
-            <div className="flex-1">
-              <div className="w-3/4 h-5 rounded-lg bg-gray-200 dark:bg-gray-800" />
-              <div className="w-1/2 h-3.5 rounded-lg bg-gray-200 dark:bg-gray-800 mt-2" />
-              <div className="flex gap-2 mt-3">
-                <div className="w-16 h-5 rounded-lg bg-gray-200 dark:bg-gray-800" />
-                <div className="w-20 h-5 rounded-lg bg-gray-200 dark:bg-gray-800" />
-                <div className="w-24 h-5 rounded-lg bg-gray-200 dark:bg-gray-800" />
-              </div>
-            </div>
-          </div>
+          <Box
+            sx={{
+              borderRadius: 3,
+              borderLeft: "4px solid",
+              borderLeftColor: "divider",
+              p: 2.5,
+              bgcolor: "background.paper",
+              border: "1px solid",
+              borderColor: "divider",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
+              <Skeleton variant="circular" width={24} height={24} sx={{ mt: 0.25, flexShrink: 0 }} />
+              <Box sx={{ flex: 1 }}>
+                <Skeleton variant="rounded" width="75%" height={20} sx={{ borderRadius: 1.5 }} />
+                <Skeleton variant="rounded" width="50%" height={14} sx={{ borderRadius: 1.5, mt: 1 }} />
+                <Box sx={{ display: "flex", gap: 1, mt: 1.5 }}>
+                  <Skeleton variant="rounded" width={64} height={20} sx={{ borderRadius: 1.5 }} />
+                  <Skeleton variant="rounded" width={80} height={20} sx={{ borderRadius: 1.5 }} />
+                  <Skeleton variant="rounded" width={96} height={20} sx={{ borderRadius: 1.5 }} />
+                </Box>
+              </Box>
+            </Box>
+          </Box>
         </motion.div>
       ))}
-    </div>
+    </Box>
   );
 }

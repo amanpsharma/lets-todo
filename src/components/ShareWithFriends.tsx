@@ -1,9 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { Check, Loader2, Share2, Eye, Pencil, Shield } from "lucide-react";
 import toast from "react-hot-toast";
+import {
+  List,
+  ListItemButton,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+  Select,
+  MenuItem,
+  Box,
+  Typography,
+  CircularProgress,
+  Chip,
+  FormControl,
+  Divider,
+} from "@mui/material";
 
 interface Friend {
   clerkId: string;
@@ -19,9 +33,9 @@ interface ShareWithFriendsProps {
 }
 
 const permissions = [
-  { value: "view", label: "View", icon: Eye, desc: "Can only view", color: "text-gray-500" },
-  { value: "edit", label: "Edit", icon: Pencil, desc: "Can add subtasks & toggle", color: "text-blue-500" },
-  { value: "admin", label: "Full", icon: Shield, desc: "Can edit everything", color: "text-indigo-500" },
+  { value: "view", label: "View", icon: Eye, desc: "Can only view" },
+  { value: "edit", label: "Edit", icon: Pencil, desc: "Can add subtasks & toggle" },
+  { value: "admin", label: "Full", icon: Shield, desc: "Can edit everything" },
 ];
 
 export default function ShareWithFriends({
@@ -72,85 +86,116 @@ export default function ShareWithFriends({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-4">
-        <Loader2 className="w-4 h-4 text-indigo-500 animate-spin" />
-      </div>
+      <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+        <CircularProgress size={16} sx={{ color: "#6366f1" }} />
+      </Box>
     );
   }
 
   if (friends.length === 0) {
     return (
-      <div className="px-4 py-4 text-center">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+      <Box sx={{ px: 2, py: 2, textAlign: "center" }}>
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
           Add friends to share todos
-        </p>
-      </div>
+        </Typography>
+      </Box>
     );
   }
 
+  const selectedPermDesc = permissions.find((p) => p.value === selectedPermission)?.desc;
+
   return (
-    <div className="py-2">
-      <p className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
-        <Share2 className="w-3 h-3" />
-        Share with friend
-      </p>
+    <Box sx={{ py: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, px: 2, py: 1 }}>
+        <Share2 style={{ width: 12, height: 12 }} />
+        <Typography
+          variant="caption"
+          sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "text.secondary" }}
+        >
+          Share with friend
+        </Typography>
+      </Box>
 
       {/* Permission selector */}
-      <div className="px-4 pb-2">
-        <div className="flex gap-1 p-0.5 bg-gray-100 dark:bg-gray-800 rounded-lg">
-          {permissions.map((perm) => (
-            <button
-              key={perm.value}
-              onClick={() => setSelectedPermission(perm.value)}
-              className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-[10px] font-medium transition-all ${
-                selectedPermission === perm.value
-                  ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700"
-              }`}
-            >
-              <perm.icon className={`w-3 h-3 ${selectedPermission === perm.value ? perm.color : ""}`} />
-              {perm.label}
-            </button>
-          ))}
-        </div>
-        <p className="text-[10px] text-gray-400 mt-1 text-center">
-          {permissions.find((p) => p.value === selectedPermission)?.desc}
-        </p>
-      </div>
+      <Box sx={{ px: 2, pb: 1 }}>
+        <FormControl fullWidth size="small">
+          <Select
+            value={selectedPermission}
+            onChange={(e) => setSelectedPermission(e.target.value)}
+            sx={{ borderRadius: "10px", fontSize: "0.8rem" }}
+          >
+            {permissions.map((perm) => {
+              const Icon = perm.icon;
+              return (
+                <MenuItem key={perm.value} value={perm.value}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Icon style={{ width: 14, height: 14 }} />
+                    <span>{perm.label}</span>
+                    <Typography variant="caption" sx={{ color: "text.secondary", ml: 0.5 }}>
+                      — {perm.desc}
+                    </Typography>
+                  </Box>
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Divider />
 
       {/* Friends list */}
-      {friends.map((friend) => {
-        const existingPerm = getSharedPermission(friend.clerkId);
-        return (
-          <button
-            key={friend.clerkId}
-            onClick={() => shareTodo(friend.clerkId)}
-            disabled={sharing === friend.clerkId}
-            className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-60"
-          >
-            {friend.avatar ? (
-              <img
-                src={friend.avatar}
-                alt={friend.name}
-                className="w-7 h-7 rounded-full object-cover"
+      <List disablePadding>
+        {friends.map((friend) => {
+          const existingPerm = getSharedPermission(friend.clerkId);
+          return (
+            <ListItemButton
+              key={friend.clerkId}
+              onClick={() => !sharing && shareTodo(friend.clerkId)}
+              disabled={sharing === friend.clerkId}
+              sx={{
+                "&.Mui-disabled": { opacity: 0.6 },
+                px: 2,
+                py: 1,
+                display: "flex",
+                gap: 1.5,
+              }}
+            >
+              <ListItemAvatar sx={{ minWidth: 44 }}>
+                <Avatar
+                  src={friend.avatar || undefined}
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    fontSize: "0.7rem",
+                    background: !friend.avatar
+                      ? "linear-gradient(135deg, #818cf8, #6366f1)"
+                      : undefined,
+                  }}
+                >
+                  {!friend.avatar && friend.name.charAt(0).toUpperCase()}
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={<Typography variant="body2" noWrap>{friend.name}</Typography>}
+                sx={{ flex: 1 }}
               />
-            ) : (
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-[10px] font-bold">
-                {friend.name.charAt(0).toUpperCase()}
-              </div>
-            )}
-            <span className="flex-1 text-left truncate text-sm">{friend.name}</span>
-            {sharing === friend.clerkId ? (
-              <Loader2 className="w-4 h-4 text-indigo-500 animate-spin" />
-            ) : existingPerm ? (
-              <span className="flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400">
-                <Check className="w-3 h-3" />
-                {existingPerm}
-              </span>
-            ) : null}
-          </button>
-        );
-      })}
-    </div>
+              {sharing === friend.clerkId ? (
+                <CircularProgress size={16} sx={{ color: "#6366f1", flexShrink: 0 }} />
+              ) : existingPerm ? (
+                <Chip
+                  size="small"
+                  icon={<Check style={{ width: 12, height: 12 }} />}
+                  label={existingPerm}
+                  color="success"
+                  variant="outlined"
+                  sx={{ fontSize: "0.65rem", flexShrink: 0 }}
+                />
+              ) : null}
+            </ListItemButton>
+          );
+        })}
+      </List>
+    </Box>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   Plus,
@@ -10,6 +9,21 @@ import {
   Keyboard,
   Zap,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  TextField,
+  InputAdornment,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Chip,
+  Box,
+  Typography,
+  Divider,
+} from "@mui/material";
+import { Search as SearchIcon } from "@mui/icons-material";
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -40,10 +54,36 @@ export default function CommandPalette({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const commands: Command[] = [
-    { id: "new-task", label: "New Task", description: "Create a new task", icon: Plus, action: onNewTask, shortcut: "Ctrl+N" },
-    { id: "pomodoro", label: "Focus Timer", description: "Open pomodoro timer", icon: Timer, action: onTogglePomodoro, shortcut: "Ctrl+P" },
-    { id: "theme", label: "Toggle Theme", description: "Switch between light and dark mode", icon: Moon, action: onToggleTheme },
-    { id: "shortcuts", label: "Keyboard Shortcuts", description: "View all keyboard shortcuts", icon: Keyboard, action: () => {} },
+    {
+      id: "new-task",
+      label: "New Task",
+      description: "Create a new task",
+      icon: Plus,
+      action: onNewTask,
+      shortcut: "Ctrl+N",
+    },
+    {
+      id: "pomodoro",
+      label: "Focus Timer",
+      description: "Open pomodoro timer",
+      icon: Timer,
+      action: onTogglePomodoro,
+      shortcut: "Ctrl+P",
+    },
+    {
+      id: "theme",
+      label: "Toggle Theme",
+      description: "Switch between light and dark mode",
+      icon: Moon,
+      action: onToggleTheme,
+    },
+    {
+      id: "shortcuts",
+      label: "Keyboard Shortcuts",
+      description: "View all keyboard shortcuts",
+      icon: Keyboard,
+      action: () => {},
+    },
   ];
 
   const filteredCommands = commands.filter(
@@ -85,97 +125,159 @@ export default function CommandPalette({
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: 3,
+            mt: { xs: "15vh", sm: "20vh" },
+            verticalAlign: "top",
+            overflow: "hidden",
+          },
+        },
+        backdrop: {
+          sx: { backdropFilter: "blur(4px)" },
+        },
+      }}
+    >
+      <DialogContent sx={{ p: 0 }}>
+        {/* Search Input */}
+        <Box sx={{ px: 2, py: 1.5, borderBottom: 1, borderColor: "divider" }}>
+          <TextField
+            inputRef={inputRef}
+            fullWidth
+            variant="standard"
+            placeholder="Type a command..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+            slotProps={{
+              input: {
+                disableUnderline: true,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search style={{ width: 20, height: 20, color: "#9ca3af" }} />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Chip label="ESC" size="small" variant="outlined" sx={{ fontSize: "0.6rem", height: 20 }} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            sx={{ "& input": { fontSize: "0.875rem" } }}
           />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 400 }}
-            className="fixed top-[15%] sm:top-[20%] left-1/2 -translate-x-1/2 w-full max-w-lg z-50 px-4"
-          >
-            <div className="glass-card rounded-2xl shadow-2xl overflow-hidden">
-              {/* Search Input */}
-              <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-200/50 dark:border-gray-700/50">
-                <Search className="w-5 h-5 text-gray-400" />
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Type a command..."
-                  className="flex-1 bg-transparent border-0 outline-none text-gray-900 dark:text-white placeholder:text-gray-400 text-sm"
-                />
-                <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-lg text-[10px] font-mono text-gray-400">
-                  ESC
-                </kbd>
-              </div>
+        </Box>
 
-              {/* Commands List */}
-              <div className="max-h-64 overflow-y-auto p-2">
-                {filteredCommands.length === 0 ? (
-                  <div className="px-4 py-8 text-center">
-                    <Zap className="w-8 h-8 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
-                    <p className="text-sm text-gray-500 dark:text-gray-400">No commands found</p>
-                  </div>
-                ) : (
-                  filteredCommands.map((cmd, index) => (
-                    <button
-                      key={cmd.id}
-                      onClick={() => { cmd.action(); onClose(); }}
-                      onMouseEnter={() => setSelectedIndex(index)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors ${
-                        index === selectedIndex
-                          ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                      }`}
+        {/* Commands List */}
+        <Box sx={{ maxHeight: 256, overflowY: "auto", p: 1 }}>
+          {filteredCommands.length === 0 ? (
+            <Box sx={{ py: 4, textAlign: "center" }}>
+              <Zap
+                style={{ width: 32, height: 32, color: "#d1d5db", margin: "0 auto 8px" }}
+              />
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                No commands found
+              </Typography>
+            </Box>
+          ) : (
+            <List disablePadding>
+              {filteredCommands.map((cmd, index) => {
+                const Icon = cmd.icon;
+                const selected = index === selectedIndex;
+                return (
+                  <ListItemButton
+                    key={cmd.id}
+                    selected={selected}
+                    onClick={() => {
+                      cmd.action();
+                      onClose();
+                    }}
+                    onMouseEnter={() => setSelectedIndex(index)}
+                    sx={{ borderRadius: 2, mb: 0.25 }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 40,
+                        "& > div": {
+                          p: 0.75,
+                          borderRadius: 1.5,
+                          bgcolor: selected ? "primary.100" : "action.selected",
+                          display: "flex",
+                          alignItems: "center",
+                        },
+                      }}
                     >
-                      <div className={`p-2 rounded-lg ${
-                        index === selectedIndex
-                          ? "bg-indigo-100 dark:bg-indigo-900/40"
-                          : "bg-gray-100 dark:bg-gray-800"
-                      }`}>
-                        <cmd.icon className="w-4 h-4" />
+                      <div>
+                        <Icon style={{ width: 16, height: 16 }} />
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{cmd.label}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{cmd.description}</p>
-                      </div>
-                      {cmd.shortcut && (
-                        <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-lg text-[10px] font-mono text-gray-400">
-                          {cmd.shortcut}
-                        </kbd>
-                      )}
-                    </button>
-                  ))
-                )}
-              </div>
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {cmd.label}
+                        </Typography>
+                      }
+                      secondary={
+                        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                          {cmd.description}
+                        </Typography>
+                      }
+                      disableTypography={false}
+                    />
+                    {cmd.shortcut && (
+                      <Chip
+                        label={cmd.shortcut}
+                        size="small"
+                        variant="outlined"
+                        sx={{ fontSize: "0.6rem", height: 20, ml: 1 }}
+                      />
+                    )}
+                  </ListItemButton>
+                );
+              })}
+            </List>
+          )}
+        </Box>
 
-              {/* Footer — hidden on mobile since keyboard shortcuts aren't relevant for touch */}
-              <div className="hidden sm:flex px-5 py-3 border-t border-gray-200/50 dark:border-gray-700/50 items-center gap-4 text-[10px] text-gray-400">
-                <span className="flex items-center gap-1">
-                  <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded">↑↓</kbd> Navigate
-                </span>
-                <span className="flex items-center gap-1">
-                  <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded">↵</kbd> Select
-                </span>
-                <span className="flex items-center gap-1">
-                  <kbd className="px-1 py-0.5 bg-gray-100 dark:bg-gray-800 rounded">Esc</kbd> Close
-                </span>
-              </div>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+        {/* Footer */}
+        <Box
+          sx={{
+            display: { xs: "none", sm: "flex" },
+            px: 2.5,
+            py: 1.25,
+            borderTop: 1,
+            borderColor: "divider",
+            gap: 2,
+          }}
+        >
+          {[
+            { key: "↑↓", label: "Navigate" },
+            { key: "↵", label: "Select" },
+            { key: "Esc", label: "Close" },
+          ].map(({ key, label }) => (
+            <Box
+              key={key}
+              sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+            >
+              <Chip
+                label={key}
+                size="small"
+                variant="outlined"
+                sx={{ fontSize: "0.6rem", height: 18 }}
+              />
+              <Typography variant="caption" sx={{ color: "text.disabled" }}>
+                {label}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      </DialogContent>
+    </Dialog>
   );
 }

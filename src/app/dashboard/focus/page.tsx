@@ -11,8 +11,15 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { TodoContext } from "@/context/TodoContext";
-import { Todo } from "@/types/todo";
 import toast from "react-hot-toast";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Typography,
+} from "@mui/material";
 
 export default function FocusPage() {
   const ctx = useContext(TodoContext);
@@ -55,7 +62,6 @@ export default function FocusPage() {
     }
     setElapsed(0);
     setRunning(false);
-    // Index stays the same since completed task leaves activeTodos
   };
 
   const skip = () => {
@@ -70,39 +76,56 @@ export default function FocusPage() {
     setRunning(true);
   };
 
+  const priorityColor: Record<string, string> = {
+    urgent: "#ef4444",
+    high: "#fb923c",
+    medium: "#60a5fa",
+    low: "#34d399",
+  };
+
   if (activeTodos.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-flex p-6 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-2xl shadow-emerald-500/30 mb-6">
-            <CheckCircle2 className="w-12 h-12 text-white" />
-          </div>
-          <h2 className="text-2xl font-bold font-heading text-gray-900 dark:text-white mb-2">
+      <Box sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Box sx={{ textAlign: "center" }}>
+          <Box
+            sx={{
+              display: "inline-flex",
+              p: 3,
+              borderRadius: 4,
+              background: "linear-gradient(135deg, #10b981, #0d9488)",
+              boxShadow: "0 20px 40px rgba(16,185,129,0.3)",
+              mb: 3,
+            }}
+          >
+            <CheckCircle2 size={48} color="#fff" />
+          </Box>
+          <Typography variant="h5" sx={{ fontWeight: 700 }} gutterBottom>
             All caught up!
-          </h2>
-          <p className="text-gray-500 dark:text-gray-400">
+          </Typography>
+          <Typography sx={{ color: "text.secondary" }}>
             No active tasks to focus on. Nice work!
-          </p>
-        </div>
-      </div>
+          </Typography>
+        </Box>
+      </Box>
     );
   }
 
   return (
-    <div className="h-full flex items-center justify-center p-4">
-      <div className="w-full max-w-lg text-center">
+    <Box sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", p: 2 }}>
+      <Box sx={{ width: "100%", maxWidth: 512, textAlign: "center" }}>
         {/* Header */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <Eye className="w-5 h-5 text-indigo-500" />
-          <span className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mb: 4 }}>
+          <Eye size={20} color="#6366f1" />
+          <Typography variant="body2" sx={{ fontWeight: 500, color: "text.secondary", textTransform: "uppercase", letterSpacing: 1.5 }}>
             Focus Mode
-          </span>
-          <span className="text-xs px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full font-medium">
-            {currentIndex + 1}/{activeTodos.length}
-          </span>
-        </div>
+          </Typography>
+          <Chip
+            label={`${currentIndex + 1}/${activeTodos.length}`}
+            size="small"
+            sx={{ bgcolor: "#ede9fe", color: "#6366f1", fontWeight: 600, height: 22, fontSize: "0.75rem" }}
+          />
+        </Box>
 
-        {/* Timer */}
         <AnimatePresence mode="wait">
           <motion.div
             key={currentTodo?._id}
@@ -110,18 +133,19 @@ export default function FocusPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
-            <div className="relative w-48 h-48 mx-auto mb-8">
-              <svg viewBox="0 0 200 200" className="w-full h-full -rotate-90">
+            {/* Timer circle */}
+            <Box sx={{ position: "relative", width: 192, height: 192, mx: "auto", mb: 4 }}>
+              <svg viewBox="0 0 200 200" style={{ width: "100%", height: "100%", transform: "rotate(-90deg)" }}>
                 <circle
                   cx="100" cy="100" r="88" fill="none"
                   stroke="currentColor" strokeWidth="4"
-                  className="text-gray-200 dark:text-gray-700"
+                  style={{ color: "#e5e7eb" }}
                 />
                 <circle
                   cx="100" cy="100" r="88" fill="none"
                   stroke="url(#focusGrad)" strokeWidth="4" strokeLinecap="round"
                   strokeDasharray={`${Math.min(elapsed / 15, 1) * 553} 553`}
-                  className="transition-all duration-1000"
+                  style={{ transition: "stroke-dasharray 1s linear" }}
                 />
                 <defs>
                   <linearGradient id="focusGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -130,89 +154,159 @@ export default function FocusPage() {
                   </linearGradient>
                 </defs>
               </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <Clock className="w-5 h-5 text-gray-400 mb-1" />
-                <span className="text-3xl font-bold font-heading text-gray-900 dark:text-white font-mono">
+              <Box
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Clock size={20} color="#9ca3af" style={{ marginBottom: 4 }} />
+                <Typography
+                  variant="h1"
+                  sx={{ fontSize: "1.875rem", fontWeight: 700, fontFamily: "monospace" }}
+                >
                   {formatTime(elapsed)}
-                </span>
-              </div>
-            </div>
+                </Typography>
+              </Box>
+            </Box>
 
-            {/* Current task */}
-            <div className="glass-card rounded-2xl p-6 mb-8">
-              {currentTodo && (
-                <>
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${
-                      currentTodo.priority === "urgent" ? "bg-red-500" :
-                      currentTodo.priority === "high" ? "bg-orange-400" :
-                      currentTodo.priority === "medium" ? "bg-blue-400" : "bg-emerald-400"
-                    }`} />
-                    {currentTodo.category && currentTodo.category !== "general" && (
-                      <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-500 dark:text-gray-400 capitalize">
-                        {currentTodo.category}
-                      </span>
+            {/* Current task card */}
+            <Card variant="outlined" sx={{ borderRadius: 3, mb: 4, boxShadow: "none" }}>
+              <CardContent>
+                {currentTodo && (
+                  <>
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mb: 1 }}>
+                      <Box
+                        sx={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: "50%",
+                          bgcolor: priorityColor[currentTodo.priority] || "#34d399",
+                        }}
+                      />
+                      {currentTodo.category && currentTodo.category !== "general" && (
+                        <Chip
+                          label={currentTodo.category}
+                          size="small"
+                          sx={{
+                            height: 20,
+                            fontSize: "0.6875rem",
+                            textTransform: "capitalize",
+                            bgcolor: "action.hover",
+                            color: "text.secondary",
+                          }}
+                        />
+                      )}
+                    </Box>
+                    <Typography variant="h5" sx={{ fontWeight: 700, lineHeight: 1.3 }}>
+                      {currentTodo.title}
+                    </Typography>
+                    {currentTodo.description && (
+                      <Typography variant="body2" sx={{ mt: 1.5, lineHeight: 1.6, color: "text.secondary" }}>
+                        {currentTodo.description}
+                      </Typography>
                     )}
-                  </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-snug">
-                    {currentTodo.title}
-                  </h2>
-                  {currentTodo.description && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-3 leading-relaxed">
-                      {currentTodo.description}
-                    </p>
-                  )}
-                </>
-              )}
-            </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
           </motion.div>
         </AnimatePresence>
 
         {/* Controls */}
-        <div className="flex items-center justify-center gap-4">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={skip}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          >
-            <SkipForward className="w-4 h-4" />
-            Skip
-          </motion.button>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: { xs: 1, sm: 2 }, flexWrap: "wrap" }}>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="contained"
+              startIcon={<SkipForward size={16} />}
+              onClick={skip}
+              sx={{
+                px: { xs: 1.5, sm: 2.5 },
+                py: 1.25,
+                borderRadius: 2.5,
+                textTransform: "none",
+                fontWeight: 600,
+                fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                bgcolor: "action.hover",
+                color: "text.secondary",
+                boxShadow: "none",
+                "&:hover": { bgcolor: "action.selected", boxShadow: "none" },
+              }}
+            >
+              Skip
+            </Button>
+          </motion.div>
 
           {!running ? (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={startFocus}
-              className="flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 shadow-lg shadow-indigo-500/30"
-            >
-              <Sparkles className="w-4 h-4" />
-              Start Focusing
-            </motion.button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="contained"
+                startIcon={<Sparkles size={16} />}
+                onClick={startFocus}
+                sx={{
+                  px: { xs: 2, sm: 4 },
+                  py: 1.25,
+                  borderRadius: 2.5,
+                  textTransform: "none",
+                  fontWeight: 700,
+                  fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                  background: "linear-gradient(to right, #4f46e5, #6366f1)",
+                  boxShadow: "0 4px 14px rgba(99,102,241,0.35)",
+                  "&:hover": { background: "linear-gradient(to right, #4338ca, #4f46e5)" },
+                }}
+              >
+                Start
+              </Button>
+            </motion.div>
           ) : (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setRunning(false)}
-              className="flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-gray-600 to-gray-700 shadow-lg"
-            >
-              Pause
-            </motion.button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="contained"
+                onClick={() => setRunning(false)}
+                sx={{
+                  px: { xs: 2, sm: 4 },
+                  py: 1.25,
+                  borderRadius: 2.5,
+                  textTransform: "none",
+                  fontWeight: 700,
+                  fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                  background: "linear-gradient(to right, #4b5563, #374151)",
+                  boxShadow: "0 4px 14px rgba(0,0,0,0.2)",
+                  "&:hover": { background: "linear-gradient(to right, #374151, #1f2937)" },
+                }}
+              >
+                Pause
+              </Button>
+            </motion.div>
           )}
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={completeAndNext}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg shadow-emerald-500/30"
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            Done
-            <ArrowRight className="w-3.5 h-3.5" />
-          </motion.button>
-        </div>
-      </div>
-    </div>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="contained"
+              startIcon={<CheckCircle2 size={16} />}
+              endIcon={<ArrowRight size={14} />}
+              onClick={completeAndNext}
+              sx={{
+                px: { xs: 1.5, sm: 2.5 },
+                py: 1.25,
+                borderRadius: 2.5,
+                textTransform: "none",
+                fontWeight: 700,
+                fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                background: "linear-gradient(to right, #10b981, #0d9488)",
+                boxShadow: "0 4px 14px rgba(16,185,129,0.35)",
+                "&:hover": { background: "linear-gradient(to right, #059669, #0f766e)" },
+              }}
+            >
+              Done
+            </Button>
+          </motion.div>
+        </Box>
+      </Box>
+    </Box>
   );
 }

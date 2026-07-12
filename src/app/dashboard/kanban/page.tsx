@@ -14,6 +14,13 @@ import {
   Calendar,
 } from "lucide-react";
 import { format } from "date-fns";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Chip,
+} from "@mui/material";
 import { TodoContext } from "@/context/TodoContext";
 import { Todo } from "@/types/todo";
 
@@ -24,6 +31,7 @@ const columnDefs: {
   label: string;
   icon: typeof CircleDashed;
   color: string;
+  chipColor: "primary" | "warning" | "success";
   dropBg: string;
 }[] = [
   {
@@ -31,6 +39,7 @@ const columnDefs: {
     label: "To Do",
     icon: CircleDashed,
     color: "from-blue-500 to-cyan-500",
+    chipColor: "primary",
     dropBg: "border-blue-300 dark:border-blue-700 bg-blue-50/40 dark:bg-blue-900/10",
   },
   {
@@ -38,6 +47,7 @@ const columnDefs: {
     label: "In Progress",
     icon: Loader2,
     color: "from-amber-500 to-orange-500",
+    chipColor: "warning",
     dropBg: "border-amber-300 dark:border-amber-700 bg-amber-50/40 dark:bg-amber-900/10",
   },
   {
@@ -45,6 +55,7 @@ const columnDefs: {
     label: "Done",
     icon: CheckCircle2,
     color: "from-emerald-500 to-teal-500",
+    chipColor: "success",
     dropBg: "border-emerald-300 dark:border-emerald-700 bg-emerald-50/40 dark:bg-emerald-900/10",
   },
 ];
@@ -145,18 +156,24 @@ export default function KanbanPage() {
   };
 
   return (
-    <div className="h-full">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold font-heading text-gray-900 dark:text-white">
+    <Box sx={{ height: "100%" }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold" }} gutterBottom>
           Kanban Board
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
           Drag tasks between columns to update their status
-        </p>
-      </div>
+        </Typography>
+      </Box>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+            gap: { xs: 2, lg: 3 },
+          }}
+        >
           {columnDefs.map((col) => (
             <KanbanColumn
               key={col.id}
@@ -164,9 +181,9 @@ export default function KanbanPage() {
               tasks={grouped[col.id]}
             />
           ))}
-        </div>
+        </Box>
       </DragDropContext>
-    </div>
+    </Box>
   );
 }
 
@@ -180,22 +197,27 @@ function KanbanColumn({
   const Icon = column.icon;
 
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center gap-3 mb-4">
-        <div
+    <Box sx={{ display: "flex", flexDirection: "column" }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+        <Box
           className={`p-2 rounded-xl bg-gradient-to-br ${column.color} shadow-lg`}
+          sx={{ display: "flex" }}
         >
           <Icon className="w-4 h-4 text-white" />
-        </div>
-        <div>
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+        </Box>
+        <Box>
+          <Typography variant="body2" sx={{ fontWeight: "600" }}>
             {column.label}
-          </h3>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {tasks.length} task{tasks.length !== 1 ? "s" : ""}
-          </span>
-        </div>
-      </div>
+          </Typography>
+          <Chip
+            label={`${tasks.length} task${tasks.length !== 1 ? "s" : ""}`}
+            size="small"
+            color={column.chipColor}
+            variant="outlined"
+            sx={{ height: 18, fontSize: "0.6875rem" }}
+          />
+        </Box>
+      </Box>
 
       <Droppable droppableId={column.id}>
         {(provided, snapshot) => (
@@ -209,9 +231,13 @@ function KanbanColumn({
             }`}
           >
             {tasks.length === 0 && !snapshot.isDraggingOver && (
-              <div className="flex items-center justify-center h-32 text-sm text-gray-400 dark:text-gray-500">
+              <Typography
+                variant="body2"
+                align="center"
+                sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: 128, color: "text.secondary" }}
+              >
                 Drop tasks here
-              </div>
+              </Typography>
             )}
             {tasks.map((todo, i) => (
               <Draggable key={todo._id} draggableId={todo._id} index={i}>
@@ -220,47 +246,80 @@ function KanbanColumn({
                     ref={dragProvided.innerRef}
                     {...dragProvided.draggableProps}
                     {...dragProvided.dragHandleProps}
-                    className={`group relative p-4 rounded-xl bg-white dark:bg-gray-800/80 border shadow-sm transition-shadow select-none cursor-grab active:cursor-grabbing ${
-                      dragSnapshot.isDragging
-                        ? "shadow-xl ring-2 ring-indigo-500/40 border-indigo-300 dark:border-indigo-600 rotate-[2deg]"
-                        : "border-gray-200/50 dark:border-white/5 hover:shadow-md"
-                    } ${todo.completed ? "opacity-60" : ""}`}
                   >
-                    <div className="flex items-start gap-2">
-                      <div className="flex-1 min-w-0">
-                        <p
-                          className={`text-sm font-medium ${
-                            todo.completed
-                              ? "line-through text-gray-400"
-                              : "text-gray-900 dark:text-white"
-                          }`}
-                        >
-                          {todo.title}
-                        </p>
-                        {todo.description && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                            {todo.description}
-                          </p>
-                        )}
+                    <Card
+                      variant="outlined"
+                      sx={{
+                        borderRadius: 2,
+                        opacity: todo.completed ? 0.6 : 1,
+                        cursor: "grab",
+                        userSelect: "none",
+                        boxShadow: dragSnapshot.isDragging ? 6 : 1,
+                        transform: dragSnapshot.isDragging ? "rotate(2deg)" : "none",
+                        borderColor: dragSnapshot.isDragging ? "primary.main" : undefined,
+                        transition: "box-shadow 0.15s",
+                        "&:hover": { boxShadow: 3 },
+                        "&:active": { cursor: "grabbing" },
+                      }}
+                    >
+                      <CardContent sx={{ p: "12px !important" }}>
+                        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: "medium",
+                                textDecoration: todo.completed ? "line-through" : "none",
+                                color: todo.completed ? "text.disabled" : "text.primary",
+                              }}
+                            >
+                              {todo.title}
+                            </Typography>
+                            {todo.description && (
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  color: "text.secondary",
+                                  mt: 0.5,
+                                }}
+                              >
+                                {todo.description}
+                              </Typography>
+                            )}
 
-                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                          <span
-                            className={`w-2 h-2 rounded-full ${priorityDot[todo.priority]}`}
-                          />
-                          {todo.dueDate && (
-                            <span className="flex items-center gap-0.5 text-[11px] text-gray-500 dark:text-gray-400">
-                              <Calendar className="w-3 h-3" />
-                              {format(new Date(todo.dueDate), "MMM d")}
-                            </span>
-                          )}
-                          {todo.category && todo.category !== "general" && (
-                            <span className="text-[11px] px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
-                              {todo.category}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                            <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 0.75, mt: 1 }}>
+                              <span
+                                className={`w-2 h-2 rounded-full ${priorityDot[todo.priority]}`}
+                              />
+                              {todo.dueDate && (
+                                <Typography
+                                  variant="caption"
+                                  sx={{ color: "text.secondary", display: "flex", alignItems: "center", gap: 0.25 }}
+                                >
+                                  <Calendar className="w-3 h-3" />
+                                  {format(new Date(todo.dueDate), "MMM d")}
+                                </Typography>
+                              )}
+                              {todo.category && todo.category !== "general" && (
+                                <Chip
+                                  label={todo.category}
+                                  size="small"
+                                  sx={{
+                                    height: 18,
+                                    fontSize: "0.6875rem",
+                                    textTransform: "capitalize",
+                                  }}
+                                />
+                              )}
+                            </Box>
+                          </Box>
+                        </Box>
+                      </CardContent>
+                    </Card>
                   </div>
                 )}
               </Draggable>
@@ -269,6 +328,6 @@ function KanbanColumn({
           </div>
         )}
       </Droppable>
-    </div>
+    </Box>
   );
 }

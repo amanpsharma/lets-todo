@@ -1,8 +1,15 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { ArrowUpDown, Calendar, Flag, Type, Clock } from "lucide-react";
+import {
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 
 type SortType = "date" | "priority" | "name" | "dueDate";
 
@@ -19,61 +26,62 @@ const sortOptions: { value: SortType; label: string; icon: typeof Calendar }[] =
 ];
 
 export default function SortDropdown({ sortBy, setSortBy }: SortDropdownProps) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(e.currentTarget);
+  };
+  const handleClose = () => setAnchorEl(null);
 
   const currentSort = sortOptions.find((s) => s.value === sortBy)!;
 
   return (
-    <div ref={ref} className="relative">
-      <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 dark:bg-gray-800/80 border border-gray-200/50 dark:border-gray-700/50 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors backdrop-blur-sm"
-      >
-        <ArrowUpDown className="w-4 h-4" />
-        <span className="hidden sm:inline">{currentSort.label}</span>
-      </motion.button>
+    <>
+      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+        <Button
+          onClick={handleOpen}
+          startIcon={<ArrowUpDown style={{ width: 16, height: 16 }} />}
+          variant="outlined"
+          size="small"
+          sx={{
+            borderRadius: 3,
+            textTransform: "none",
+            "& .button-label": { display: { xs: "none", sm: "inline" } },
+          }}
+        >
+          <span className="button-label">{currentSort.label}</span>
+        </Button>
+      </motion.div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -5, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -5, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-48 glass-card rounded-xl shadow-xl overflow-hidden z-30"
-          >
-            <div className="p-1">
-              {sortOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => { setSortBy(option.value); setOpen(false); }}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                    sortBy === option.value
-                      ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 font-medium"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
-                  }`}
-                >
-                  <option.icon className="w-4 h-4" />
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        slotProps={{ paper: { sx: { mt: 1, borderRadius: 3, minWidth: 192 } } }}
+      >
+        {sortOptions.map((option) => {
+          const Icon = option.icon;
+          return (
+            <MenuItem
+              key={option.value}
+              selected={sortBy === option.value}
+              onClick={() => {
+                setSortBy(option.value);
+                handleClose();
+              }}
+              sx={{ borderRadius: 2, mx: 0.5 }}
+            >
+              <ListItemIcon sx={{ minWidth: 32 }}>
+                <Icon style={{ width: 16, height: 16 }} />
+              </ListItemIcon>
+              <ListItemText primary={option.label} />
+            </MenuItem>
+          );
+        })}
+      </Menu>
+    </>
   );
 }

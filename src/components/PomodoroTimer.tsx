@@ -3,6 +3,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Play, Pause, RotateCcw, Coffee, Brain } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  Button,
+  Typography,
+  IconButton,
+  Box,
+  ButtonGroup,
+} from "@mui/material";
 
 interface PomodoroTimerProps {
   isOpen: boolean;
@@ -37,7 +46,6 @@ export default function PomodoroTimer({ isOpen, onClose }: PomodoroTimerProps) {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
     } else if (timeLeft === 0) {
-      // Timer finished
       setIsRunning(false);
       if (intervalRef.current) clearInterval(intervalRef.current);
 
@@ -78,151 +86,185 @@ export default function PomodoroTimer({ isOpen, onClose }: PomodoroTimerProps) {
   const circumference = 2 * Math.PI * 90;
 
   const modeConfig = {
-    focus: { label: "Focus", icon: Brain, color: "from-indigo-500 to-indigo-600", bg: "bg-indigo-50 dark:bg-indigo-900/20" },
-    shortBreak: { label: "Short Break", icon: Coffee, color: "from-emerald-500 to-teal-600", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
-    longBreak: { label: "Long Break", icon: Coffee, color: "from-blue-500 to-cyan-600", bg: "bg-blue-50 dark:bg-blue-900/20" },
+    focus: { label: "Focus", icon: Brain, gradientStart: "#8b5cf6", gradientEnd: "#a855f7" },
+    shortBreak: { label: "Short Break", icon: Coffee, gradientStart: "#10b981", gradientEnd: "#14b8a6" },
+    longBreak: { label: "Long Break", icon: Coffee, gradientStart: "#3b82f6", gradientEnd: "#06b6d4" },
   };
+
+  const currentConfig = modeConfig[mode];
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
-          />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-x-4 top-[10%] md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-md z-50"
-          >
-            <div className="glass-card rounded-3xl shadow-2xl p-8">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <Brain className="w-5 h-5 text-indigo-500" />
-                  Pomodoro Timer
-                </h2>
-                <button
-                  onClick={onClose}
-                  className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        <Dialog
+          open={isOpen}
+          onClose={onClose}
+          maxWidth="xs"
+          fullWidth
+          slotProps={{
+            paper: { sx: { borderRadius: 4, overflow: "hidden" } },
+          }}
+        >
+          <DialogContent sx={{ p: 4 }}>
+            {/* Header */}
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 1 }}>
+                <Brain style={{ width: 20, height: 20, color: "#6366f1" }} />
+                Pomodoro Timer
+              </Typography>
+              <IconButton onClick={onClose} size="small">
+                <X style={{ width: 20, height: 20 }} />
+              </IconButton>
+            </Box>
+
+            {/* Mode Switcher */}
+            <Box
+              sx={{
+                display: "flex",
+                gap: 0.5,
+                p: 0.5,
+                bgcolor: "grey.100",
+                borderRadius: 3,
+                mb: 4,
+              }}
+            >
+              {(Object.keys(modeConfig) as TimerMode[]).map((m) => {
+                const config = modeConfig[m];
+                const Icon = config.icon;
+                const isActive = mode === m;
+                return (
+                  <Box
+                    key={m}
+                    onClick={() => switchMode(m)}
+                    sx={{
+                      position: "relative",
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 0.75,
+                      px: 1.5,
+                      py: 1.25,
+                      borderRadius: 2.5,
+                      cursor: "pointer",
+                      color: isActive ? "white" : "text.secondary",
+                      background: isActive
+                        ? `linear-gradient(135deg, ${config.gradientStart}, ${config.gradientEnd})`
+                        : "transparent",
+                      boxShadow: isActive ? "0 2px 8px rgba(0,0,0,0.15)" : "none",
+                      transition: "all 0.2s",
+                      fontSize: "0.8rem",
+                      fontWeight: 500,
+                      "&:hover": !isActive ? { bgcolor: "grey.200" } : {},
+                    }}
+                  >
+                    <Icon style={{ width: 16, height: 16 }} />
+                    <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
+                      {config.label}
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Box>
+
+            {/* Timer Display */}
+            <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+              <Box sx={{ position: "relative" }}>
+                <svg width="200" height="200">
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="90"
+                    fill="none"
+                    stroke="#e5e7eb"
+                    strokeWidth="6"
+                  />
+                  <motion.circle
+                    cx="100"
+                    cy="100"
+                    r="90"
+                    fill="none"
+                    stroke={`url(#pomodoroGradient)`}
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    animate={{ strokeDashoffset: circumference * (1 - progress) }}
+                    transition={{ duration: 0.5 }}
+                  />
+                  <defs>
+                    <linearGradient id="pomodoroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor={currentConfig.gradientStart} />
+                      <stop offset="100%" stopColor={currentConfig.gradientEnd} />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    inset: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
                 >
-                  <X className="w-5 h-5 text-gray-400" />
-                </button>
-              </div>
+                  <Typography
+                    variant="h3"
+                    sx={{ fontWeight: 700, fontFamily: "monospace", lineHeight: 1 }}
+                  >
+                    {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "text.secondary", mt: 0.5, textTransform: "capitalize" }}>
+                    {currentConfig.label}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
 
-              {/* Mode Switcher */}
-              <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-2xl mb-8">
-                {(Object.keys(modeConfig) as TimerMode[]).map((m) => {
-                  const config = modeConfig[m];
-                  return (
-                    <button
-                      key={m}
-                      onClick={() => switchMode(m)}
-                      className={`relative flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                        mode === m
-                          ? "text-white"
-                          : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                      }`}
-                    >
-                      {mode === m && (
-                        <motion.div
-                          layoutId="pomodoroMode"
-                          className={`absolute inset-0 bg-gradient-to-r ${config.color} rounded-xl shadow-lg`}
-                          transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        />
-                      )}
-                      <span className="relative flex items-center gap-1.5">
-                        <config.icon className="w-4 h-4" />
-                        <span className="hidden sm:inline">{config.label}</span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Timer Display */}
-              <div className="flex justify-center mb-8">
-                <div className="relative">
-                  <svg width="200" height="200" className="progress-ring">
-                    <circle
-                      cx="100"
-                      cy="100"
-                      r="90"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      className="text-gray-200 dark:text-gray-700"
-                    />
-                    <motion.circle
-                      cx="100"
-                      cy="100"
-                      r="90"
-                      fill="none"
-                      stroke="url(#pomodoroGradient)"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      strokeDasharray={circumference}
-                      animate={{ strokeDashoffset: circumference * (1 - progress) }}
-                      transition={{ duration: 0.5 }}
-                    />
-                    <defs>
-                      <linearGradient id="pomodoroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor={mode === "focus" ? "#8b5cf6" : mode === "shortBreak" ? "#10b981" : "#3b82f6"} />
-                        <stop offset="100%" stopColor={mode === "focus" ? "#a855f7" : mode === "shortBreak" ? "#14b8a6" : "#06b6d4"} />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-4xl font-bold text-gray-900 dark:text-white font-mono">
-                      {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
-                    </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400 mt-1 capitalize">
-                      {modeConfig[mode].label}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Controls */}
-              <div className="flex items-center justify-center gap-4">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+            {/* Controls */}
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2 }}>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <IconButton
                   onClick={() => resetTimer()}
-                  className="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  sx={{ bgcolor: "grey.100", "&:hover": { bgcolor: "grey.200" } }}
                 >
-                  <RotateCcw className="w-5 h-5" />
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  <RotateCcw style={{ width: 20, height: 20 }} />
+                </IconButton>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  variant="contained"
+                  size="large"
                   onClick={toggleTimer}
-                  className={`px-8 py-4 rounded-2xl font-semibold text-white shadow-lg transition-all bg-gradient-to-r ${modeConfig[mode].color} ${
-                    isRunning ? "shadow-lg" : "shadow-xl"
-                  }`}
+                  startIcon={isRunning ? <Pause style={{ width: 20, height: 20 }} /> : <Play style={{ width: 20, height: 20 }} />}
+                  sx={{
+                    px: 5,
+                    py: 1.75,
+                    borderRadius: 3,
+                    fontWeight: 600,
+                    background: `linear-gradient(135deg, ${currentConfig.gradientStart}, ${currentConfig.gradientEnd})`,
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+                    "&:hover": {
+                      background: `linear-gradient(135deg, ${currentConfig.gradientEnd}, ${currentConfig.gradientStart})`,
+                    },
+                  }}
                 >
-                  <span className="flex items-center gap-2">
-                    {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                    {isRunning ? "Pause" : "Start"}
-                  </span>
-                </motion.button>
-              </div>
+                  {isRunning ? "Pause" : "Start"}
+                </Button>
+              </motion.div>
+            </Box>
 
-              {/* Sessions Counter */}
-              <div className="mt-6 text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Sessions completed: <span className="font-bold text-indigo-600 dark:text-indigo-400">{sessions}</span>
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </>
+            {/* Sessions Counter */}
+            <Box sx={{ mt: 3, textAlign: "center" }}>
+              <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                Sessions completed:{" "}
+                <Box component="span" sx={{ fontWeight: 700, color: "primary.main" }}>
+                  {sessions}
+                </Box>
+              </Typography>
+            </Box>
+          </DialogContent>
+        </Dialog>
       )}
     </AnimatePresence>
   );

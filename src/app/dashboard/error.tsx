@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { AlertTriangle, RotateCcw } from "lucide-react";
+import { Alert, Button, Box } from "@mui/material";
 
 export default function DashboardError({
   error,
@@ -11,29 +12,46 @@ export default function DashboardError({
   reset: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center py-20">
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", py: 10 }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center"
+        style={{ width: "100%", maxWidth: 480 }}
       >
-        <div className="w-20 h-20 bg-red-50 dark:bg-red-900/20 rounded-3xl flex items-center justify-center mx-auto mb-5">
-          <AlertTriangle className="w-10 h-10 text-red-500" />
-        </div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          Something went wrong
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 max-w-sm">
-          {error.message || "An unexpected error occurred. Please try again."}
-        </p>
-        <button
-          onClick={reset}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all"
+        <Alert
+          severity="error"
+          icon={<AlertTriangle className="w-10 h-10" />}
+          sx={{
+            borderRadius: 3,
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+            py: 4,
+            "& .MuiAlert-icon": {
+              mb: 2,
+              fontSize: "2.5rem",
+            },
+            "& .MuiAlert-message": {
+              width: "100%",
+            },
+          }}
+          action={
+            <Button
+              color="error"
+              variant="contained"
+              onClick={reset}
+              startIcon={<RotateCcw className="w-4 h-4" />}
+              sx={{ mt: 2, borderRadius: 2 }}
+            >
+              Try Again
+            </Button>
+          }
         >
-          <RotateCcw className="w-4 h-4" />
-          Try Again
-        </button>
+          <strong>Something went wrong</strong>
+          <br />
+          {error.message || "An unexpected error occurred. Please try again."}
+        </Alert>
       </motion.div>
-    </div>
+    </Box>
   );
 }

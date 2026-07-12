@@ -16,6 +16,15 @@ import { useRouter, useParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { format, isToday, isYesterday } from "date-fns";
 import toast from "react-hot-toast";
+import {
+  Avatar,
+  Box,
+  CircularProgress,
+  IconButton,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 interface Message {
   _id: string;
@@ -56,20 +65,16 @@ export default function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior });
   }, []);
 
-  // Fetch friend info
   useEffect(() => {
     fetch("/api/friends")
       .then((res) => res.json())
       .then((data) => {
-        const f = data.friends?.find(
-          (f: FriendInfo) => f.clerkId === friendId
-        );
+        const f = data.friends?.find((f: FriendInfo) => f.clerkId === friendId);
         if (f) setFriend(f);
       })
       .catch(console.error);
   }, [friendId]);
 
-  // Fetch messages
   const fetchMessages = useCallback(async () => {
     try {
       const res = await fetch(`/api/chat/${friendId}`);
@@ -88,14 +93,12 @@ export default function ChatPage() {
     fetchMessages();
   }, [fetchMessages]);
 
-  // Scroll to bottom on initial load
   useEffect(() => {
     if (!loading && messages.length > 0) {
       scrollToBottom("instant");
     }
   }, [loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Poll for new messages every 3s
   useEffect(() => {
     pollingRef.current = setInterval(async () => {
       try {
@@ -117,15 +120,12 @@ export default function ChatPage() {
     };
   }, [friendId, scrollToBottom]);
 
-  // Load older messages
   const loadMore = async () => {
     if (!hasMore || loadingMore || messages.length === 0) return;
     setLoadingMore(true);
     try {
       const oldest = messages[0].createdAt;
-      const res = await fetch(
-        `/api/chat/${friendId}?before=${encodeURIComponent(oldest)}`
-      );
+      const res = await fetch(`/api/chat/${friendId}?before=${encodeURIComponent(oldest)}`);
       if (!res.ok) return;
       const data = await res.json();
       setMessages((prev) => [...data.messages, ...prev]);
@@ -164,18 +164,12 @@ export default function ChatPage() {
       });
       if (res.ok) {
         const saved = await res.json();
-        setMessages((prev) =>
-          prev.map((m) => (m._id === optimisticMsg._id ? saved : m))
-        );
+        setMessages((prev) => prev.map((m) => (m._id === optimisticMsg._id ? saved : m)));
       } else {
-        setMessages((prev) =>
-          prev.filter((m) => m._id !== optimisticMsg._id)
-        );
+        setMessages((prev) => prev.filter((m) => m._id !== optimisticMsg._id));
       }
     } catch {
-      setMessages((prev) =>
-        prev.filter((m) => m._id !== optimisticMsg._id)
-      );
+      setMessages((prev) => prev.filter((m) => m._id !== optimisticMsg._id));
     } finally {
       setSending(false);
       inputRef.current?.focus();
@@ -192,9 +186,7 @@ export default function ChatPage() {
             onClick={async () => {
               toast.dismiss(t.id);
               try {
-                const res = await fetch(`/api/chat/${friendId}`, {
-                  method: "DELETE",
-                });
+                const res = await fetch(`/api/chat/${friendId}`, { method: "DELETE" });
                 if (res.ok) {
                   setMessages([]);
                   toast.success("Chat history deleted");
@@ -221,9 +213,7 @@ export default function ChatPage() {
     );
   };
 
-  const formatMessageTime = (date: string) => {
-    return format(new Date(date), "h:mm a");
-  };
+  const formatMessageTime = (date: string) => format(new Date(date), "h:mm a");
 
   const formatDateSeparator = (date: string) => {
     const d = new Date(date);
@@ -232,7 +222,6 @@ export default function ChatPage() {
     return format(d, "MMMM d, yyyy");
   };
 
-  // Auto-resize textarea
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
     const el = e.target;
@@ -240,14 +229,13 @@ export default function ChatPage() {
     el.style.height = Math.min(el.scrollHeight, 120) + "px";
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   };
 
-  // Group messages by date
   const groupedMessages: { date: string; messages: Message[] }[] = [];
   messages.forEach((msg) => {
     const dateKey = new Date(msg.createdAt).toDateString();
@@ -261,140 +249,238 @@ export default function ChatPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
-      </div>
+      <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
+        <CircularProgress size={24} />
+      </Box>
     );
   }
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-10rem)] sm:h-[calc(100dvh-7rem)] max-w-2xl mx-auto -mt-2 sm:-mt-4">
-      {/* Chat Header — glass sticky bar */}
-      <div className="flex items-center gap-3 py-3 px-1 mb-1 sticky top-0 z-10 bg-white/60 dark:bg-gray-950/60 backdrop-blur-xl rounded-2xl">
-        <button
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: { xs: "calc(100dvh - 12rem)", sm: "calc(100dvh - 7rem)" },
+        maxWidth: 640,
+        mx: "auto",
+        mt: { xs: -0.5, sm: -2 },
+      }}
+    >
+      {/* Chat Header */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: { xs: 1, sm: 1.5 },
+          py: { xs: 1.25, sm: 1.5 },
+          px: { xs: 1, sm: 1.5 },
+          mb: 1,
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          bgcolor: (theme) =>
+            theme.palette.mode === "dark"
+              ? "rgba(30,41,59,0.85)"
+              : "rgba(255,255,255,0.85)",
+          backdropFilter: "blur(16px)",
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+        }}
+      >
+        <IconButton
           onClick={() => router.push("/dashboard/chat")}
-          className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors"
+          size="small"
+          sx={{ borderRadius: 2, color: "text.secondary", "&:hover": { bgcolor: "action.hover" } }}
         >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+          <ArrowLeft size={18} />
+        </IconButton>
 
         {friend ? (
-          <div
-            className="flex items-center gap-3 flex-1 min-w-0 cursor-default"
-          >
-            <div className="relative flex-shrink-0">
-              {friend.avatar ? (
-                <img
-                  src={friend.avatar}
-                  alt={friend.name}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-800 shadow-sm"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-sm">
-                  {friend.name.charAt(0).toUpperCase()}
-                </div>
-              )}
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white dark:border-gray-900 rounded-full" />
-            </div>
-            <div className="min-w-0">
-              <h2 className="text-sm font-bold text-gray-900 dark:text-white truncate">
-                {friend.name}
-              </h2>
-              <p className="text-[11px] text-emerald-500 font-medium">Active now</p>
-            </div>
-          </div>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, flex: 1, minWidth: 0 }}>
+            <Box sx={{ position: "relative", flexShrink: 0 }}>
+              <Avatar
+                src={friend.avatar}
+                alt={friend.name}
+                sx={{ width: 36, height: 36, fontSize: "0.875rem", background: "linear-gradient(135deg, #818cf8, #6366f1)" }}
+              >
+                {friend.name.charAt(0).toUpperCase()}
+              </Avatar>
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: -1,
+                  right: -1,
+                  width: 10,
+                  height: 10,
+                  bgcolor: "#34d399",
+                  borderRadius: "50%",
+                  border: "2px solid",
+                  borderColor: "background.paper",
+                }}
+              />
+            </Box>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.3 }} noWrap>{friend.name}</Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "#34d399" }} />
+                <Typography variant="caption" sx={{ color: "#10b981", fontWeight: 500, fontSize: "0.68rem" }}>Online</Typography>
+              </Box>
+            </Box>
+          </Box>
         ) : (
-          <div className="flex items-center gap-3 flex-1">
-            <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse" />
-            <div className="space-y-2">
-              <div className="h-3 w-24 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
-              <div className="h-2 w-16 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
-            </div>
-          </div>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, flex: 1 }}>
+            <Box sx={{ width: 36, height: 36, borderRadius: "50%", bgcolor: "action.hover" }} />
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
+              <Box sx={{ height: 12, width: 96, borderRadius: 1, bgcolor: "action.hover" }} />
+              <Box sx={{ height: 8, width: 64, borderRadius: 1, bgcolor: "action.hover" }} />
+            </Box>
+          </Box>
         )}
 
-        {/* Menu button */}
-        <div className="relative">
-          <button
+        {/* Menu */}
+        <Box sx={{ position: "relative" }}>
+          <IconButton
             onClick={() => setShowMenu(!showMenu)}
-            className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 transition-colors"
+            sx={{ borderRadius: 2, color: "text.disabled" }}
           >
-            <MoreVertical className="w-5 h-5" />
-          </button>
+            <MoreVertical size={20} />
+          </IconButton>
           <AnimatePresence>
             {showMenu && (
               <>
-                <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
+                <Box
+                  sx={{ position: "fixed", inset: 0, zIndex: 10 }}
+                  onClick={() => setShowMenu(false)}
+                />
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95, y: -4 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -4 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200/60 dark:border-gray-700/60 overflow-hidden z-20"
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "100%",
+                    marginTop: 4,
+                    width: 192,
+                    zIndex: 20,
+                  }}
                 >
-                  <button
-                    onClick={deleteChatHistory}
-                    disabled={messages.length === 0}
-                    className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  <Paper
+                    elevation={8}
+                    sx={{ borderRadius: 2, overflow: "hidden", border: "1px solid", borderColor: "divider" }}
                   >
-                    <Trash2 className="w-4 h-4" />
-                    Delete chat
-                  </button>
+                    <Box
+                      component="button"
+                      onClick={deleteChatHistory}
+                      disabled={messages.length === 0}
+                      sx={{
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.25,
+                        px: 2,
+                        py: 1.5,
+                        fontSize: "0.875rem",
+                        color: "#dc2626",
+                        cursor: messages.length === 0 ? "not-allowed" : "pointer",
+                        opacity: messages.length === 0 ? 0.4 : 1,
+                        bgcolor: "transparent",
+                        border: "none",
+                        textAlign: "left",
+                        "&:hover": { bgcolor: "#fee2e2" },
+                        transition: "background 0.15s",
+                      }}
+                    >
+                      <Trash2 size={16} />
+                      Delete chat
+                    </Box>
+                  </Paper>
                 </motion.div>
               </>
             )}
           </AnimatePresence>
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       {/* Messages Area */}
-      <div
+      <Box
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto px-1 space-y-0.5 scrollbar-thin"
+        sx={{ flex: 1, overflowY: "auto", px: 0.5 }}
       >
         {/* Load more */}
         {hasMore && (
-          <div className="text-center py-3">
-            <button
+          <Box sx={{ textAlign: "center", py: 1.5 }}>
+            <Box
+              component="button"
               onClick={loadMore}
               disabled={loadingMore}
-              className="px-4 py-2 text-xs text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-full hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors disabled:opacity-50 font-medium"
+              sx={{
+                px: 2,
+                py: 1,
+                fontSize: "0.75rem",
+                fontWeight: 600,
+                color: "#6366f1",
+                bgcolor: "#ede9fe",
+                border: "none",
+                borderRadius: 10,
+                cursor: loadingMore ? "default" : "pointer",
+                opacity: loadingMore ? 0.5 : 1,
+                "&:hover": { bgcolor: "#ddd6fe" },
+                transition: "background 0.15s",
+              }}
             >
-              {loadingMore ? (
-                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
-              ) : (
-                "Load older messages"
-              )}
-            </button>
-          </div>
+              {loadingMore ? <Loader2 size={16} className="animate-spin" /> : "Load older messages"}
+            </Box>
+          </Box>
         )}
 
         {/* Empty state */}
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="p-5 bg-gradient-to-br from-indigo-100 to-amber-100 dark:from-indigo-900/30 dark:to-amber-900/20 rounded-3xl mb-4">
-              <MessageCircle className="w-10 h-10 text-indigo-500 dark:text-indigo-400" />
-            </div>
-            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-              Start a conversation
-            </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", py: 10, textAlign: "center" }}>
+            <Box
+              sx={{
+                p: 2.5,
+                background: "linear-gradient(135deg, #ede9fe, #fef3c7)",
+                borderRadius: 4,
+                mb: 2,
+              }}
+            >
+              <MessageCircle size={40} color="#6366f1" />
+            </Box>
+            <Typography variant="body2" sx={{ fontWeight: 600 }} gutterBottom>Start a conversation</Typography>
+            <Typography variant="caption" sx={{ color: "text.disabled" }}>
               Say hello to {friend?.name || "your friend"} 👋
-            </p>
-          </div>
+            </Typography>
+          </Box>
         )}
 
         {/* Message groups */}
         {groupedMessages.map((group) => (
-          <div key={group.date}>
+          <Box key={group.date}>
             {/* Date separator */}
-            <div className="flex items-center gap-3 py-4">
-              <div className="flex-1 h-px bg-gray-200/50 dark:bg-gray-700/50" />
-              <span className="px-3 py-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-full text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, py: 2 }}>
+              <Box sx={{ flex: 1, height: "1px", bgcolor: "divider" }} />
+              <Typography
+                variant="caption"
+                sx={{
+                  px: 1.5,
+                  py: 0.5,
+                  bgcolor: "action.hover",
+                  borderRadius: 10,
+                  fontSize: "0.625rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: 1,
+                  color: "text.secondary",
+                }}
+              >
                 {formatDateSeparator(group.messages[0].createdAt)}
-              </span>
-              <div className="flex-1 h-px bg-gray-200/50 dark:bg-gray-700/50" />
-            </div>
+              </Typography>
+              <Box sx={{ flex: 1, height: "1px", bgcolor: "divider" }} />
+            </Box>
 
             {group.messages.map((msg, i) => {
               const isMe = msg.from === userId;
@@ -409,126 +495,151 @@ export default function ChatPage() {
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
-                  className={`flex items-end gap-2 ${isLastInGroup ? "mb-3" : "mb-0.5"} ${
-                    isMe ? "justify-end" : "justify-start"
-                  }`}
                 >
-                  {/* Friend avatar — only on last msg in group */}
-                  {!isMe && (
-                    <div className="w-7 flex-shrink-0">
-                      {isLastInGroup && friend ? (
-                        friend.avatar ? (
-                          <img
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "flex-end",
+                      gap: 1,
+                      mb: isLastInGroup ? 1.5 : 0.25,
+                      justifyContent: isMe ? "flex-end" : "flex-start",
+                    }}
+                  >
+                    {/* Friend avatar */}
+                    {!isMe && (
+                      <Box sx={{ width: 28, flexShrink: 0 }}>
+                        {isLastInGroup && friend ? (
+                          <Avatar
                             src={friend.avatar}
                             alt=""
-                            className="w-7 h-7 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-[10px] font-bold">
+                            sx={{ width: 28, height: 28, fontSize: "0.625rem", background: "linear-gradient(135deg, #818cf8, #6366f1)" }}
+                          >
                             {friend.name.charAt(0).toUpperCase()}
-                          </div>
-                        )
-                      ) : null}
-                    </div>
-                  )}
-
-                  {/* Message bubble */}
-                  <div
-                    className={`max-w-[78%] sm:max-w-[65%] px-3.5 py-2.5 ${
-                      isMe
-                        ? `bg-gradient-to-br from-indigo-600 to-indigo-500 text-white shadow-sm shadow-indigo-500/10 ${
-                            isFirstInGroup && isLastInGroup
-                              ? "rounded-2xl rounded-br-lg"
-                              : isFirstInGroup
-                              ? "rounded-2xl rounded-br-md"
-                              : isLastInGroup
-                              ? "rounded-2xl rounded-tr-md rounded-br-lg"
-                              : "rounded-2xl rounded-r-md"
-                          }`
-                        : `bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white border border-gray-100/80 dark:border-gray-700/50 shadow-sm ${
-                            isFirstInGroup && isLastInGroup
-                              ? "rounded-2xl rounded-bl-lg"
-                              : isFirstInGroup
-                              ? "rounded-2xl rounded-bl-md"
-                              : isLastInGroup
-                              ? "rounded-2xl rounded-tl-md rounded-bl-lg"
-                              : "rounded-2xl rounded-l-md"
-                          }`
-                    }`}
-                  >
-                    <p className="text-[13px] sm:text-sm leading-relaxed whitespace-pre-wrap break-words">
-                      {msg.content}
-                    </p>
-                    {isLastInGroup && (
-                      <div
-                        className={`flex items-center gap-1 mt-1 ${
-                          isMe ? "justify-end" : ""
-                        }`}
-                      >
-                        <span
-                          className={`text-[10px] ${
-                            isMe
-                              ? "text-white/50"
-                              : "text-gray-400 dark:text-gray-500"
-                          }`}
-                        >
-                          {formatMessageTime(msg.createdAt)}
-                        </span>
-                        {isMe &&
-                          (msg.read ? (
-                            <CheckCheck className="w-3.5 h-3.5 text-white/60" />
-                          ) : (
-                            <Check className="w-3.5 h-3.5 text-white/40" />
-                          ))}
-                      </div>
+                          </Avatar>
+                        ) : null}
+                      </Box>
                     )}
-                  </div>
+
+                    {/* Message bubble */}
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        maxWidth: { xs: "78%", sm: "65%" },
+                        px: 1.75,
+                        py: 1.25,
+                        bgcolor: isMe ? undefined : "background.paper",
+                        background: isMe ? "linear-gradient(135deg, #4f46e5, #6366f1)" : undefined,
+                        color: isMe ? "#fff" : "text.primary",
+                        border: isMe ? "none" : "1px solid",
+                        borderColor: "divider",
+                        borderRadius: isMe
+                          ? (isFirstInGroup && isLastInGroup ? "16px 16px 4px 16px"
+                            : isFirstInGroup ? "16px 16px 4px 16px"
+                            : isLastInGroup ? "16px 16px 4px 16px"
+                            : "16px 4px 4px 16px")
+                          : (isFirstInGroup && isLastInGroup ? "16px 16px 16px 4px"
+                            : isFirstInGroup ? "16px 16px 16px 4px"
+                            : isLastInGroup ? "4px 16px 16px 4px"
+                            : "4px 16px 16px 4px"),
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{ fontSize: "0.8125rem", lineHeight: 1.5, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                      >
+                        {msg.content}
+                      </Typography>
+                      {isLastInGroup && (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                            mt: 0.5,
+                            justifyContent: isMe ? "flex-end" : "flex-start",
+                          }}
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontSize: "0.625rem",
+                              color: isMe ? "rgba(255,255,255,0.5)" : "text.disabled",
+                            }}
+                          >
+                            {formatMessageTime(msg.createdAt)}
+                          </Typography>
+                          {isMe && (
+                            msg.read
+                              ? <CheckCheck size={14} color="rgba(255,255,255,0.6)" />
+                              : <Check size={14} color="rgba(255,255,255,0.4)" />
+                          )}
+                        </Box>
+                      )}
+                    </Paper>
+                  </Box>
                 </motion.div>
               );
             })}
-          </div>
+          </Box>
         ))}
 
-        <div ref={messagesEndRef} className="h-1" />
-      </div>
+        <div ref={messagesEndRef} style={{ height: 4 }} />
+      </Box>
 
-      {/* Message Input — fixed above mobile nav */}
-      <div className="pt-3 pb-1 sticky bottom-0 bg-transparent">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            sendMessage();
-          }}
-          className="flex gap-2"
-          style={{ alignItems: "flex-end" }}
+      {/* Message Input */}
+      <Box sx={{ pt: 1.5, pb: { xs: 1.5, sm: 0.5 }, position: "sticky", bottom: 0, bgcolor: "background.default" }}>
+        <Box
+          component="form"
+          onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
+          sx={{ display: "flex", gap: { xs: 0.75, sm: 1 }, alignItems: "flex-end" }}
         >
-          <textarea
-            ref={inputRef}
+          <TextField
+            key={messages.length}
+            inputRef={inputRef}
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
-            maxLength={2000}
-            rows={1}
-            className="flex-1 min-w-0 px-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200/60 dark:border-gray-700/60 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-300 dark:focus:border-indigo-700 transition-all resize-none overflow-hidden box-border"
-            style={{ minHeight: "46px", maxHeight: "120px", paddingTop: "11px", paddingBottom: "11px", lineHeight: "24px" }}
+            multiline
+            minRows={1}
+            maxRows={4}
+            size="small"
+            fullWidth
+            slotProps={{ htmlInput: { maxLength: 2000 } }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 3,
+                bgcolor: "background.paper",
+                fontSize: "0.875rem",
+                py: 1,
+                alignItems: "flex-end",
+              },
+              "& textarea": {
+                overflow: "auto !important",
+              },
+            }}
           />
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            type="submit"
-            disabled={!input.trim() || sending}
-            className="flex items-center justify-center bg-gradient-to-br from-indigo-600 to-indigo-500 text-white rounded-2xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex-shrink-0 box-border"
-            style={{ width: "46px", height: "46px" }}
-          >
-            {sending ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Send className="w-5 h-5" />
-            )}
-          </motion.button>
-        </form>
-      </div>
-    </div>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} style={{ flexShrink: 0 }}>
+            <IconButton
+              type="submit"
+              disabled={!input.trim() || sending}
+              sx={{
+                width: { xs: 40, sm: 46 },
+                height: { xs: 40, sm: 46 },
+                borderRadius: 3,
+                flexShrink: 0,
+                background: "linear-gradient(135deg, #4f46e5, #6366f1)",
+                color: "#fff",
+                boxShadow: "0 4px 14px rgba(99,102,241,0.35)",
+                "&:hover": { background: "linear-gradient(135deg, #4338ca, #4f46e5)" },
+                "&.Mui-disabled": { opacity: 0.4, background: "linear-gradient(135deg, #4f46e5, #6366f1)", color: "#fff" },
+              }}
+            >
+              {sending ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
+            </IconButton>
+          </motion.div>
+        </Box>
+      </Box>
+    </Box>
   );
 }

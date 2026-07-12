@@ -11,6 +11,12 @@ import {
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import {
+  Fab,
+  Badge,
+  Box,
+  Paper,
+} from "@mui/material";
 
 type TabType = "all" | "active" | "completed" | "shared";
 
@@ -30,93 +36,211 @@ const tabs: { id: TabType; label: string; icon: typeof ListTodo }[] = [
   { id: "shared", label: "Shared", icon: Share2 },
 ];
 
-export default function MobileNav({ activeTab, onTabChange, onNewTask, pathname, unreadChats = 0, pendingShared = 0 }: MobileNavProps) {
+export default function MobileNav({
+  activeTab,
+  onTabChange,
+  onNewTask,
+  pathname,
+  unreadChats = 0,
+  pendingShared = 0,
+}: MobileNavProps) {
   const router = useRouter();
-  const specialPages = ["/dashboard/friends", "/dashboard/pomodoro", "/dashboard/kanban", "/dashboard/calendar", "/dashboard/analytics", "/dashboard/habits", "/dashboard/notes", "/dashboard/focus", "/dashboard/timeline"];
-  const isSpecialPage = specialPages.includes(pathname) || pathname.startsWith("/dashboard/chat");
+  const specialPages = [
+    "/dashboard/friends",
+    "/dashboard/pomodoro",
+    "/dashboard/kanban",
+    "/dashboard/calendar",
+    "/dashboard/analytics",
+    "/dashboard/habits",
+    "/dashboard/notes",
+    "/dashboard/focus",
+    "/dashboard/timeline",
+  ];
+  const isSpecialPage =
+    specialPages.includes(pathname) || pathname.startsWith("/dashboard/chat");
+
+  // Determine the current bottom nav value
+  // We need a composite value that covers tabs + extra nav items
+  const currentValue = isSpecialPage
+    ? pathname.startsWith("/dashboard/chat")
+      ? "chat"
+      : pathname === "/dashboard/friends"
+      ? "friends"
+      : false
+    : activeTab;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 md:hidden z-30">
-      {/* Gradient fade above nav */}
-      <div className="h-6 bg-gradient-to-t from-white/80 dark:from-gray-950/80 to-transparent pointer-events-none" />
-
-      <nav className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-800/50 px-2 pb-[env(safe-area-inset-bottom)]">
-        <div className="flex items-center justify-around py-1.5">
+    <Box
+      sx={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        display: { md: "none" },
+        zIndex: 30,
+      }}
+    >
+      <Paper
+        elevation={0}
+        sx={{
+          backdropFilter: "blur(20px)",
+          bgcolor: (theme) =>
+            theme.palette.mode === "dark"
+              ? "rgba(15,23,42,0.85)"
+              : "rgba(255,255,255,0.85)",
+          borderTop: "1px solid",
+          borderColor: "divider",
+          pb: "env(safe-area-inset-bottom)",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            px: 0.5,
+            py: 0.5,
+          }}
+        >
+          {/* All nav items in one row, equally spaced */}
           {tabs.map((tab) => {
+            const Icon = tab.icon;
             const isActive = !isSpecialPage && activeTab === tab.id;
             return (
-              <button
+              <Box
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className={`relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-colors min-w-[56px] ${
-                  isActive
-                    ? "text-indigo-600 dark:text-indigo-400"
-                    : "text-gray-400 dark:text-gray-500"
-                }`}
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 0.25,
+                  py: 0.75,
+                  cursor: "pointer",
+                  color: isActive ? "primary.main" : "text.secondary",
+                  transition: "color 0.2s",
+                }}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="mobileNavActive"
-                    className="absolute -top-1.5 w-6 h-1 bg-indigo-500 rounded-full"
-                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                  />
-                )}
-                <div className="relative">
-                  <tab.icon className="w-5 h-5" />
-                  {tab.id === "shared" && pendingShared > 0 && (
-                    <span className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-0.5 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full shadow-sm">
-                      {pendingShared > 99 ? "99+" : pendingShared}
-                    </span>
+                <Box sx={{ position: "relative" }}>
+                  {isActive && (
+                    <motion.div
+                      layoutId="mobileNavActive"
+                      style={{
+                        position: "absolute",
+                        top: -6,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        width: 24,
+                        height: 4,
+                        backgroundColor: "#6366f1",
+                        borderRadius: 9999,
+                      }}
+                      transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                    />
                   )}
-                </div>
-                <span className="text-[10px] font-medium">{tab.label}</span>
-              </button>
+                  <Badge
+                    badgeContent={
+                      tab.id === "shared" && pendingShared > 0
+                        ? pendingShared > 9 ? "9+" : pendingShared
+                        : 0
+                    }
+                    color="error"
+                    max={9}
+                    sx={{ "& .MuiBadge-badge": { fontSize: "0.5rem", minWidth: 14, height: 14 } }}
+                  >
+                    <Icon style={{ width: 18, height: 18 }} />
+                  </Badge>
+                </Box>
+                <Box component="span" sx={{ fontSize: "0.6rem", fontWeight: isActive ? 600 : 400 }}>
+                  {tab.label}
+                </Box>
+              </Box>
             );
           })}
 
-          {/* Center FAB for new task */}
-          <button
-            onClick={onNewTask}
-            className="flex flex-col items-center gap-0.5 px-3 py-1.5"
+          {/* Center FAB */}
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-500 rounded-2xl shadow-lg shadow-indigo-500/30 flex items-center justify-center -mt-4">
-              <Plus className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-[10px] font-medium text-indigo-600 dark:text-indigo-400">New</span>
-          </button>
+            <Fab
+              color="primary"
+              size="small"
+              onClick={onNewTask}
+              aria-label="New task"
+              sx={{
+                width: 38,
+                height: 38,
+                mt: -2,
+                borderRadius: 2,
+                background: "linear-gradient(135deg, #4f46e5, #6366f1)",
+                boxShadow: "0 4px 12px rgba(99,102,241,0.35)",
+              }}
+            >
+              <Plus style={{ width: 18, height: 18 }} />
+            </Fab>
+            <Box
+              component="span"
+              sx={{ fontSize: "0.575rem", fontWeight: 500, color: "primary.main", mt: 0.25 }}
+            >
+              New
+            </Box>
+          </Box>
 
-          {/* Extra shortcuts */}
-          <button
+          {/* Chat */}
+          <Box
             onClick={() => router.push("/dashboard/chat")}
-            className={`relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl min-w-[56px] ${
-              pathname.startsWith("/dashboard/chat")
-                ? "text-indigo-600 dark:text-indigo-400"
-                : "text-gray-400 dark:text-gray-500"
-            }`}
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 0.25,
+              py: 0.75,
+              cursor: "pointer",
+              color: pathname.startsWith("/dashboard/chat") ? "primary.main" : "text.secondary",
+              transition: "color 0.2s",
+            }}
           >
-            <div className="relative">
-              <MessageCircle className="w-5 h-5" />
-              {unreadChats > 0 && (
-                <span className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-0.5 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full shadow-sm">
-                  {unreadChats > 99 ? "99+" : unreadChats}
-                </span>
-              )}
-            </div>
-            <span className="text-[10px] font-medium">Chat</span>
-          </button>
-          <button
+            <Badge
+              badgeContent={unreadChats > 0 ? (unreadChats > 9 ? "9+" : unreadChats) : 0}
+              color="error"
+              max={9}
+              sx={{ "& .MuiBadge-badge": { fontSize: "0.5rem", minWidth: 14, height: 14 } }}
+            >
+              <MessageCircle style={{ width: 18, height: 18 }} />
+            </Badge>
+            <Box component="span" sx={{ fontSize: "0.6rem", fontWeight: pathname.startsWith("/dashboard/chat") ? 600 : 400 }}>
+              Chat
+            </Box>
+          </Box>
+
+          {/* Friends */}
+          <Box
             onClick={() => router.push("/dashboard/friends")}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl min-w-[56px] ${
-              pathname === "/dashboard/friends"
-                ? "text-indigo-600 dark:text-indigo-400"
-                : "text-gray-400 dark:text-gray-500"
-            }`}
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 0.25,
+              py: 0.75,
+              cursor: "pointer",
+              color: pathname === "/dashboard/friends" ? "primary.main" : "text.secondary",
+              transition: "color 0.2s",
+            }}
           >
-            <Users className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Friends</span>
-          </button>
-        </div>
-      </nav>
-    </div>
+            <Users style={{ width: 18, height: 18 }} />
+            <Box component="span" sx={{ fontSize: "0.6rem", fontWeight: pathname === "/dashboard/friends" ? 600 : 400 }}>
+              Friends
+            </Box>
+          </Box>
+        </Box>
+      </Paper>
+    </Box>
   );
 }

@@ -2,8 +2,38 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Tag, Calendar, Flag, Sparkles } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
 import { Todo } from "@/types/todo";
+
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  IconButton,
+  Chip,
+  CircularProgress,
+  ToggleButtonGroup,
+  ToggleButton,
+  Box,
+  Typography,
+  Stack,
+} from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import CloseIcon from "@mui/icons-material/Close";
+import AddIcon from "@mui/icons-material/Add";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import WorkIcon from "@mui/icons-material/Work";
+import HomeIcon from "@mui/icons-material/Home";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import SchoolIcon from "@mui/icons-material/School";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import { SvgIconComponent } from "@mui/icons-material";
 
 interface AddTodoModalProps {
   isOpen: boolean;
@@ -16,26 +46,26 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<Todo["priority"]>("medium");
   const [category, setCategory] = useState("general");
-  const [dueDate, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState<Date | null>(null);
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const priorities: { value: Todo["priority"]; label: string; color: string; dot: string }[] = [
-    { value: "low", label: "Low", color: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 ring-emerald-500", dot: "bg-emerald-400" },
-    { value: "medium", label: "Medium", color: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 ring-blue-500", dot: "bg-blue-400" },
-    { value: "high", label: "High", color: "bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 ring-orange-500", dot: "bg-orange-400" },
-    { value: "urgent", label: "Urgent", color: "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300 ring-red-500", dot: "bg-red-500" },
+  const priorities: { value: Todo["priority"]; label: string; color: string }[] = [
+    { value: "low", label: "Low", color: "#10b981" },
+    { value: "medium", label: "Medium", color: "#6366f1" },
+    { value: "high", label: "High", color: "#f97316" },
+    { value: "urgent", label: "Urgent", color: "#ef4444" },
   ];
 
-  const categories = [
-    { value: "general", label: "General", emoji: "📋" },
-    { value: "work", label: "Work", emoji: "💼" },
-    { value: "personal", label: "Personal", emoji: "🏠" },
-    { value: "shopping", label: "Shopping", emoji: "🛒" },
-    { value: "health", label: "Health", emoji: "💪" },
-    { value: "learning", label: "Learning", emoji: "📚" },
-    { value: "finance", label: "Finance", emoji: "💰" },
+  const categories: { value: string; label: string; icon: SvgIconComponent }[] = [
+    { value: "general", label: "General", icon: AssignmentIcon },
+    { value: "work", label: "Work", icon: WorkIcon },
+    { value: "personal", label: "Personal", icon: HomeIcon },
+    { value: "shopping", label: "Shopping", icon: ShoppingCartIcon },
+    { value: "health", label: "Health", icon: FitnessCenterIcon },
+    { value: "learning", label: "Learning", icon: SchoolIcon },
+    { value: "finance", label: "Finance", icon: AccountBalanceIcon },
   ];
 
   const addTag = () => {
@@ -54,16 +84,17 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
     if (!title.trim()) return;
 
     setLoading(true);
-    const finalTags = tagInput.trim() && !tags.includes(tagInput.trim())
-      ? [...tags, tagInput.trim()]
-      : [...tags];
+    const finalTags =
+      tagInput.trim() && !tags.includes(tagInput.trim())
+        ? [...tags, tagInput.trim()]
+        : [...tags];
 
     await onAdd({
       title: title.trim(),
       description: description.trim(),
       priority,
       category,
-      dueDate: dueDate || null,
+      dueDate: dueDate ? dueDate.toISOString().split("T")[0] : null,
       tags: finalTags,
     });
 
@@ -71,7 +102,7 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
     setDescription("");
     setPriority("medium");
     setCategory("general");
-    setDueDate("");
+    setDueDate(null);
     setTags([]);
     setTagInput("");
     setLoading(false);
@@ -82,219 +113,310 @@ export default function AddTodoModal({ isOpen, onClose, onAdd }: AddTodoModalPro
     <AnimatePresence>
       {isOpen && (
         <>
+          {/* Animated backdrop overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: "rgba(0,0,0,0.6)",
+              backdropFilter: "blur(6px)",
+              zIndex: 1299,
+            }}
           />
+
+          {/* Animated dialog wrapper */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed inset-x-4 top-[8%] md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-lg z-50 max-h-[84vh] overflow-y-auto"
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 1300,
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "center",
+              paddingTop: "8vh",
+              paddingLeft: 16,
+              paddingRight: 16,
+              pointerEvents: "none",
+            }}
           >
-            <form
+            <Box
+              component="form"
               onSubmit={handleSubmit}
-              className="glass-card rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-7"
+              sx={{
+                width: "100%",
+                maxWidth: 520,
+                maxHeight: "84vh",
+                overflowY: "auto",
+                bgcolor: "background.paper",
+                borderRadius: 3,
+                boxShadow: 24,
+                p: { xs: 2.5, sm: 3.5 },
+                pointerEvents: "auto",
+              }}
             >
               {/* Header */}
-              <div className="flex items-center justify-between mb-5 sm:mb-7">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="p-1.5 sm:p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg sm:rounded-xl shadow-lg shadow-indigo-500/30">
-                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  mb: { xs: 2.5, sm: 3 },
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                  <Box
+                    sx={{
+                      p: 1,
+                      background: "linear-gradient(135deg, #6366f1, #4f46e5)",
+                      borderRadius: 2,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      boxShadow: "0 4px 14px rgba(99,102,241,0.35)",
+                    }}
+                  >
+                    <Sparkles size={18} color="#fff" />
+                  </Box>
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
                       Create Task
-                    </h2>
-                    <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400">Add a new task to your list</p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                >
-                  <X className="w-5 h-5 text-gray-400" />
-                </button>
-              </div>
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                      Add a new task to your list
+                    </Typography>
+                  </Box>
+                </Box>
 
-              <div className="space-y-4 sm:space-y-5">
+                <IconButton size="small" onClick={onClose} aria-label="close">
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Box>
+
+              <Stack spacing={2.5}>
                 {/* Title */}
-                <div>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="What needs to be done?"
-                    className="w-full px-4 py-3.5 bg-gray-50/80 dark:bg-gray-800/80 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400 text-lg font-medium backdrop-blur-sm"
-                    autoFocus
-                  />
-                </div>
+                <TextField
+                  fullWidth
+                  autoFocus
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="What needs to be done?"
+                  slotProps={{ htmlInput: { style: { fontWeight: 500, fontSize: "1rem" } } }}
+                />
 
                 {/* Description */}
-                <div>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Add a description (optional)..."
-                    rows={3}
-                    className="w-full px-4 py-3 bg-gray-50/80 dark:bg-gray-800/80 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400 resize-none text-sm backdrop-blur-sm"
-                  />
-                </div>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={3}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Add a description (optional)..."
+                />
 
                 {/* Priority */}
-                <div>
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
-                    <Flag className="w-4 h-4 text-indigo-500" /> Priority
-                  </label>
-                  <div className="flex gap-2 flex-wrap">
+                <Box>
+                  <Typography
+                    variant="body2"
+                    gutterBottom
+                    sx={{ fontWeight: 600, color: "text.secondary" }}
+                  >
+                    Priority
+                  </Typography>
+                  <ToggleButtonGroup
+                    value={priority}
+                    exclusive
+                    onChange={(_e, val) => val && setPriority(val)}
+                    size="small"
+                    sx={{ flexWrap: "wrap", gap: 0.5 }}
+                  >
                     {priorities.map((p) => (
-                      <button
+                      <ToggleButton
                         key={p.value}
-                        type="button"
-                        onClick={() => setPriority(p.value)}
-                        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
-                          priority === p.value
-                            ? `${p.color} ring-2 ${p.color.split(" ").find(c => c.startsWith("ring-"))} shadow-sm`
-                            : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                        }`}
+                        value={p.value}
+                        sx={{
+                          borderRadius: "10px !important",
+                          border: "1px solid",
+                          borderColor: "divider",
+                          px: 1.5,
+                          py: 0.75,
+                          gap: 0.75,
+                          "&.Mui-selected": {
+                            borderColor: p.color,
+                            color: p.color,
+                            bgcolor: `${p.color}18`,
+                            "&:hover": { bgcolor: `${p.color}28` },
+                          },
+                        }}
                       >
-                        <span className={`w-2 h-2 rounded-full ${p.dot}`} />
-                        {p.label}
-                      </button>
+                        <Box
+                          sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            bgcolor: p.color,
+                            flexShrink: 0,
+                          }}
+                        />
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {p.label}
+                        </Typography>
+                      </ToggleButton>
                     ))}
-                  </div>
-                </div>
+                  </ToggleButtonGroup>
+                </Box>
 
                 {/* Category */}
-                <div>
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
-                    <ListIcon className="w-4 h-4 text-indigo-500" /> Category
-                  </label>
-                  <div className="flex gap-2 flex-wrap">
+                <Box>
+                  <Typography
+                    variant="body2"
+                    gutterBottom
+                    sx={{ fontWeight: 600, color: "text.secondary" }}
+                  >
+                    Category
+                  </Typography>
+                  <ToggleButtonGroup
+                    value={category}
+                    exclusive
+                    onChange={(_e, val) => val && setCategory(val)}
+                    size="small"
+                    sx={{ flexWrap: "wrap", gap: 0.5 }}
+                  >
                     {categories.map((c) => (
-                      <button
+                      <ToggleButton
                         key={c.value}
-                        type="button"
-                        onClick={() => setCategory(c.value)}
-                        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
-                          category === c.value
-                            ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 ring-2 ring-indigo-500 shadow-sm"
-                            : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                        }`}
+                        value={c.value}
+                        sx={{
+                          borderRadius: "10px !important",
+                          border: "1px solid",
+                          borderColor: "divider",
+                          px: 1.5,
+                          py: 0.75,
+                          gap: 0.75,
+                          "&.Mui-selected": {
+                            borderColor: "primary.main",
+                            color: "primary.main",
+                            bgcolor: "rgba(99,102,241,0.08)",
+                            "&:hover": { bgcolor: "rgba(99,102,241,0.14)" },
+                          },
+                        }}
                       >
-                        <span>{c.emoji}</span>
-                        {c.label}
-                      </button>
+                        <c.icon fontSize="small" />
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {c.label}
+                        </Typography>
+                      </ToggleButton>
                     ))}
-                  </div>
-                </div>
+                  </ToggleButtonGroup>
+                </Box>
 
                 {/* Due Date */}
-                <div>
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
-                    <Calendar className="w-4 h-4 text-indigo-500" /> Due Date
-                  </label>
-                  <input
-                    type="date"
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    label="Due Date"
                     value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-gray-50/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-gray-900 dark:text-white text-sm backdrop-blur-sm"
+                    onChange={(val) => setDueDate(val)}
+                    slotProps={{ textField: { fullWidth: true }, field: { clearable: true } }}
                   />
-                </div>
+                </LocalizationProvider>
 
                 {/* Tags */}
-                <div>
-                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2.5">
-                    <Tag className="w-4 h-4 text-indigo-500" /> Tags
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
+                <Box>
+                  <Typography
+                    variant="body2"
+                    gutterBottom
+                    sx={{ fontWeight: 600, color: "text.secondary" }}
+                  >
+                    Tags
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <TextField
+                      fullWidth
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addTag();
+                        }
+                      }}
                       placeholder="Add tags..."
-                      className="flex-1 px-4 py-2.5 bg-gray-50/80 dark:bg-gray-800/80 rounded-xl border border-gray-200/50 dark:border-gray-700/50 focus:ring-2 focus:ring-indigo-500/50 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400 text-sm backdrop-blur-sm"
                     />
-                    <button
-                      type="button"
+                    <IconButton
                       onClick={addTag}
-                      className="px-3 py-2.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-200/50 dark:border-indigo-800/50"
+                      color="primary"
+                      aria-label="add tag"
+                      sx={{
+                        border: "1px solid",
+                        borderColor: "primary.light",
+                        borderRadius: 2,
+                        bgcolor: "rgba(99,102,241,0.06)",
+                        "&:hover": { bgcolor: "rgba(99,102,241,0.12)" },
+                      }}
                     >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
+                      <AddIcon />
+                    </IconButton>
+                  </Box>
+
                   {tags.length > 0 && (
-                    <div className="flex gap-2 flex-wrap mt-2.5">
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1.5 }}>
                       {tags.map((tag) => (
-                        <motion.span
+                        <motion.div
                           key={tag}
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-lg text-sm border border-indigo-200/50 dark:border-indigo-800/50"
                         >
-                          #{tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="hover:text-red-500 transition-colors"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </motion.span>
+                          <Chip
+                            label={`#${tag}`}
+                            onDelete={() => removeTag(tag)}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                          />
+                        </motion.div>
                       ))}
-                    </div>
+                    </Box>
                   )}
-                </div>
-              </div>
+                </Box>
+              </Stack>
 
               {/* Actions */}
-              <div className="mt-5 sm:mt-7 flex gap-3">
-                <button
-                  type="button"
+              <Box sx={{ display: "flex", gap: 1.5, mt: { xs: 3, sm: 3.5 } }}>
+                <Button
+                  fullWidth
+                  variant="outlined"
                   onClick={onClose}
-                  className="flex-1 py-3.5 rounded-2xl font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  sx={{ py: 1.5 }}
                 >
                   Cancel
-                </button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                </Button>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
                   type="submit"
                   disabled={!title.trim() || loading}
-                  className="flex-1 py-3.5 rounded-2xl font-semibold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40"
+                  sx={{ py: 1.5 }}
+                  startIcon={
+                    loading ? (
+                      <CircularProgress size={16} color="inherit" />
+                    ) : undefined
+                  }
                 >
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <motion.span
-                        animate={{ rotate: 360 }}
-                        transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
-                        className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full inline-block"
-                      />
-                      Creating...
-                    </span>
-                  ) : (
-                    "Create Task"
-                  )}
-                </motion.button>
-              </div>
-            </form>
+                  {loading ? "Creating..." : "Create Task"}
+                </Button>
+              </Box>
+            </Box>
           </motion.div>
         </>
       )}
     </AnimatePresence>
-  );
-}
-
-function ListIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" />
-    </svg>
   );
 }

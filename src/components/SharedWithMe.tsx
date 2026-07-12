@@ -20,34 +20,47 @@ import {
 import { Todo } from "@/types/todo";
 import { format, isPast, isToday } from "date-fns";
 import toast from "react-hot-toast";
+import {
+  Card,
+  CardContent,
+  Chip,
+  Typography,
+  Avatar,
+  Box,
+  CircularProgress,
+  IconButton,
+  TextField,
+  LinearProgress,
+  Stack,
+} from "@mui/material";
 
 const priorityConfig = {
   low: {
-    color: "border-l-emerald-400",
-    badge: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
-    dot: "bg-emerald-400",
+    borderColor: "#34d399",
+    chipColor: "success" as const,
+    dotColor: "#34d399",
   },
   medium: {
-    color: "border-l-blue-400",
-    badge: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-    dot: "bg-blue-400",
+    borderColor: "#60a5fa",
+    chipColor: "primary" as const,
+    dotColor: "#60a5fa",
   },
   high: {
-    color: "border-l-orange-400",
-    badge: "bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
-    dot: "bg-orange-400",
+    borderColor: "#fb923c",
+    chipColor: "warning" as const,
+    dotColor: "#fb923c",
   },
   urgent: {
-    color: "border-l-red-500",
-    badge: "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300",
-    dot: "bg-red-500",
+    borderColor: "#f87171",
+    chipColor: "error" as const,
+    dotColor: "#f87171",
   },
 };
 
 const permissionIcons = {
-  view: { icon: Eye, label: "View only", color: "text-gray-500 bg-gray-50 dark:bg-gray-800" },
-  edit: { icon: Pencil, label: "Can edit", color: "text-blue-500 bg-blue-50 dark:bg-blue-900/20" },
-  admin: { icon: Shield, label: "Full access", color: "text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20" },
+  view: { icon: Eye, label: "View only" },
+  edit: { icon: Pencil, label: "Can edit" },
+  admin: { icon: Shield, label: "Full access" },
 };
 
 function getExpandedState(id: string): boolean {
@@ -85,6 +98,7 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
   const config = priorityConfig[todo.priority];
   const perm = todo.myPermission || "view";
   const permInfo = permissionIcons[perm];
+  const PermIcon = permInfo.icon;
   const canEdit = perm === "edit" || perm === "admin";
   const subtasks = todo.subtasks || [];
   const tags = todo.tags || [];
@@ -145,24 +159,43 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
   };
 
   return (
-    <div
-      className={`group glass-card rounded-2xl border-l-4 ${config.color} overflow-hidden transition-all duration-300 ${
-        todo.completed ? "opacity-60" : ""
-      }`}
+    <Card
+      variant="outlined"
+      sx={{
+        borderRadius: 3,
+        borderLeft: "4px solid",
+        borderLeftColor: config.borderColor,
+        opacity: todo.completed ? 0.6 : 1,
+        transition: "all 0.3s",
+        overflow: "hidden",
+      }}
     >
-      <div className="p-4 sm:p-5">
-        <div className="flex items-start gap-3">
+      <CardContent sx={{ p: { xs: 2, sm: 2.5 }, "&:last-child": { pb: { xs: 2, sm: 2.5 } } }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
           {/* Checkbox */}
-          <button
+          <Box
+            component="button"
             onClick={toggleComplete}
             disabled={!canEdit}
-            className={`mt-0.5 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
-              todo.completed
-                ? "bg-gradient-to-br from-emerald-400 to-emerald-600 border-emerald-500 shadow-lg shadow-emerald-500/30"
-                : canEdit
-                ? "border-gray-300 dark:border-gray-600 hover:border-indigo-500 hover:scale-110 cursor-pointer"
-                : "border-gray-200 dark:border-gray-700 cursor-default"
-            }`}
+            sx={{
+              mt: 0.25,
+              flexShrink: 0,
+              width: 24,
+              height: 24,
+              borderRadius: "50%",
+              border: "2px solid",
+              borderColor: todo.completed ? "success.main" : canEdit ? "grey.300" : "grey.200",
+              background: todo.completed
+                ? "linear-gradient(135deg, #34d399, #059669)"
+                : "transparent",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: canEdit ? "pointer" : "default",
+              transition: "all 0.3s",
+              boxShadow: todo.completed ? "0 2px 8px rgba(52,211,153,0.4)" : "none",
+              "&:hover": canEdit && !todo.completed ? { borderColor: "primary.main", transform: "scale(1.1)" } : {},
+            }}
           >
             {todo.completed && (
               <motion.div
@@ -170,191 +203,260 @@ function SharedTodoItem({ todo, onUpdate }: { todo: Todo; onUpdate: (updated: To
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", damping: 10, stiffness: 400 }}
               >
-                <Check className="w-3.5 h-3.5 text-white" />
+                <Check style={{ width: 14, height: 14, color: "white" }} />
               </motion.div>
             )}
-          </button>
+          </Box>
 
           {/* Content */}
-          <div className="flex-1 min-w-0">
-            <h3
-              className={`font-semibold text-gray-900 dark:text-white leading-snug ${
-                todo.completed ? "line-through text-gray-400 dark:text-gray-500" : ""
-              }`}
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography
+              variant="body1"
+              sx={{
+                fontWeight: 600,
+                lineHeight: 1.4,
+                textDecoration: todo.completed ? "line-through" : "none",
+                color: todo.completed ? "text.disabled" : "text.primary",
+              }}
             >
               {todo.title}
-            </h3>
+            </Typography>
             {todo.description && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", mt: 0.5, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
+              >
                 {todo.description}
-              </p>
+              </Typography>
             )}
 
-            {/* Meta */}
-            <div className="flex items-center gap-2 mt-3 flex-wrap">
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium ${config.badge}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
-                {todo.priority}
-              </span>
+            {/* Meta chips */}
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mt: 1.5 }}>
+              <Chip
+                size="small"
+                label={
+                  <Box component="span" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    <Box component="span" sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: config.dotColor, display: "inline-block" }} />
+                    {todo.priority}
+                  </Box>
+                }
+                color={config.chipColor}
+                variant="outlined"
+                sx={{ textTransform: "capitalize", fontSize: "0.7rem", height: 22 }}
+              />
+
               {todo.dueDate && (
-                <span
-                  className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium ${
-                    isOverdue
-                      ? "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400"
-                      : isToday(new Date(todo.dueDate))
-                      ? "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"
-                      : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-                  }`}
-                >
-                  <Calendar className="w-3 h-3" />
-                  {format(new Date(todo.dueDate), "MMM d")}
-                </span>
+                <Chip
+                  size="small"
+                  icon={<Calendar style={{ width: 12, height: 12 }} />}
+                  label={format(new Date(todo.dueDate), "MMM d")}
+                  color={isOverdue ? "error" : isToday(new Date(todo.dueDate)) ? "warning" : "default"}
+                  variant="outlined"
+                  sx={{ fontSize: "0.7rem", height: 22 }}
+                />
               )}
+
               {tags.map((tag) => (
-                <span
+                <Chip
                   key={tag}
-                  className="flex items-center gap-0.5 px-2 py-0.5 rounded-lg text-xs bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
-                >
-                  <Tag className="w-2.5 h-2.5" />
-                  {tag}
-                </span>
+                  size="small"
+                  icon={<Tag style={{ width: 10, height: 10 }} />}
+                  label={tag}
+                  variant="outlined"
+                  sx={{ fontSize: "0.7rem", height: 22 }}
+                />
               ))}
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-300 font-medium">
-                <Share2 className="w-3 h-3" />
-                from {todo.ownerName}
-              </span>
-              <span className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium ${permInfo.color}`}>
-                <permInfo.icon className="w-3 h-3" />
-                {permInfo.label}
-              </span>
-            </div>
-          </div>
+
+              <Chip
+                size="small"
+                icon={<Share2 style={{ width: 12, height: 12 }} />}
+                label={`from ${todo.ownerName}`}
+                color="primary"
+                variant="outlined"
+                sx={{ fontSize: "0.7rem", height: 22 }}
+              />
+
+              <Chip
+                size="small"
+                icon={<PermIcon style={{ width: 12, height: 12 }} />}
+                label={permInfo.label}
+                variant="outlined"
+                sx={{ fontSize: "0.7rem", height: 22 }}
+              />
+            </Box>
+          </Box>
 
           {/* Expand button */}
           {canEdit && (
-            <button
+            <IconButton
+              size="small"
               onClick={() => setExpanded(!expanded)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 hover:text-gray-600 transition-colors"
+              sx={{ color: "text.secondary", "&:hover": { bgcolor: "action.hover" } }}
             >
-              {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
+              {expanded ? (
+                <ChevronUp style={{ width: 16, height: 16 }} />
+              ) : (
+                <ChevronDown style={{ width: 16, height: 16 }} />
+              )}
+            </IconButton>
           )}
-        </div>
+        </Box>
 
         {/* Subtask progress */}
         {subtasks.length > 0 && !expanded && (
-          <div className="mt-3 ml-0 sm:ml-9">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs text-gray-400">
-                {subtasks.filter((s) => s.completed).length}/{subtasks.length} subtasks
-              </span>
-            </div>
-            <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${subtaskProgress}%` }}
-                className="h-full bg-gradient-to-r from-indigo-500 to-indigo-400 rounded-full"
-                transition={{ duration: 0.5 }}
+          <Box sx={{ mt: 1.5, ml: { xs: 0, sm: 4.5 } }}>
+            <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mb: 0.5 }}>
+              {subtasks.filter((s) => s.completed).length}/{subtasks.length} subtasks
+            </Typography>
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              style={{ transformOrigin: "left" }}
+              transition={{ duration: 0.5 }}
+            >
+              <LinearProgress
+                variant="determinate"
+                value={subtaskProgress}
+                sx={{
+                  borderRadius: 4,
+                  height: 6,
+                  bgcolor: "grey.100",
+                  "& .MuiLinearProgress-bar": {
+                    background: "linear-gradient(90deg, #6366f1, #818cf8)",
+                    borderRadius: 4,
+                  },
+                }}
               />
-            </div>
-          </div>
+            </motion.div>
+          </Box>
         )}
-      </div>
+      </CardContent>
 
-      {/* Expanded subtasks section */}
+      {/* Expanded subtasks */}
       {expanded && canEdit && (
         <motion.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          className="px-3 sm:px-5 pb-4 sm:pb-5 border-t border-gray-100/50 dark:border-gray-800/50"
         >
-          <div className="pt-4 ml-0 sm:ml-9 space-y-2">
-            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-              Subtasks
-            </p>
+          <Box
+            sx={{
+              px: { xs: 2, sm: 2.5 },
+              pb: { xs: 2, sm: 2.5 },
+              borderTop: 1,
+              borderColor: "divider",
+            }}
+          >
+            <Box sx={{ pt: 2, ml: { xs: 0, sm: 4.5 } }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, mb: 1.5 }}>
+                Subtasks
+              </Typography>
 
-            {subtasks.map((subtask) => (
-              <div key={subtask.id} className="group/sub py-1.5">
-                <div className="flex items-center gap-2.5">
-                  <button
-                    onClick={() => toggleSubtask(subtask.id)}
-                    className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
-                      subtask.completed
-                        ? "bg-emerald-500 border-emerald-500"
-                        : "border-gray-300 dark:border-gray-600 hover:border-indigo-500"
-                    }`}
-                  >
-                    {subtask.completed && <Check className="w-2.5 h-2.5 text-white" />}
-                  </button>
-                  <span
-                    className={`text-sm flex-1 ${
-                      subtask.completed
-                        ? "line-through text-gray-400"
-                        : "text-gray-700 dark:text-gray-300"
-                    }`}
-                  >
-                    {subtask.title}
-                  </span>
-                  <button
-                    onClick={() => removeSubtask(subtask.id)}
-                    className="sm:opacity-0 sm:group-hover/sub:opacity-100 p-0.5 text-gray-400 hover:text-red-500 transition-all"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-                {/* User info: added by / completed by */}
-                <div className="ml-6.5 mt-0.5 flex items-center gap-3 flex-wrap">
-                  {subtask.addedBy && (
-                    <span className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500">
-                      {subtask.addedBy.avatar ? (
-                        <img src={subtask.addedBy.avatar} alt="" className="w-3.5 h-3.5 rounded-full" />
-                      ) : (
-                        <span className="w-3.5 h-3.5 rounded-full bg-indigo-400 text-white flex items-center justify-center text-[7px] font-bold">
-                          {subtask.addedBy.name.charAt(0).toUpperCase()}
-                        </span>
+              <Stack spacing={1}>
+                {subtasks.map((subtask) => (
+                  <Box key={subtask.id}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1.25 }}>
+                      <Box
+                        component="button"
+                        onClick={() => toggleSubtask(subtask.id)}
+                        sx={{
+                          width: 16,
+                          height: 16,
+                          borderRadius: 0.5,
+                          border: "2px solid",
+                          borderColor: subtask.completed ? "success.main" : "grey.300",
+                          bgcolor: subtask.completed ? "success.main" : "transparent",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                          flexShrink: 0,
+                          transition: "all 0.2s",
+                          "&:hover": { borderColor: "primary.main" },
+                        }}
+                      >
+                        {subtask.completed && <Check style={{ width: 10, height: 10, color: "white" }} />}
+                      </Box>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          flex: 1,
+                          textDecoration: subtask.completed ? "line-through" : "none",
+                          color: subtask.completed ? "text.disabled" : "text.primary",
+                        }}
+                      >
+                        {subtask.title}
+                      </Typography>
+                      <IconButton
+                        size="small"
+                        onClick={() => removeSubtask(subtask.id)}
+                        sx={{ color: "text.disabled", "&:hover": { color: "error.main" }, opacity: { xs: 1, sm: 0 }, ".group:hover &": { opacity: 1 } }}
+                      >
+                        <X style={{ width: 12, height: 12 }} />
+                      </IconButton>
+                    </Box>
+                    <Box sx={{ ml: 3.5, mt: 0.25, display: "flex", gap: 2, flexWrap: "wrap" }}>
+                      {subtask.addedBy && (
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                          <Avatar
+                            src={subtask.addedBy.avatar || undefined}
+                            sx={{ width: 14, height: 14, fontSize: "0.45rem", bgcolor: "#818cf8" }}
+                          >
+                            {!subtask.addedBy.avatar && subtask.addedBy.name.charAt(0).toUpperCase()}
+                          </Avatar>
+                          <Typography variant="caption" sx={{ color: "text.disabled", fontSize: "0.65rem" }}>
+                            added by {subtask.addedBy.name}
+                          </Typography>
+                        </Box>
                       )}
-                      added by {subtask.addedBy.name}
-                    </span>
-                  )}
-                  {subtask.completed && subtask.completedBy && (
-                    <span className="flex items-center gap-1 text-[10px] text-emerald-500 dark:text-emerald-400">
-                      {subtask.completedBy.avatar ? (
-                        <img src={subtask.completedBy.avatar} alt="" className="w-3.5 h-3.5 rounded-full" />
-                      ) : (
-                        <span className="w-3.5 h-3.5 rounded-full bg-emerald-400 text-white flex items-center justify-center text-[7px] font-bold">
-                          {subtask.completedBy.name.charAt(0).toUpperCase()}
-                        </span>
+                      {subtask.completed && subtask.completedBy && (
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                          <Avatar
+                            src={subtask.completedBy.avatar || undefined}
+                            sx={{ width: 14, height: 14, fontSize: "0.45rem", bgcolor: "#34d399" }}
+                          >
+                            {!subtask.completedBy.avatar && subtask.completedBy.name.charAt(0).toUpperCase()}
+                          </Avatar>
+                          <Typography variant="caption" sx={{ color: "success.main", fontSize: "0.65rem" }}>
+                            done by {subtask.completedBy.name}
+                          </Typography>
+                        </Box>
                       )}
-                      done by {subtask.completedBy.name}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
+                    </Box>
+                  </Box>
+                ))}
+              </Stack>
 
-            {/* Add subtask input */}
-            <div className="flex gap-2 mt-3">
-              <input
-                type="text"
-                value={subtaskInput}
-                onChange={(e) => setSubtaskInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && addSubtask()}
-                placeholder="Add a subtask..."
-                className="flex-1 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400"
-              />
-              <button
-                onClick={addSubtask}
-                disabled={!subtaskInput.trim()}
-                className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors disabled:opacity-40"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+              {/* Add subtask input */}
+              <Box sx={{ display: "flex", gap: 1, mt: 1.5 }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  value={subtaskInput}
+                  onChange={(e) => setSubtaskInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addSubtask()}
+                  placeholder="Add a subtask..."
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px", fontSize: "0.875rem" } }}
+                />
+                <IconButton
+                  onClick={addSubtask}
+                  disabled={!subtaskInput.trim()}
+                  sx={{
+                    bgcolor: "primary.50",
+                    color: "primary.main",
+                    borderRadius: "12px",
+                    "&:hover": { bgcolor: "primary.100" },
+                    "&.Mui-disabled": { opacity: 0.4 },
+                  }}
+                >
+                  <Plus style={{ width: 16, height: 16 }} />
+                </IconButton>
+              </Box>
+            </Box>
+          </Box>
         </motion.div>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -371,38 +473,47 @@ export default function SharedWithMe() {
   }, []);
 
   const handleUpdate = (updated: Todo) => {
-    setTodos((prev) => prev.map((t) => (t._id === updated._id ? { ...updated, ownerName: t.ownerName, myPermission: t.myPermission } : t)));
+    setTodos((prev) =>
+      prev.map((t) => (t._id === updated._id ? { ...updated, ownerName: t.ownerName, myPermission: t.myPermission } : t))
+    );
   };
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-        <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", py: 10 }}>
+        <CircularProgress sx={{ color: "#6366f1" }} />
+        <Typography variant="body2" sx={{ color: "text.secondary", mt: 1.5 }}>
           Loading shared todos...
-        </p>
-      </div>
+        </Typography>
+      </Box>
     );
   }
 
   if (todos.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl mb-4">
-          <Inbox className="w-10 h-10 text-indigo-400" />
-        </div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", py: 10 }}>
+        <Box
+          sx={{
+            p: 2,
+            bgcolor: "primary.50",
+            borderRadius: 3,
+            mb: 2,
+          }}
+        >
+          <Inbox style={{ width: 40, height: 40, color: "#818cf8" }} />
+        </Box>
+        <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
           Nothing shared yet
-        </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center max-w-xs">
+        </Typography>
+        <Typography variant="body2" sx={{ color: "text.secondary", textAlign: "center", maxWidth: 280 }}>
           When friends share todos with you, they will appear here.
-        </p>
-      </div>
+        </Typography>
+      </Box>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <Stack spacing={1.5}>
       {todos.map((todo, index) => (
         <motion.div
           key={todo._id}
@@ -413,6 +524,6 @@ export default function SharedWithMe() {
           <SharedTodoItem todo={todo} onUpdate={handleUpdate} />
         </motion.div>
       ))}
-    </div>
+    </Stack>
   );
 }
