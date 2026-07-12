@@ -410,7 +410,13 @@ export default function ChatPage() {
       {/* Messages Area */}
       <Box
         ref={scrollContainerRef}
-        sx={{ flex: 1, overflowY: "auto", px: 0.5 }}
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          px: 0.5,
+          scrollbarWidth: "none",
+          "&::-webkit-scrollbar": { display: "none" },
+        }}
       >
         {/* Load more */}
         {hasMore && (
