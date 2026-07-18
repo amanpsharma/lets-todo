@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 import MuiThemeProvider from "@/components/MuiThemeProvider";
 import "./globals.css";
 
@@ -41,13 +41,13 @@ export default function RootLayout({
         <head>
           <meta name="theme-color" content="#7c3aed" />
           <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-          <Script src="/sw-kill.js" strategy="beforeInteractive" />
-          <Script src="/theme-init.js" strategy="beforeInteractive" />
         </head>
         <body
           className={`${plusJakarta.variable} ${spaceGrotesk.variable} font-sans antialiased`}
         >
-          <MuiThemeProvider>{children}</MuiThemeProvider>
+          <AppRouterCacheProvider>
+            <MuiThemeProvider>{children}</MuiThemeProvider>
+          </AppRouterCacheProvider>
         </body>
       </html>
     </ClerkProvider>

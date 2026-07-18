@@ -1,21 +1,38 @@
 "use client";
 
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 
-export default function MuiThemeProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setMode] = useState<"light" | "dark">("light");
+type ColorMode = "light" | "dark";
 
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains("dark");
-    setMode(isDark ? "dark" : "light");
+function getModeSnapshot(): ColorMode {
+  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+}
 
-    const observer = new MutationObserver(() => {
-      setMode(document.documentElement.classList.contains("dark") ? "dark" : "light");
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => observer.disconnect();
-  }, []);
+function getServerModeSnapshot(): ColorMode {
+  return "light";
+}
+
+function subscribeToMode(onStoreChange: () => void) {
+  const observer = new MutationObserver(onStoreChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+
+  return () => observer.disconnect();
+}
+
+export default function MuiThemeProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const mode = useSyncExternalStore(
+    subscribeToMode,
+    getModeSnapshot,
+    getServerModeSnapshot,
+  );
 
   const theme = useMemo(
     () =>
